@@ -43,7 +43,7 @@ public class crud_mongo {
         collection.insertOne(doc);
         mongoClient.close();
     }
-
+    //find all review by name of winery
     public  void findReviewByWinery (String winery){
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
@@ -56,6 +56,7 @@ public class crud_mongo {
         mongoClient.close();
     }
 
+    //delete all review by taster name
     public void deleteReviewsByTaster_Name (String taster_name) {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
@@ -66,6 +67,7 @@ public class crud_mongo {
         System.out.println("Sono state eliminate "  + deleteResult.getDeletedCount() + "reviews");
     }
 
+    //update all price under a treshold with new price
     public void updateAllPrice (int selectOldPrice , int newPrice) {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
