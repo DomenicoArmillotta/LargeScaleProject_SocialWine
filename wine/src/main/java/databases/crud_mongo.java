@@ -48,7 +48,7 @@ public class crud_mongo {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("review");
-        Bson query = eq("winery" ,  winery);
+        Bson query = eq("winery" , "\"" + winery + "\"");
         MongoCursor<Document> cursor = collection.find(query).iterator();
         while (cursor.hasNext()){
             System.out.println(cursor.next().toJson());
@@ -62,7 +62,7 @@ public class crud_mongo {
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("review");
 
-        Bson query = eq("taster_name" ,  taster_name);
+        Bson query = eq("taster_name" , "\"" +  taster_name + "\"");
         DeleteResult deleteResult = collection.deleteMany(query);
         System.out.println("Sono state eliminate "  + deleteResult.getDeletedCount() + "reviews");
     }
@@ -73,8 +73,8 @@ public class crud_mongo {
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("review");
 
-        BasicDBObject set = new BasicDBObject("price", newPrice);
-        UpdateResult updateResult = collection.updateMany(lt("price", selectOldPrice), set);
+        BasicDBObject set = new BasicDBObject("price","\"" + newPrice + "\"");
+        UpdateResult updateResult = collection.updateMany(lt("price", "\"" + selectOldPrice + "\""), set);
         System.out.println(updateResult.getModifiedCount());
     }
 
