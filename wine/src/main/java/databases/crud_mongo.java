@@ -1,8 +1,6 @@
 package databases;
 import beans.Review;
-import com.mongodb.BasicDBObject;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
+import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -41,7 +39,15 @@ public class crud_mongo {
                 .append("province" , "\"" + province + " \"")
                 .append("country" , "\"" + country + " \"")
                 .append("winery" , "\"" + winery + " \"");
-        collection.insertOne(doc);
+
+        try {
+            collection.insertOne(doc);
+            System.out.println("Successfully inserted documents. \n");
+        } catch (MongoWriteException mwe) {
+            if (mwe.getError().getCategory().equals(ErrorCategory.DUPLICATE_KEY)) {
+                System.out.println("Document with that id already exists");
+            }
+        }
         mongoClient.close();
     }
     //find all review by name of winery
@@ -50,9 +56,13 @@ public class crud_mongo {
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("review");
         Bson query = eq("winery" , "\"" + winery + "\"");
-        MongoCursor<Document> cursor = collection.find(query).iterator();
-        while (cursor.hasNext()){
-            System.out.println(cursor.next().toJson());
+        try{
+            MongoCursor<Document> cursor = collection.find(query).iterator();
+            while (cursor.hasNext()){
+                System.out.println(cursor.next().toJson());
+            }
+        }catch (MongoCursorNotFoundException mce){
+            mce.printStackTrace();
         }
         mongoClient.close();
     }
@@ -62,10 +72,14 @@ public class crud_mongo {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("review");
-
-        Bson query = eq("taster_name" , "\"" +  taster_name + "\"");
-        DeleteResult deleteResult = collection.deleteMany(query);
-        System.out.println("Sono state eliminate "  + deleteResult.getDeletedCount() + "reviews");
+        try {
+            Bson query = eq("taster_name" , "\"" +  taster_name + "\"");
+            DeleteResult deleteResult = collection.deleteMany(query);
+            System.out.println("Document dropped successfully");
+            System.out.println("Were dropped "  + deleteResult.getDeletedCount() + " reviews");
+        } catch (MongoException me){
+            me.printStackTrace();
+        }
         mongoClient.close();
 
     }
@@ -75,10 +89,14 @@ public class crud_mongo {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("review");
-
+        try {
         BasicDBObject set = new BasicDBObject("price","\"" + newPrice + "\"");
         UpdateResult updateResult = collection.updateMany(lt("price", "\"" + selectOldPrice + "\""), set);
+        System.out.println("Document updated successfully");
         System.out.println(updateResult.getModifiedCount());
+        } catch (MongoException me){
+            me.printStackTrace();
+        }
         mongoClient.close();
 
     }
