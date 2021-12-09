@@ -26,19 +26,19 @@ public class crud_mongo {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("review");
-        Document doc = new Document("points" , "\"" + points + " \"")
-                .append("title" , "\"" + title + " \"")
-                .append("description" , "\"" + description + " \"")
-                .append("taster_name" , "\"" + taster_name + " \"")
-                .append("taster_twitter_handle" , "\"" + taster_twitter_handle + " \"")
-                .append("price" , "\"" + price + " \"")
-                .append("designation" , "\"" + designation + " \"")
-                .append("variety" , "\"" + variety + " \"")
-                .append("region_1" , "\"" + region_1 + " \"")
-                .append("region_2" , "\"" + region_2 + " \"")
-                .append("province" , "\"" + province + " \"")
-                .append("country" , "\"" + country + " \"")
-                .append("winery" , "\"" + winery + " \"");
+        Document doc = new Document("points" , "" + points + "")
+                .append("title" , "" + title + "")
+                .append("description" , "" + description + "")
+                .append("taster_name" , "" + taster_name + "")
+                .append("taster_twitter_handle" , "" + taster_twitter_handle + "")
+                .append("price" , "" + price + "")
+                .append("designation" , "" + designation + "")
+                .append("variety" , "" + variety + "")
+                .append("region_1" , "" + region_1 + "")
+                .append("region_2" , "" + region_2 + "")
+                .append("province" , "" + province + "")
+                .append("country" , "" + country + "")
+                .append("winery" , "" + winery + "");
 
         try {
             collection.insertOne(doc);
@@ -55,7 +55,7 @@ public class crud_mongo {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("review");
-        Bson query = eq("winery" , "\"" + winery + "\"");
+        Bson query = eq("winery" , "" + winery + "");
         try{
             MongoCursor<Document> cursor = collection.find(query).iterator();
             while (cursor.hasNext()){
@@ -73,7 +73,7 @@ public class crud_mongo {
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("review");
         try {
-            Bson query = eq("taster_name" , "\"" +  taster_name + "\"");
+            Bson query = eq("taster_name" , "" +  taster_name + "");
             DeleteResult deleteResult = collection.deleteMany(query);
             System.out.println("Document dropped successfully");
             System.out.println("Were dropped "  + deleteResult.getDeletedCount() + " reviews");
@@ -90,8 +90,8 @@ public class crud_mongo {
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("review");
         try {
-        BasicDBObject set = new BasicDBObject("price","\"" + newPrice + "\"");
-        UpdateResult updateResult = collection.updateMany(lt("price", "\"" + selectOldPrice + "\""), set);
+        BasicDBObject set = new BasicDBObject("price","" + newPrice + "");
+        UpdateResult updateResult = collection.updateMany(lt("price", "" + selectOldPrice + ""), set);
         System.out.println("Document updated successfully");
         System.out.println(updateResult.getModifiedCount());
         } catch (MongoException me){
@@ -107,7 +107,7 @@ public class crud_mongo {
         MongoCollection<Document> collection = database.getCollection("review");
 
         Review review = null;
-        Bson query = eq("_id" , "\"" + id + "\"");
+        Bson query = eq("_id" , "" + id + "");
         MongoCursor<Document> cursor = collection.find(query).iterator();
         while (cursor.hasNext()){
             Document temp_review_doc = cursor.next();
