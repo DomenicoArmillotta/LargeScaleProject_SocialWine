@@ -1,5 +1,5 @@
 package databases;
-
+import beans.Review;
 import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
@@ -20,6 +20,7 @@ public class crud_mongo {
     //create review DONE
     //delete all review by taster_name DONE
     //update all price under a threshold DONE
+    //findReviewFromId DONE
 
 
     //insert the review inside the collection review
@@ -65,6 +66,8 @@ public class crud_mongo {
         Bson query = eq("taster_name" , "\"" +  taster_name + "\"");
         DeleteResult deleteResult = collection.deleteMany(query);
         System.out.println("Sono state eliminate "  + deleteResult.getDeletedCount() + "reviews");
+        mongoClient.close();
+
     }
 
     //update all price under a treshold with new price
@@ -76,7 +79,40 @@ public class crud_mongo {
         BasicDBObject set = new BasicDBObject("price","\"" + newPrice + "\"");
         UpdateResult updateResult = collection.updateMany(lt("price", "\"" + selectOldPrice + "\""), set);
         System.out.println(updateResult.getModifiedCount());
+        mongoClient.close();
+
     }
+    //find a review by _id and create the beans
+    public Review findReviewFromId (String id){
+        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
+        MongoDatabase database = mongoClient.getDatabase("wine");
+        MongoCollection<Document> collection = database.getCollection("review");
+
+        Review review = null;
+        Bson query = eq("_id" , "\"" + id + "\"");
+        MongoCursor<Document> cursor = collection.find(query).iterator();
+        while (cursor.hasNext()){
+            Document temp_review_doc = cursor.next();
+            String points = temp_review_doc.getString("points");
+            System.out.println(points);
+            String title = temp_review_doc.getString("title");
+            String description = temp_review_doc.getString("description");
+            String taster_name = temp_review_doc.getString("taster_name");
+            String taster_twitter_handle = temp_review_doc.getString("taster_twitter_handle");
+            Integer price = temp_review_doc.getInteger("price");
+            String designation = temp_review_doc.getString("designation");
+            String variety = temp_review_doc.getString("variety");
+            String region_1 = temp_review_doc.getString("region_1");
+            String region_2 = temp_review_doc.getString("region_2");
+            String province = temp_review_doc.getString("province");
+            String country = temp_review_doc.getString("country");
+            String winery = temp_review_doc.getString("winery");
+            review = new Review(points,title,description,taster_name,taster_twitter_handle,price,designation,variety,region_1,region_2,province,country,winery);
+        }
+        mongoClient.close();
+        return review;
+    }
+
 
 }
 

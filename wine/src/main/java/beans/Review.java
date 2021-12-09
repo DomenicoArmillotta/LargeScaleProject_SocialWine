@@ -1,6 +1,6 @@
 package beans;
 
-public class review {
+public class Review {
     String points;
     String title;
     String description;
@@ -14,6 +14,22 @@ public class review {
     String province;
     String country;
     String winery;
+
+    public Review(String points, String title, String description, String taster_name, String taster_twitter_handle, int price, String designation, String variety, String region_1, String region_2, String province, String country, String winery) {
+        this.points = points;
+        this.title = title;
+        this.description = description;
+        this.taster_name = taster_name;
+        this.taster_twitter_handle = taster_twitter_handle;
+        this.price = price;
+        this.designation = designation;
+        this.variety = variety;
+        this.region_1 = region_1;
+        this.region_2 = region_2;
+        this.province = province;
+        this.country = country;
+        this.winery = winery;
+    }
 
     public String getPoints() {
         return points;

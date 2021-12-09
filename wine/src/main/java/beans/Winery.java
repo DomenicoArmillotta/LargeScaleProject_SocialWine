@@ -2,8 +2,8 @@ package beans;
 
 import java.util.List;
 
-public class winery {
+public class Winery {
     String name;
-    List<review> reviewList;
+    List<Review> reviewList;
 
 }
