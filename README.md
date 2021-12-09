@@ -7,7 +7,7 @@ Application:
 
 Mongo Db:
 - [x] Crud in mongo Db
-- [x] 1 advanced mongo db
+- [ ] 1 advanced mongo db
 - [ ] 2 advanced mongo db
 - [ ] 3 advanced mongo db
 
