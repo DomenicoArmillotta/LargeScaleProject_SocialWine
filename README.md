@@ -22,8 +22,11 @@ Distruibuited :
 
 
 Domande :
-1. possiamo eliminare la seconda collezione e lasciare solo review perche tutte le advanced query su mongo le facciamo su review?
-2. Non abbiamo nessun nested document , dovremmo implementarlo nel document delle winery?
+1. possiamo eliminare la seconda collezione e lasciare solo review perche tutte le advanced query su mongo le facciamo su review? non ci sono costrains
+2. Non abbiamo nessun nested document , dovremmo implementarlo nel document delle winery? Si lo implementiamo  ma non ci facciamo nessuna query perche non è nelle costrains
+
+Link per Neo4j:
+https://github.com/andrealagna/FUTDataMining/tree/08253590b90f68caf3d70c00e288dedeb94394ac/FUTPersistence/src/main/java/neo4j
 
 
 
