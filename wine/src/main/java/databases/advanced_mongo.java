@@ -89,11 +89,13 @@ public class advanced_mongo {
             //convert to string into int to do avg operation of all collection
             int updatePts = Integer.parseInt(pts);
 
-
+            //set the attribute to replace in this query "POINTS"
             BasicDBObject updateQuery = new BasicDBObject();
             updateQuery.append("$set", new BasicDBObject().append("points", updatePts));
+            //set the attribute to search in this query "_id"
             BasicDBObject searchQuery = new BasicDBObject();
             searchQuery.put("_id", new ObjectId(id));
+            //make the update query with the update and searchquery
             collection.updateMany(searchQuery, updateQuery);
         }
         // {"taster_name" : "name1" , "avg" : "2"}
