@@ -21,5 +21,4 @@ Distruibuited :
 - [ ] Create the replica
 
 
-## Social Wine Project
 
