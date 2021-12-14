@@ -14,8 +14,8 @@ public class Main {
         //mongo.updateAllPrice(20,23);
 
         advanced_mongo ad_mongo = new advanced_mongo();
-        //ad_mongo.topTenCountriesWineries();
+        ad_mongo.topTenCountriesWineries();
         //ad_mongo.topTwentyVarietiesAvgPrice();
-        ad_mongo.topFiveUsersHighestAvgScores();
+        //ad_mongo.topFiveUsersHighestAvgScores();
     }
 }
