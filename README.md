@@ -21,4 +21,9 @@ Distruibuited :
 - [ ] Create the replica
 
 
+Domande :
+1. possiamo eliminare la seconda collezione e lasciare solo review perche tutte le advanced query su mongo le facciamo su review?
+2. Non abbiamo nessun nested document , dovremmo implementarlo nel document delle winery?
+
+
 
