@@ -26,14 +26,22 @@ public class advanced_mongo {
     //WORK
     public void topTenCountriesWineries() {
         MongoClient mongoClient = MongoClients.create();
+        //i use the Database = "wine" and collection = "review"
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("review");
 
-        Bson limit = limit(10);
-        Bson sort = sort(descending("wineryCount"));
-        Bson unwind = unwind("$wineries");
-        Bson secondGroup = group("$_id", sum("wineryCount",1));
+        // {"country": "US" , "wineries" : ["winery1" , "winery2" , "winery3"]}
         Bson firstGroup = group("$country", Accumulators.addToSet("wineries", new Document("wineries","$winery")));
+        // {""country": "US" , "wineries" : "winery1"}
+        // {""country": "US" , "wineries" : "winery2"}
+        // {""country": "US" , "wineries" : "winery3"}
+        Bson unwind = unwind("$wineries");
+        //  {"_id" : "US" , "wineryCount" : 3}
+        Bson secondGroup = group("$_id", sum("wineryCount",1));
+        //sort to extraxt the top 10
+        Bson sort = sort(descending("wineryCount"));
+        //limit to extraxt top 10
+        Bson limit = limit(10);
 
         List<Document> results = collection.aggregate(Arrays.asList(firstGroup,unwind,secondGroup,sort,limit)).into(new ArrayList<>());
         results.forEach( doc -> System.out.println(doc.toJson()));
@@ -46,12 +54,18 @@ public class advanced_mongo {
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("review");
 
-        Bson limit = limit(20);
-        Bson sort = sort(descending("avgPrice"));
-        Bson unwind = unwind("$prices");
-
+        // {"variety" : "variety1" , "prices" : ["1" , "2" , "3"]}
         Bson firstGroup = group("$variety", Accumulators.addToSet("prices", "$price"));
+        // {"variety" : "variety1" , "prices" : "1"}
+        // {"variety" : "variety1" , "prices" : "2"}
+        // {"variety" : "variety1" , "prices" : "3"}
+        Bson unwind = unwind("$prices");
+        // {"_id" : "variety1" , "avgPrice" : 2}
         Bson secondGroup = group("$_id", avg("avgPrice","$prices"));
+        //used to sort and extraxt top 20 wine variety with avg price highter
+        Bson sort = sort(descending("avgPrice"));
+        Bson limit = limit(20);
+
         List<Document> results = collection.aggregate(Arrays.asList(firstGroup,unwind,secondGroup,sort,limit)).into(new ArrayList<>());
         results.forEach( doc -> System.out.println(doc.toJson()));
     }
@@ -65,22 +79,28 @@ public class advanced_mongo {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("review");
+
+        //iterator of all collection
         MongoCursor<Document> cursor = collection.find().cursor();
         while (cursor.hasNext()){
             Document cur = cursor.next();
             String id = cur.get("_id").toString();
             String pts = cur.get("points").toString();
+            //convert to string into int to do avg operation of all collection
             int updatePts = Integer.parseInt(pts);
+
+
             BasicDBObject updateQuery = new BasicDBObject();
             updateQuery.append("$set", new BasicDBObject().append("points", updatePts));
             BasicDBObject searchQuery = new BasicDBObject();
             searchQuery.put("_id", new ObjectId(id));
             collection.updateMany(searchQuery, updateQuery);
         }
-
-        Bson limit = limit(5);
-        Bson sort = sort(descending("avg"));
+        // {"taster_name" : "name1" , "avg" : "2"}
         Bson group = group("$taster_name",avg("avg","$points"));
+        //used to extract top 5 user in descending order
+        Bson sort = sort(descending("avg"));
+        Bson limit = limit(5);
         List<Document> results = collection.aggregate(Arrays.asList(group,sort,limit)).into(new ArrayList<>());
         results.forEach( doc -> System.out.println(doc.toJson()));
     }

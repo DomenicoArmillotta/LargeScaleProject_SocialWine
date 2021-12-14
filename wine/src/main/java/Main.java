@@ -15,7 +15,7 @@ public class Main {
 
         advanced_mongo ad_mongo = new advanced_mongo();
         //ad_mongo.topTenCountriesWineries();
-        ad_mongo.topTwentyVarietiesAvgPrice();
-        //ad_mongo.topFiveUsersHighestAvgScores();
+        //ad_mongo.topTwentyVarietiesAvgPrice();
+        ad_mongo.topFiveUsersHighestAvgScores();
     }
 }
