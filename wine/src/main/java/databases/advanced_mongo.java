@@ -2,7 +2,6 @@ package databases;
 
 //here there are all the advanced query with aggregation
 //top k user with average highest of review
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Accumulators;
@@ -12,13 +11,13 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import static com.mongodb.client.model.Accumulators.*;
 import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Sorts.descending;
+
 
 public class advanced_mongo {
 
