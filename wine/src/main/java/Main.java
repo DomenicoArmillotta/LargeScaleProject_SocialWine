@@ -13,9 +13,44 @@ public class Main {
 
         //mongo.updateAllPrice(20,23);
 
-        advanced_mongo ad_mongo = new advanced_mongo();
-        ad_mongo.topTenCountriesWineries();
+        //advanced_mongo ad_mongo = new advanced_mongo();
+        //ad_mongo.topTenCountriesWineries();
         //ad_mongo.topTwentyVarietiesAvgPrice();
         //ad_mongo.topFiveUsersHighestAvgScores();
+
+        crud_graph crud = new crud_graph("bolt://localhost:7687","neo4j","root");
+        advanced_graph adv = new advanced_graph("bolt://localhost:7687","neo4j","root");
+/*        //connection.addUser("Ba cicc");
+        crud.addUser("Aldo");
+        crud.addUser("Giovanni");
+        crud.addUser("Giacomo");
+        crud.addUser("Giuseppe");
+        crud.addPageWinery("Enoteca","Italy");
+        crud.addPageWinery("Eno","Germany");
+        crud.addPost("ottimo vino","il vino era molto buono");
+        crud.createRelationBelong("ottimo vino","Enoteca");
+        crud.createRelationCreated("ottimo vino","Aldo");
+        crud.createRelationFollow("Aldo","Giovanni");
+        crud.createRelationLike("ottimo vino","Giuseppe");
+        crud.deletePage("Eno");
+        crud.deletePost("ottimo vino");
+        crud.deleteRelationBelong("ottimo vino","Enoteca");
+        crud.deleteUser("Ba cicc");
+        crud.deleteRelationCreated("ottimo vino","Aldo");
+        crud.deleteRelationFollow("Aldo","Giovanni");
+        crud.deleteRelationLike("ottimo vino","Giuseppe");
+        crud.createRelationFollow("Aldo","Giovanni");
+        crud.createRelationFollow("Aldo","Giacomo");
+        crud.createRelationFollow("Aldo","Giuseppe");
+        crud.createRelationFollow("Giovanni","Giacomo");
+        crud.createRelationFollow("Giovanni","Aldo");
+        crud.createRelationFollow("Giovanni","Giuseppe");
+        crud.createRelationFollow("Giuseppe","Giovanni");
+        crud.createRelationFollow("Giuseppe","Giacomo");*/
+
+        adv.top5UserMostFriendship();
+
+
+
     }
 }

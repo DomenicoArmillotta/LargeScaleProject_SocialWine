@@ -37,22 +37,19 @@ import static org.neo4j.driver.Values.parameters;
 public class crud_graph implements AutoCloseable  {
     private final Driver driver;
 
-    public crud_graph( String uri, String user, String password )
-    {
-        driver = GraphDatabase.driver( uri, AuthTokens.basic( user, password ) );
+
+    public crud_graph( String uri, String user, String password ) {
+            driver = GraphDatabase.driver( uri, AuthTokens.basic( user, password ) );
     }
 
     @Override
-    public void close() throws Exception
-    {
+    public void close() throws Exception {
         driver.close();
     }
 
     //add people
-    public void addUser( final String taster_name )
-    {
-        try ( Session session = driver.session() )
-        {
+    public void addUser( final String taster_name ) {
+        try ( Session session = driver.session() ) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run( "MERGE (p:User {taster_name: $taster_name})",
                         parameters( "taster_name" , taster_name) );
@@ -62,10 +59,8 @@ public class crud_graph implements AutoCloseable  {
     }
 
     //add post
-    public void addPost( final String titlePost, final String description )
-    {
-        try ( Session session = driver.session() )
-        {
+    public void addPost( final String titlePost, final String description ) {
+        try ( Session session = driver.session() ) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run( "MERGE (p:Post {titlePost: $titlePost, description: $description})",
                         parameters( "titlePost", titlePost, "description", description) );
@@ -75,10 +70,8 @@ public class crud_graph implements AutoCloseable  {
     }
 
     //add Page winery
-    public void addPageWinery( final String wineryName, final String country )
-    {
-        try ( Session session = driver.session() )
-        {
+    public void addPageWinery( final String wineryName, final String country ) {
+        try ( Session session = driver.session() ) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run( "MERGE (p:Page {wineryName: $wineryName, country: $country})",
                         parameters( "wineryName", wineryName, "country", country) );
