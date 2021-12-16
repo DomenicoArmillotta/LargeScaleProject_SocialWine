@@ -1,8 +1,14 @@
 import databases.*;
 import miscellaneous.*;
+import scraping.InitTh;
+import scraping.scraperThread;
 
 public class Main {
     public static void main(String[] args){
+
+        InitTh thread = new InitTh();
+        thread.initThread();
+
         //crud_mongo mongo = new crud_mongo();
 
         /*mongo.createReview("85","Prova","Wine was good","Giovanni","@giovanni 98",
@@ -21,7 +27,7 @@ public class Main {
 
         crud_graph crud = new crud_graph("bolt://localhost:7687","neo4j","root");
         advanced_graph adv = new advanced_graph("bolt://localhost:7687","neo4j","root");
-/*        //connection.addUser("Ba cicc");
+/*      //connection.addUser("Ba cicc");
         crud.addUser("Aldo");
         crud.addUser("Giovanni");
         crud.addUser("Giacomo");
@@ -49,8 +55,8 @@ public class Main {
         crud.createRelationFollow("Giuseppe","Giovanni");
         crud.createRelationFollow("Giuseppe","Giacomo");*/
 
-        distinctUsers user = new distinctUsers();
-        user.distinctUser();
+ /*       distinctUsers user = new distinctUsers();
+        user.distinctUser();*/
 
     }
 }

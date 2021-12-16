@@ -2,9 +2,9 @@ package miscellaneous;
 
 import java.util.Scanner;
 
-public class loginSystem {
+public class loginAdmin {
 
-    public void logIn(){
+    public boolean logIn(){
         String Username = "admin";
         String Password = "root";
 
@@ -18,14 +18,18 @@ public class loginSystem {
 
         if (username.equals(Username) && password.equals(Password)) {
             System.out.println("Access Granted! Welcome!");
+            return true;
         }
 
         else if (username.equals(Username)) {
             System.out.println("Invalid Password!");
+            return false;
         } else if (password.equals(Password)) {
             System.out.println("Invalid Username!");
+            return false;
         } else {
             System.out.println("Invalid Username & Password!");
+            return false;
         }
     }
 
