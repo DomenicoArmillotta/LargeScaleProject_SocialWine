@@ -1,8 +1,13 @@
 package databases;
 
+import beans.Review;
+import beans.User;
 import org.neo4j.driver.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+
+import static org.neo4j.driver.Values.parameters;
 
 public class advanced_graph implements AutoCloseable {
     private final Driver driver;
@@ -12,26 +17,51 @@ public class advanced_graph implements AutoCloseable {
         driver = GraphDatabase.driver( uri, AuthTokens.basic( user, password ) );
     }
 
-    public HashMap<String,Value> top5UserMostFriendship() {
-        HashMap<String,Value> friendCount;
+
+    public ArrayList<User> suggestedUserByFriends(final String taster_name) {
+        ArrayList<User> suggestedUsers;
         try (Session session = driver.session()) {
-            friendCount = session.readTransaction((TransactionWork<HashMap<String, Value>>) tx -> {
-                        Result result = tx.run("MATCH path=(p:user)-[f:Follow]-(p:User)\n" +
-                                "RETURN  AS User, p.taster_name, COUNT(f) AS numFollow \n" +
-                                "ORDER BY numFollow DESC\n" +
-                                "LIMIT 5");
-                        HashMap<String, Value> friendCountResult = new HashMap<>();
-                        while (result.hasNext()) {
-                            Record r = result.next();
-                            friendCountResult.put(r.get("Taster Name").asString(), r.get("numFollow"));
-                        }
-                        System.out.println(friendCountResult);
-                return friendCountResult;
+            suggestedUsers = session.readTransaction((TransactionWork<ArrayList<User>>) tx -> {
+                Result result = tx.run("MATCH p=(n:User{taster_name: $taster_name})-[:Follow]->(:User)<-[:Follow]-(u:User)\n" +
+                                "WHERE NOT EXISTS ((n)-[:Follow]-(u))\n" +
+                                "WITH u, rand() AS number\n" +
+                                "RETURN toString(u.id) AS Id, u.taster_name AS taster_name\n" +
+                                "ORDER BY number\n" +
+                                "LIMIT 5",
+                        parameters("taster_name", taster_name));
+                ArrayList<User> users = new ArrayList<>();
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    User u = new User(r.get("taster_name").asString());
+                    users.add(u);
+                }
+                return users;
+            });
+        } catch (Exception e){
+            suggestedUsers = null;
+        }
+        return suggestedUsers;
+    }
+
+    public HashMap<String,String> FiveMostLikePost(){
+        HashMap<String,String>  likePost;
+        try (Session session = driver.session()) {
+            likePost = session.readTransaction((TransactionWork<HashMap<String,String> >) tx -> {
+                Result result = tx.run("MATCH (p:Review)-[r:Like]-(u:User)\n" +
+                        "RETURN p.title AS Title, COUNT(r) AS numLike \n" +
+                        "ORDER BY numLike DESC\n" +
+                        "LIMIT 5");
+                HashMap<String,String>  likeResult = new HashMap<>();
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    likeResult.put(r.get("Title").asString(), r.get("numLike").toString());
+                }
+                return likeResult;
             });
         }catch (Exception e){
-            friendCount = null;
+            likePost = null;
         }
-        return friendCount;
+        return likePost;
     }
 
     @Override

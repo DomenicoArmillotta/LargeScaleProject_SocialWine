@@ -1,4 +1,5 @@
 import databases.*;
+import miscellaneous.*;
 
 public class Main {
     public static void main(String[] args){
@@ -48,9 +49,8 @@ public class Main {
         crud.createRelationFollow("Giuseppe","Giovanni");
         crud.createRelationFollow("Giuseppe","Giacomo");*/
 
-        adv.top5UserMostFriendship();
-
-
+        distinctUsers user = new distinctUsers();
+        user.distinctUser();
 
     }
 }
