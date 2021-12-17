@@ -17,7 +17,9 @@ public class advanced_graph implements AutoCloseable {
         driver = GraphDatabase.driver( uri, AuthTokens.basic( user, password ) );
     }
 
-
+    //suggest 5 user that are friend of friend that are not yet followed
+    // user1 <----> user2 ---> user3
+    // user3 is suggested to user1
     public ArrayList<User> suggestedUserByFriends(final String taster_name) {
         ArrayList<User> suggestedUsers;
         try (Session session = driver.session()) {
@@ -25,7 +27,7 @@ public class advanced_graph implements AutoCloseable {
                 Result result = tx.run("MATCH p=(n:User{taster_name: $taster_name})-[:Follow]->(:User)<-[:Follow]-(u:User)\n" +
                                 "WHERE NOT EXISTS ((n)-[:Follow]-(u))\n" +
                                 "WITH u, rand() AS number\n" +
-                                "RETURN toString(u.id) AS Id, u.taster_name AS taster_name\n" +
+                                "RETURN u.taster_name AS taster_name\n" +
                                 "ORDER BY number\n" +
                                 "LIMIT 5",
                         parameters("taster_name", taster_name));
@@ -43,6 +45,7 @@ public class advanced_graph implements AutoCloseable {
         return suggestedUsers;
     }
 
+    //find the most 5 post with most like on the social
     public HashMap<String,String> FiveMostLikePost(){
         HashMap<String,String>  likePost;
         try (Session session = driver.session()) {
@@ -64,7 +67,20 @@ public class advanced_graph implements AutoCloseable {
         return likePost;
     }
 
-    @Override
+    // query to extract 10 people for the follow
+    //   MATCH (p:Person) RETURN p.name LIMIT 10
+    public void randomFollowByUser (final String taster_name){
+    }
+
+    //query to extract 10 post to put like
+    //  MATCH (p:Post) RETURN p.titlePost LIMIT 10
+    public void randomLikeByUser (final String taster_name){
+    }
+
+
+
+
+        @Override
     public void close() throws Exception {
         driver.close();
     }

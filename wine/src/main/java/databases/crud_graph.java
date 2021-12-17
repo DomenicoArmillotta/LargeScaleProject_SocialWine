@@ -58,7 +58,15 @@ public class crud_graph implements AutoCloseable  {
         }
     }
 
-    //add post
+    //this query is used to add a post and make the connection "created by" and "belong"
+    public void addPostComplete(final String taster_name, final String titlePost, final String description , final String wineryName ) {
+        addPost(titlePost ,description );
+        createRelationBelong(titlePost,wineryName);
+        createRelationCreated(titlePost , taster_name);
+    }
+
+
+        //add post
     public void addPost( final String titlePost, final String description ) {
         try ( Session session = driver.session() ) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -80,7 +88,7 @@ public class crud_graph implements AutoCloseable  {
         }
     }
 
-    //create follow between user
+    //create follow between user and the edge have direction
     public boolean createRelationFollow(final String taster_name1, final String taster_name2){
         boolean result = true;
         try (Session session = driver.session()){
@@ -118,7 +126,7 @@ public class crud_graph implements AutoCloseable  {
         boolean result = true;
         try (Session session = driver.session()){
             session.writeTransaction( tx -> {
-                tx.run("MATCH (u:Post{titlePost: $titlePost}),(u1:User{taster_name: $taster_name})\n" +
+                tx.run("MATCH (u:User{taster_name: $taster_name}),(u1:Post{titlePost: $titlePost})\n" +
                                 "CREATE (u)-[:Like]->(u1)",
                         parameters("titlePost", titlePost , "taster_name", taster_name));
                 return 1;
@@ -150,7 +158,7 @@ public class crud_graph implements AutoCloseable  {
         boolean result = true;
         try (Session session = driver.session()){
             session.writeTransaction( tx -> {
-                tx.run("MATCH (u:Post{titlePost: $titlePost}),(u1:User{taster_name: $taster_name})\n" +
+                tx.run("MATCH (u:User{taster_name: $taster_name}),(u1:Post{titlePost: $titlePost})\n" +
                                 "CREATE (u)-[:Created]->(u1)",
                         parameters("titlePost", titlePost , "taster_name", taster_name));
                 return 1;
@@ -253,10 +261,5 @@ public class crud_graph implements AutoCloseable  {
         }
         return result;
     }
-
-
-
-
-
 
 }
