@@ -5,6 +5,7 @@ Application:
 - [ ] implement scraper on app
 - [ ] implement auto update of the review scraped on mongo db in the two collection (user , winery)
 - [ ] implement auto adding of the user scraped on graph db
+- [ ] finish the menu
 
 Mongo Db:
 - [x] Crud in mongo Db
