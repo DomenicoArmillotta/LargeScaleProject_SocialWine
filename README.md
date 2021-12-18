@@ -21,8 +21,8 @@ Graph Db:
 - [ ] Testing the graph advanced query
 - [ ] populating the graph db with user -----> <name>
 - [ ] populating the graph db with Post (review) ----> <title,description>
-- [ ] create the random follow between user (a function that admin can launch)
-- [ ] create the random like between user and post (a function that admin can launch)
+- [x] create the random follow between user (a function that admin can launch)
+- [x] create the random like between user and post (a function that admin can launch)
 
 
 
