@@ -2,27 +2,31 @@
 
 Application:
 - [x] Scraper
-- [ ] implement scraper on app
-- [ ] implement auto update of the review scraped on mongo db in the two collection (user , winery)
-- [ ] implement auto adding of the user scraped on graph db
+- [x] implement scraper on app
+- [ ] implement auto update of the review scraped on mongo db in the two collection (user , winery) ----> the winery collection is missing
+- [ ] implement auto adding of the user scraped on graph db using the function addPostComplete and addUser
 - [ ] finish the menu
+- [ ] create the login with a search in mongo db to login
 
 Mongo Db:
+
 - [x] Crud in mongo Db
 - [x] 1 advanced mongo db
 - [x] 2 advanced mongo db
 - [x] 3 advanced mongo db
+- [x] test the mongo db query 
 
 Graph Db:
 - [x] Crud in Graph
-- [x] 1 advanced og graph
-- [x] 2 advanced on graph
-- [x] Create query ADD_POST where you specify the winery, the title, the description, the creator. In order to create the "created" and "Belong" relationships
+- [x] 1 advanced og graph ----> TO BE TESTED
+- [x] 2 advanced on graph ----> TO BE TESTED
+- [x] Create query ADD_POST where you specify the winery, the title, the description, the creator. In order to create the "created" and "Belong" relationships ----> TO BE TESTED
+- [x] create the random follow between user (a function that admin can launch)[randomFollowByUser] ----> TO BE TESTED
+- [x] create the random like between user and post (a function that admin can launch) [randomLikeByUser] ----> TO BE TESTED
 - [ ] Testing the graph advanced query
 - [ ] populating the graph db with user -----> <name>
 - [ ] populating the graph db with Post (review) ----> <title,description>
-- [x] create the random follow between user (a function that admin can launch)
-- [x] create the random like between user and post (a function that admin can launch)
+
 
 
 
@@ -38,11 +42,16 @@ Distruibuited :
   
   
 
-Domande :
-1. possiamo eliminare la seconda collezione e lasciare solo review perche tutte le advanced query su mongo le facciamo su review? non ci sono costrains
-2. Non abbiamo nessun nested document , dovremmo implementarlo nel document delle winery? Si lo implementiamo  ma non ci facciamo nessuna query perche non è nelle costrains
+Questions and answers
+1. we can delete the second collection and leave only reviews why do we do all the advanced queries on mongo on review?
+  we can leave becouse there are no costrains
+2. We don't have any nested document, should we implement it in the winery document?
+  Yes we implement it but we do not make any queries because it is not in the costrains
+3. we dont use the beans in our code becouse we use directly the query to do operation! We can delete the beans?
+4. when a user login to mantain the user name we can use the key value database (?)
+  
 
-Link per Neo4j:
+Link for Neo4j:
 https://github.com/andrealagna/FUTDataMining/tree/08253590b90f68caf3d70c00e288dedeb94394ac/FUTPersistence/src/main/java/neo4j
 
 
