@@ -1,11 +1,11 @@
 package databases;
-
 import beans.Review;
 import beans.User;
 import org.neo4j.driver.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import static org.neo4j.driver.Values.parameters;
 
@@ -69,12 +69,74 @@ public class advanced_graph implements AutoCloseable {
 
     // query to extract 10 people for the follow
     //   MATCH (p:Person) RETURN p.name LIMIT 10
-    public void randomFollowByUser (final String taster_name){
+    public void randomFollowByUser (final String selected_taster_name){
+        try ( Session session = driver.session() )
+        {
+            // take the 10 random user
+            List<String> random = session.readTransaction((TransactionWork<List<String>>) tx -> {
+                Result result = tx.run( "MATCH (p:User) RETURN p.taster_name as taster_name LIMIT 10");
+
+                ArrayList<String> randomUsers = new ArrayList<>();
+                while(result.hasNext())
+                {
+                    Record r = result.next();
+                    //i pick the random user
+                    randomUsers.add(r.get("taster_name").asString());
+                    //i save the String name in the variable
+                    String taster_name;
+                    taster_name = r.get("taster_name").asString();
+                    //i open another session to create the relation "Follow" in bidirectional way
+                    try (Session session2 = driver.session()){
+                        session2.writeTransaction( tx2 -> {
+                            tx2.run("MATCH (u:User{taster_name: $taster_name1}),(u1:User{taster_name: $taster_name2})\n" +
+                                            "CREATE (u)<-[:Follow]->(u1)",
+                                    parameters("selected_taster_name", selected_taster_name , "taster_name", taster_name));
+                            return 1;
+                        });
+                    } catch (Exception e){
+                    }
+
+                }
+                return randomUsers;
+            });
+                System.out.println(random);
+        }
     }
 
     //query to extract 10 post to put like
     //  MATCH (p:Post) RETURN p.titlePost LIMIT 10
-    public void randomLikeByUser (final String taster_name){
+    public void randomLikeByUser (final String selected_taster_name){
+        try ( Session session = driver.session() )
+        {
+            // take the 10 random user
+            List<String> random = session.readTransaction((TransactionWork<List<String>>) tx -> {
+                Result result = tx.run( "MATCH (p:Post) RETURN p.titlePost as titlePost LIMIT 10");
+
+                ArrayList<String> randomPost = new ArrayList<>();
+                while(result.hasNext())
+                {
+                    Record r = result.next();
+                    //i pick the random title Post
+                    randomPost.add(r.get("titlePost").asString());
+                    //i save the String titlePost in the variable
+                    String titlePost;
+                    titlePost = r.get("titlePost").asString();
+                    //i open another session to create the relation "Like" in unidirectional way
+                    try (Session session2 = driver.session()){
+                        session2.writeTransaction( tx2 -> {
+                            tx2.run("MATCH (u:User{taster_name: $taster_name1}),(p:Post{titlePost: $titlePost})\n" +
+                                            "CREATE (u)-[:Like]->(p)",
+                                    parameters("selected_taster_name", selected_taster_name , "titlePost", titlePost));
+                            return 1;
+                        });
+                    } catch (Exception e){
+                    }
+
+                }
+                return randomPost;
+            });
+            System.out.println(random);
+        }
     }
 
 
