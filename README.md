@@ -35,14 +35,14 @@ Distruibuited :
 
   
   
-# Population function:
+## Population function:
 -we use random function to create "follow" relationships between users [to be used only once]
 - we use the random function to create "like" relationships between users and posts [to be used only once]
 - the add review function will take as input = (title, description, author, linked winery) and create the "created" relationship between the post and the user, and the "belong" relationship between the post and the PageWinery [to be used when a user wants to write a review]
   
   
 
-Questions and answers
+# Questions and answers
 1. we can delete the second collection and leave only reviews why do we do all the advanced queries on mongo on review?
   we can leave becouse there are no costrains
 2. We don't have any nested document, should we implement it in the winery document?
