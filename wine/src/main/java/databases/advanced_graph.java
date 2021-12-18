@@ -46,6 +46,7 @@ public class advanced_graph implements AutoCloseable {
     }
 
     //find the most 5 post with most like on the social
+    //i order in descend order and the pick the top 5 from number of like
     public HashMap<String,String> FiveMostLikePost(){
         HashMap<String,String>  likePost;
         try (Session session = driver.session()) {
