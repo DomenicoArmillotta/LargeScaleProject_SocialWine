@@ -17,7 +17,7 @@ Graph Db:
 - [x] Crud in Graph
 - [x] 1 advanced og graph
 - [x] 2 advanced on graph
-- [ ] Create query ADD_POST where you specify the winery, the title, the description, the creator. In order to create the "created" and "Belong" relationships
+- [x] Create query ADD_POST where you specify the winery, the title, the description, the creator. In order to create the "created" and "Belong" relationships
 - [ ] Testing the graph advanced query
 - [ ] populating the graph db with user -----> <name>
 - [ ] populating the graph db with Post (review) ----> <title,description>
