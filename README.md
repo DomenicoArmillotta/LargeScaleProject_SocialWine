@@ -48,7 +48,9 @@ Distruibuited :
 2. We don't have any nested document, should we implement it in the winery document?
   Yes we implement it but we do not make any queries because it is not in the costrains
 3. we dont use the beans in our code becouse we use directly the query to do operation! We can delete the beans?
-4. when a user login to mantain the user name we can use the key value database (?)
+  No, we leaeve on the project, but we dont use often becouse we dont need to manipulate a lot our object java like Javascript
+4. when a user login to mantain the user name we can use the key value database 
+  key value solution 
   
 
 Link for Neo4j:
