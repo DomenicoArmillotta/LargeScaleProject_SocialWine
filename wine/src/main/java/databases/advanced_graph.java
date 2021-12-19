@@ -3,9 +3,7 @@ import beans.Review;
 import beans.User;
 import org.neo4j.driver.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static org.neo4j.driver.Values.parameters;
 
@@ -20,6 +18,7 @@ public class advanced_graph implements AutoCloseable {
     //suggest 5 user that are friend of friend that are not yet followed
     // user1 <----> user2 ---> user3
     // user3 is suggested to user1
+    //WORK
     public ArrayList<User> suggestedUserByFriends(final String taster_name) {
         ArrayList<User> suggestedUsers;
         try (Session session = driver.session()) {
@@ -37,6 +36,11 @@ public class advanced_graph implements AutoCloseable {
                     User u = new User(r.get("taster_name").asString());
                     users.add(u);
                 }
+                Iterator<User> us = users.iterator();
+                while (us.hasNext()){
+                    System.out.println(us.next().getTaster_name());
+                }
+
                 return users;
             });
         } catch (Exception e){
@@ -47,19 +51,21 @@ public class advanced_graph implements AutoCloseable {
 
     //find the most 5 post with most like on the social
     //i order in descend order and the pick the top 5 from number of like
+    //WORK
     public HashMap<String,String> FiveMostLikePost(){
         HashMap<String,String>  likePost;
         try (Session session = driver.session()) {
             likePost = session.readTransaction((TransactionWork<HashMap<String,String> >) tx -> {
-                Result result = tx.run("MATCH (p:Review)-[r:Like]-(u:User)\n" +
-                        "RETURN p.title AS Title, COUNT(r) AS numLike \n" +
+                Result result = tx.run("MATCH (p:Post)-[r:Like]-(u:User)\n" +
+                        "RETURN p.titlePost AS titlePost, COUNT(r) AS numLike \n" +
                         "ORDER BY numLike DESC\n" +
                         "LIMIT 5");
                 HashMap<String,String>  likeResult = new HashMap<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    likeResult.put(r.get("Title").asString(), r.get("numLike").toString());
+                    likeResult.put(r.get("titlePost").asString(), r.get("numLike").toString());
                 }
+                System.out.println(Arrays.asList(likeResult));
                 return likeResult;
             });
         }catch (Exception e){

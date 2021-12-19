@@ -59,10 +59,11 @@ public class crud_graph implements AutoCloseable  {
     }
 
     //this query is used to add a post and make the connection "created by" and "belong"
-    public void addPostComplete(final String taster_name, final String titlePost, final String description , final String wineryName ) {
+    public void addPostComplete(final String taster_name, final String titlePost, final String description , final String wineryName, final String country) {
         addPost(titlePost ,description );
         createRelationBelong(titlePost,wineryName);
         createRelationCreated(titlePost , taster_name);
+        addPageWinery(wineryName,country);
     }
 
 

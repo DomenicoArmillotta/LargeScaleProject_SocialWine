@@ -6,8 +6,8 @@ import scraping.scraperThread;
 public class Main {
     public static void main(String[] args){
 
-        InitTh thread = new InitTh();
-        thread.initThread();
+       /* InitTh thread = new InitTh();
+        thread.initThread();*/
 
         //crud_mongo mongo = new crud_mongo();
 
@@ -25,10 +25,10 @@ public class Main {
         //ad_mongo.topTwentyVarietiesAvgPrice();
         //ad_mongo.topFiveUsersHighestAvgScores();
 
-        crud_graph crud = new crud_graph("bolt://localhost:7687","neo4j","root");
-        advanced_graph adv = new advanced_graph("bolt://localhost:7687","neo4j","root");
-/*      //connection.addUser("Ba cicc");
-        crud.addUser("Aldo");
+        crud_graph crud = new crud_graph("bolt://localhost:7687","neo4j","0000");
+        advanced_graph adv = new advanced_graph("bolt://localhost:7687","neo4j","0000");
+
+     /*   crud.addUser("Aldo");
         crud.addUser("Giovanni");
         crud.addUser("Giacomo");
         crud.addUser("Giuseppe");
@@ -45,18 +45,30 @@ public class Main {
         crud.deleteUser("Ba cicc");
         crud.deleteRelationCreated("ottimo vino","Aldo");
         crud.deleteRelationFollow("Aldo","Giovanni");
-        crud.deleteRelationLike("ottimo vino","Giuseppe");
-        crud.createRelationFollow("Aldo","Giovanni");
-        crud.createRelationFollow("Aldo","Giacomo");
-        crud.createRelationFollow("Aldo","Giuseppe");
-        crud.createRelationFollow("Giovanni","Giacomo");
+        crud.deleteRelationLike("ottimo vino","Giuseppe");*/
+        //crud.createRelationFollow("Aldo","Giovanni");
+        //crud.createRelationFollow("Giovanni","Giacomo");
+        //crud.createRelationFollow("Giacomo","Giovanni");
+        //crud.createRelationFollow("Giacomo","Giuseppe");
+       /* crud.createRelationFollow("Giovanni","Giacomo");
         crud.createRelationFollow("Giovanni","Aldo");
         crud.createRelationFollow("Giovanni","Giuseppe");
         crud.createRelationFollow("Giuseppe","Giovanni");
         crud.createRelationFollow("Giuseppe","Giacomo");*/
+    //adv.suggestedUserByFriends("Aldo");
+      /*  crud.addPostComplete("Aldo","Il vino fa schifo","Il vino dava di tappo","Pizz");
+        crud.createRelationLike("Il vino fa schifo","Giovanni");
+        crud.createRelationLike("Il vino fa schifo","Giacomo");
+        crud.addPostComplete("Aldo","Il vino era buono","l'ho pagato assai soldi","Cola");
+        crud.createRelationLike("Il vino era buono","Giovanni");
+        crud.createRelationLike("Il vino era buono","Giacomo");
+        crud.createRelationLike("Il vino era buono","Giuseppe");*/
+        adv.FiveMostLikePost();
+
 
  /*       distinctUsers user = new distinctUsers();
         user.distinctUser();*/
+
 
     }
 }
