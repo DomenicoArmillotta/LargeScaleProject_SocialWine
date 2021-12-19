@@ -2,6 +2,7 @@ package miscellaneous;
 
 
 import com.mongodb.client.*;
+import databases.advanced_graph;
 import databases.advanced_mongo;
 import databases.crud_graph;
 import databases.crud_mongo;
@@ -13,6 +14,7 @@ import java.util.Scanner;
 
 public class Menu {
 
+
     public void MainMenu() throws Exception {
         loginAdmin login = new loginAdmin();
         InitTh thread = new InitTh();
@@ -23,6 +25,7 @@ public class Menu {
         crud_mongo mongo = new crud_mongo();
         advanced_mongo adv = new advanced_mongo();
         crud_graph graph = new crud_graph("bolt://localhost:7687", "neo4j", "root");
+        advanced_graph advgraph = new advanced_graph("bolt://localhost:7687", "neo4j", "root");
 
         System.out.println("\n***SOCIAL WINE APPLICATION***\n");
 
@@ -43,6 +46,7 @@ public class Menu {
                 default:
                     System.out.println("This is not a valid menu option... Please try again!");
                     break;
+                    //admin login
                 case 1:
                     while (true) {
                         System.out.println("\nPlease insert your name and your password or press X to exit:");
@@ -71,8 +75,89 @@ public class Menu {
                         }
                     }
 
+                //user login
+                case 2:
+                    while (true) {
+                        System.out.println("\nPlease insert your name and your password or press X to exit:");
+                        if (login.logIn()) {
+                            System.out.println("You can do these things :");
+                            System.out.println("A" + " Follow your friend");
+                            System.out.println("B" + " Unfollow a  friend");
+                            System.out.println("C" + " Put like on a Post");
+                            System.out.println("D" + " Delete like on a Post");
+                            System.out.println("E" + " Add a Post on the social");
+                            System.out.println("F" + " have tje list of suggested friends");
+                            System.out.println("G" + " Discover the top 5 trending Post on the social");
+                            System.out.println("\nWhat you want to do?");
+                            Scanner scan = new Scanner(System.in);
+                            String next = scan.nextLine();
+                            String choiceStatistics = next;
+                            String myName = null; //--> in this variable there is my name to do the query
 
-                case 2:       /* switch (choiceB) {
+                            switch (choiceStatistics) {
+                                case "A":
+                                    String userToFollow;
+                                    Scanner inputA = new Scanner(System.in);
+                                    System.out.println("who do you want to follow? Name: ");
+                                    userToFollow = inputA.next();
+                                    graph.createRelationFollow(myName,userToFollow);
+                                    System.out.println("Done");
+                                    break;
+                                case "B":
+                                    String userToUnfollow;
+                                    Scanner inputB = new Scanner(System.in);
+                                    System.out.println("who do you want to Unfollow? Name: ");
+                                    userToUnfollow = inputB.next();
+                                    graph.deleteRelationFollow(myName,userToUnfollow);
+                                    System.out.println("Done");
+                                    break;
+                                case "C":
+                                    String titlePostToPutLike;
+                                    Scanner inputC = new Scanner(System.in);
+                                    System.out.println("which post you want to like? TitlePost: ");
+                                    titlePostToPutLike = inputC.next();
+                                    graph.createRelationLike(titlePostToPutLike,myName);
+                                    System.out.println("Done");
+                                    break;
+                                case "D":
+                                    String titlePostToDeleteLike;
+                                    Scanner inputD = new Scanner(System.in);
+                                    System.out.println("which post you want to delete like? TitlePost: ");
+                                    titlePostToDeleteLike = inputD.next();
+                                    graph.deleteRelationLike(titlePostToDeleteLike,myName);
+                                    System.out.println("Done");
+                                    break;
+                                case "E":
+                                    System.out.println("which post you want to delete like? TitlePost: ");
+                                    String titleofthepost;
+                                    Scanner inputF = new Scanner(System.in);
+                                    titleofthepost = inputF.next();
+                                    String descriptionofthepost;
+                                    Scanner inputG = new Scanner(System.in);
+                                    descriptionofthepost = inputG.next();
+                                    String wineryName;
+                                    Scanner inputE = new Scanner(System.in);
+                                    wineryName = inputG.next();
+                                    graph.addPostComplete(myName,titleofthepost,descriptionofthepost,wineryName);
+                                    System.out.println("Done");
+                                    break;
+                                case "F":
+                                    System.out.println("this is the list of suggested user for you: ");
+                                    advgraph.suggestedUserByFriends(myName);
+                                    break;
+                                case "G":
+                                    System.out.println("this is the list of the tranding post on SocialWine ");
+                                    advgraph.FiveMostLikePost();
+                                    break;
+
+                            }
+
+                        }
+                    }
+
+
+
+                    /* switch (choiceB) {
                             case "A":
                                 String fName;
                                 String lName;
