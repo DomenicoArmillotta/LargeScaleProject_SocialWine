@@ -4,7 +4,7 @@ Application:
 - [x] Scraper
 - [x] implement scraper on app
 - [x] finish the menu
-- [ ] create the login with a search in mongo db to login
+- [ ] create the login with a search in mongo db to login and connect to menu
 - [ ] implement auto update of the review scraped on mongo db in the two collection (user , winery) ----> the winery collection is missing
 - [ ] implement auto adding of the user scraped on graph db using the function addPostComplete and addUser
 
@@ -26,7 +26,7 @@ Graph Db:
 - [x] Testing the graph advanced query
 - [ ] populating the graph db with user -----> <name>
 - [ ] populating the graph db with Post (review) ----> <title,description>
-- [ ] create a function to see all friends in graph db 
+- [x] create a function to see all friends in graph db 
 
 
 
