@@ -3,10 +3,10 @@
 Application:
 - [x] Scraper
 - [x] implement scraper on app
+- [x] finish the menu
+- [ ] create the login with a search in mongo db to login
 - [ ] implement auto update of the review scraped on mongo db in the two collection (user , winery) ----> the winery collection is missing
 - [ ] implement auto adding of the user scraped on graph db using the function addPostComplete and addUser
-- [ ] finish the menu
-- [ ] create the login with a search in mongo db to login
 
 Mongo Db:
 
@@ -18,14 +18,15 @@ Mongo Db:
 
 Graph Db:
 - [x] Crud in Graph
-- [x] 1 advanced og graph ----> TO BE TESTED
-- [x] 2 advanced on graph ----> TO BE TESTED
-- [x] Create query ADD_POST where you specify the winery, the title, the description, the creator. In order to create the "created" and "Belong" relationships ----> TO BE TESTED
+- [x] 1 advanced og graph ----> TESTED
+- [x] 2 advanced on graph ---->TESTED
+- [x] Create query ADD_POST where you specify the winery, the title, the description, the creator. In order to create the "created" and "Belong" relationships ----> TESTED
 - [x] create the random follow between user (a function that admin can launch)[randomFollowByUser] ----> TO BE TESTED
 - [x] create the random like between user and post (a function that admin can launch) [randomLikeByUser] ----> TO BE TESTED
-- [ ] Testing the graph advanced query
+- [x] Testing the graph advanced query
 - [ ] populating the graph db with user -----> <name>
 - [ ] populating the graph db with Post (review) ----> <title,description>
+- [ ] create a function to see all friends in graph db 
 
 
 
