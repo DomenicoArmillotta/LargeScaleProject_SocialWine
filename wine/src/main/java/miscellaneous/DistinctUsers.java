@@ -8,15 +8,13 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 
 
-public class distinctUsers {
+public class DistinctUsers {
 
     public void distinctUser() {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("review");
-
         MongoCollection<Document> newCollection = database.getCollection("user_credentials");
-
         try {
             DistinctIterable<String> docs = collection.distinct("taster_name",String.class);
             MongoCursor<String> results = docs.iterator();
@@ -36,6 +34,7 @@ public class distinctUsers {
         } catch (MongoException me) {
             System.err.println("Unable to insert due to an error: " + me);
         }
+
     }
 
 }

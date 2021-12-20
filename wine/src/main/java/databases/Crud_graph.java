@@ -36,11 +36,11 @@ import static org.neo4j.driver.Values.parameters;
 
 
 
-public class crud_graph implements AutoCloseable  {
+public class Crud_graph implements AutoCloseable  {
     private final Driver driver;
 
 
-    public crud_graph( String uri, String user, String password ) {
+    public Crud_graph(String uri, String user, String password ) {
             driver = GraphDatabase.driver( uri, AuthTokens.basic( user, password ) );
     }
 

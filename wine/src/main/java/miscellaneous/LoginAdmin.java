@@ -13,7 +13,7 @@ import java.util.Scanner;
 
 import static com.mongodb.client.model.Filters.eq;
 
-public class loginAdmin {
+public class LoginAdmin {
 
     public boolean logIn() {
         Scanner input1 = new Scanner(System.in);
@@ -47,7 +47,7 @@ public class loginAdmin {
         Document document = new Document();
         document.append("Name", "admin");
         document.append("Password", "root");
-        
+
         try {
             collection.insertOne(document);
             System.out.println("Successfully inserted documents. \n");

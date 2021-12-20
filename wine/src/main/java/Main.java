@@ -1,7 +1,4 @@
 import databases.*;
-import miscellaneous.*;
-import scraping.InitTh;
-import scraping.scraperThread;
 
 public class Main {
     public static void main(String[] args){
@@ -25,8 +22,8 @@ public class Main {
         //ad_mongo.topTwentyVarietiesAvgPrice();
         //ad_mongo.topFiveUsersHighestAvgScores();
 
-        crud_graph crud = new crud_graph("bolt://localhost:7687","neo4j","0000");
-        advanced_graph adv = new advanced_graph("bolt://localhost:7687","neo4j","0000");
+        Crud_graph crud = new Crud_graph("bolt://localhost:7687","neo4j","0000");
+        Advanced_graph adv = new Advanced_graph("bolt://localhost:7687","neo4j","0000");
 
      /*   crud.addUser("Aldo");
         crud.addUser("Giovanni");

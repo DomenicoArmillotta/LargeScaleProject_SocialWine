@@ -1,9 +1,11 @@
 package databases;
 import beans.Review;
 import com.mongodb.*;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.DeleteResult;
 import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
@@ -12,7 +14,7 @@ import org.bson.conversions.Bson;
 import static com.mongodb.client.model.Filters.*;
 
 
-public class crud_mongo {
+public class Crud_mongo {
 
     //find review by winery review DONE
     //create review DONE
@@ -50,6 +52,60 @@ public class crud_mongo {
         }
         mongoClient.close();
     }
+
+    //add a user
+    public void addUser (String taster_name , String taster_twitter_handle) {
+        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
+        MongoDatabase database = mongoClient.getDatabase("wine");
+        MongoCollection<Document> collection = database.getCollection("review");
+        Document doc = new Document ("taster_name" , "" + taster_name + "")
+                .append("taster_twitter_handle" , "" + taster_twitter_handle + "");
+        try {
+            collection.insertOne(doc);
+            System.out.println("Successfully inserted documents. \n");
+        } catch (MongoWriteException mwe) {
+            if (mwe.getError().getCategory().equals(ErrorCategory.DUPLICATE_KEY)) {
+                System.out.println("Document with that id already exists");
+            }
+        }
+        mongoClient.close();
+    }
+
+    //add winery
+    public void addWinery (String winery, String country) {
+        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
+        MongoDatabase database = mongoClient.getDatabase("wine");
+        MongoCollection<Document> collection = database.getCollection("review");
+        Document doc = new Document ("winery" , "" + winery + "")
+                .append("country" , "" + country + "");
+        try {
+            collection.insertOne(doc);
+            System.out.println("Successfully inserted documents. \n");
+        } catch (MongoWriteException mwe) {
+            if (mwe.getError().getCategory().equals(ErrorCategory.DUPLICATE_KEY)) {
+                System.out.println("Document with that id already exists");
+            }
+        }
+        mongoClient.close();
+    }
+
+    public void deleteUser (String twitterName) {
+        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
+        MongoDatabase database = mongoClient.getDatabase("wine");
+        MongoCollection<Document> collection = database.getCollection("review");
+        collection.deleteOne(Filters.eq("taster_twitter_handle", ""+twitterName+""));
+        System.out.println("Document deleted successfully...");
+    }
+
+    public void deleteWinery (String winery) {
+        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
+        MongoDatabase database = mongoClient.getDatabase("wine");
+        MongoCollection<Document> collection = database.getCollection("review");
+        collection.deleteOne(Filters.eq("winery", ""+winery+""));
+        System.out.println("Document deleted successfully...");
+    }
+
+
     //find all review by name of winery
     public  void findReviewByWinery (String winery){
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));

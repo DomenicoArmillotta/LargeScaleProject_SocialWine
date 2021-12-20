@@ -7,11 +7,11 @@ import java.util.*;
 
 import static org.neo4j.driver.Values.parameters;
 
-public class advanced_graph implements AutoCloseable {
+public class Advanced_graph implements AutoCloseable {
     private final Driver driver;
 
 
-    public advanced_graph( String uri, String user, String password ) {
+    public Advanced_graph(String uri, String user, String password ) {
         driver = GraphDatabase.driver( uri, AuthTokens.basic( user, password ) );
     }
 

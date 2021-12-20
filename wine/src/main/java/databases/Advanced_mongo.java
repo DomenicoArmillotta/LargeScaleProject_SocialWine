@@ -19,7 +19,7 @@ import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Sorts.descending;
 
 
-public class advanced_mongo {
+public class Advanced_mongo {
 
     //Top 10 countries that have most wineries in descending order
     //WORK
