@@ -1,10 +1,12 @@
 package databases;
 
+import beans.User;
 import org.neo4j.driver.*;
 import org.neo4j.driver.types.Node;
 import org.neo4j.driver.types.Path;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import static org.neo4j.driver.Values.parameters;
@@ -261,6 +263,36 @@ public class crud_graph implements AutoCloseable  {
             result = false;
         }
         return result;
+    }
+
+
+
+
+    public ArrayList<User> allFollowedUserByTaster_name(final String taster_name) {
+        ArrayList<User> followedUsers;
+        try (Session session = driver.session()) {
+            followedUsers = session.readTransaction((TransactionWork<ArrayList<User>>) tx -> {
+                Result result = tx.run("MATCH p=(n:User{taster_name: $taster_name})-[:Follow]->(u:User)\n" +
+                                "RETURN u.taster_name AS taster_name\n" +
+                                "ORDER BY number\n" ,
+                        parameters("taster_name", taster_name));
+                ArrayList<User> users = new ArrayList<>();
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    User u = new User(r.get("taster_name").asString());
+                    users.add(u);
+                }
+                Iterator<User> us = users.iterator();
+                while (us.hasNext()){
+                    System.out.println(us.next().getTaster_name());
+                }
+
+                return users;
+            });
+        } catch (Exception e){
+            followedUsers = null;
+        }
+        return followedUsers;
     }
 
 }

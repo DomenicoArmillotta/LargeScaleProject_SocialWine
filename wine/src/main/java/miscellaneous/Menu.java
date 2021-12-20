@@ -55,6 +55,8 @@ public class Menu {
                             System.out.println("A" + " Top 10 countries that have most wineries in descending order");
                             System.out.println("B" + " Display top-20 wines' varieties according to their mean price");
                             System.out.println("C" + " Top-5 users with the highest average of them review scores.");
+                            System.out.println("D" + " Create 10 follow relation between selected user and 10 random people");
+                            System.out.println("E" + " Create 10 like relation between selected user and 10 random post");
                             System.out.println("\nWhat you want to do?");
                             Scanner scan = new Scanner(System.in);
                             String next = scan.nextLine();
@@ -69,6 +71,20 @@ public class Menu {
                                     break;
                                 case "C":
                                     adv.topFiveUsersHighestAvgScores();
+                                    break;
+                                case "D":
+                                    String selected_user;
+                                    Scanner inputName = new Scanner(System.in);
+                                    System.out.println("Name of the User that you would select ");
+                                    selected_user = inputName.next();
+                                    advgraph.randomFollowByUser(selected_user);
+                                    break;
+                                case "E":
+                                    String selected_user2;
+                                    Scanner inputName2 = new Scanner(System.in);
+                                    System.out.println("Name of the User that you would select ");
+                                    selected_user2 = inputName2.next();
+                                    advgraph.randomLikeByUser(selected_user2);
                                     break;
                             }
 
@@ -88,6 +104,7 @@ public class Menu {
                             System.out.println("E" + " Add a Post on the social");
                             System.out.println("F" + " have tje list of suggested friends");
                             System.out.println("G" + " Discover the top 5 trending Post on the social");
+                            System.out.println("H" + " See all user followed");
                             System.out.println("\nWhat you want to do?");
                             Scanner scan = new Scanner(System.in);
                             String next = scan.nextLine();
@@ -128,17 +145,24 @@ public class Menu {
                                     System.out.println("Done");
                                     break;
                                 case "E":
-                                    System.out.println("which post you want to delete like? TitlePost: ");
+                                    System.out.println("Add post in the social network");
+                                    System.out.println("insert the title of the post");
                                     String titleofthepost;
                                     Scanner inputF = new Scanner(System.in);
                                     titleofthepost = inputF.next();
+                                    System.out.println("insert the review of the wine");
                                     String descriptionofthepost;
                                     Scanner inputG = new Scanner(System.in);
                                     descriptionofthepost = inputG.next();
+                                    System.out.println("insert the winery name of the wine");
                                     String wineryName;
                                     Scanner inputE = new Scanner(System.in);
                                     wineryName = inputG.next();
-                                    graph.addPostComplete(myName,titleofthepost,descriptionofthepost,wineryName);
+                                    System.out.println("insert the winery country of the wine");
+                                    String wineryCountry;
+                                    Scanner inputH = new Scanner(System.in);
+                                    wineryCountry = inputG.next();
+                                    graph.addPostComplete(myName,titleofthepost,descriptionofthepost,wineryName,wineryCountry);
                                     System.out.println("Done");
                                     break;
                                 case "F":
@@ -148,6 +172,10 @@ public class Menu {
                                 case "G":
                                     System.out.println("this is the list of the tranding post on SocialWine ");
                                     advgraph.FiveMostLikePost();
+                                    break;
+                                case "H":
+                                    System.out.println("this is the list of all followed user by this account ");
+                                    graph.allFollowedUserByTaster_name(myName);
                                     break;
 
                             }
