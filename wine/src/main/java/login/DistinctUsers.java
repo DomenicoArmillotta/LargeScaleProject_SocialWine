@@ -1,4 +1,4 @@
-package miscellaneous;
+package login;
 
 import com.mongodb.ErrorCategory;
 import com.mongodb.MongoException;
@@ -21,7 +21,7 @@ public class DistinctUsers {
             while (results.hasNext()) {
                 Document doc = new Document("_id",new ObjectId());
                 doc.append("Name",results.next());
-                doc.append("Password","0000");
+                doc.append("Password","abcd");
                 try {
                     newCollection.insertOne(doc);
                 } catch (MongoWriteException mwe) {

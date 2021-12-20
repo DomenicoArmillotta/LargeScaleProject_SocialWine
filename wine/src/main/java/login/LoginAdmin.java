@@ -1,4 +1,4 @@
-package miscellaneous;
+package login;
 
 import com.mongodb.*;
 import com.mongodb.client.FindIterable;
@@ -9,6 +9,9 @@ import com.mongodb.client.result.DeleteResult;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -59,7 +62,7 @@ public class LoginAdmin {
         mongoClient.close();
     }
 
-    private String getNameAdmin() {
+    public String getNameAdmin() {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("user_credentials");
@@ -72,7 +75,7 @@ public class LoginAdmin {
         return name;
     }
 
-    private String getPwdAdmin() {
+    public String getPwdAdmin() {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("user_credentials");
@@ -84,5 +87,7 @@ public class LoginAdmin {
         }
         return pwd;
     }
+
+
 }
 

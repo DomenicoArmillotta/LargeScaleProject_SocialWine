@@ -1,21 +1,23 @@
-package miscellaneous;
+package login;
 
-import com.mongodb.ErrorCategory;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
-import com.mongodb.MongoWriteException;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import static com.mongodb.client.model.Filters.eq;
 
 public class LoginUser {
-    public boolean logIn() {
+    SaveLogin level = new SaveLogin();
+
+    public String logIn() {
         Scanner input1 = new Scanner(System.in);
         System.out.println("Enter Username : ");
         String username = input1.next();
@@ -24,23 +26,22 @@ public class LoginUser {
         System.out.println("Enter Password : ");
         String password = input2.next();
 
-        if (username.equals(getNameUser(username)) && password.equals(getPwdUser(password))) {
-            System.out.println("Access Granted! Welcome!");
-            return true;
-        } else if (username.equals(getNameUser(username))) {
-            System.out.println("Invalid Password!");
-            return false;
-        } else if (password.equals(getPwdUser(password))) {
-            System.out.println("Invalid Username!");
-            return false;
-        } else {
-            System.out.println("Invalid Username & Password!");
-            return false;
+        try {
+            if (username.equals(getNameUser(username)) && password.equals(getPwdUser(password))) {
+                System.out.println("Access Granted! Welcome!");
+                level.putAsString(username, password);
+                ArrayList<String> name = level.findKeysByPrefix(password);
+                String str = Arrays.toString(name.toArray());
+                return str;
+            }
+        } catch (Exception e) {
+            System.out.println("User credentials are incorrect!");
         }
+        return null;
     }
 
 
-    private String getNameUser(String username) {
+    public String getNameUser(String username) {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("user_credentials");
@@ -53,7 +54,7 @@ public class LoginUser {
         return name;
     }
 
-    private String getPwdUser(String password){
+    public String getPwdUser(String password){
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("user_credentials");
@@ -65,4 +66,12 @@ public class LoginUser {
         }
         return pwd;
     }
+
+    public Boolean checkLogIn (){
+        if (logIn() != null){
+            return true;
+        }
+        return false;
+    }
+
 }

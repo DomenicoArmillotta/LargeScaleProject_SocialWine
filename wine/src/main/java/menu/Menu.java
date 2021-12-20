@@ -1,4 +1,4 @@
-package miscellaneous;
+package menu;
 
 
 import com.mongodb.client.*;
@@ -6,10 +6,14 @@ import databases.Advanced_graph;
 import databases.Advanced_mongo;
 import databases.Crud_graph;
 import databases.Crud_mongo;
+import login.LoginAdmin;
+import login.LoginUser;
+import login.SaveLogin;
 import scraping.InitTh;
 import scraping.ScraperThread;
 import static com.mongodb.client.model.Filters.eq;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class Menu {
@@ -19,6 +23,7 @@ public class Menu {
     public void MainMenu() throws Exception {
         LoginAdmin logAdm = new LoginAdmin();
         LoginUser logUse = new LoginUser();
+        SaveLogin level = new SaveLogin();
         InitTh thread = new InitTh();
         thread.initThread();
         MongoClient mongoClient = MongoClients.create();
@@ -135,9 +140,10 @@ public class Menu {
 
                     //user login
                 case 2:
+                    level.openDB();
                     while (true) {
                         System.out.println("\nPlease insert your name and your password or press X to exit:");
-                        if (logUse.logIn()) {
+                        if (logUse.checkLogIn()) {
                             System.out.println("You can do the following things:");
                             System.out.println("A" + " Follow your friend");
                             System.out.println("B" + " Unfollow a  friend");
@@ -151,7 +157,7 @@ public class Menu {
                             Scanner scan = new Scanner(System.in);
                             String next = scan.nextLine();
                             String choiceStatistics = next;
-                            String myName = null; //--> ATTENTION = in this variable there is my name to do the query, and here you must put the name taken from the keyValue db
+                            String myName = logUse.logIn();//--> ATTENTION = in this variable there is my name to do the query, and here you must put the name taken from the keyValue db
 
                             switch (choiceStatistics) {
                                 case "A":
@@ -224,7 +230,7 @@ public class Menu {
 
                         }
                     }
-            
+
             }
         }
     }
