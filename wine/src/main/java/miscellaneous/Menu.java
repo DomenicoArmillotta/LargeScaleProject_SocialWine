@@ -14,7 +14,8 @@ import java.util.Scanner;
 
 public class Menu {
 
-
+    //this class is used to create and show the menu for the admin and the user
+    //in the variable myName is stored the name of the user that is logged in this session
     public void MainMenu() throws Exception {
         loginAdmin login = new loginAdmin();
         InitTh thread = new InitTh();
@@ -109,7 +110,7 @@ public class Menu {
                             Scanner scan = new Scanner(System.in);
                             String next = scan.nextLine();
                             String choiceStatistics = next;
-                            String myName = null; //--> in this variable there is my name to do the query
+                            String myName = null; //--> ATTENTION = in this variable there is my name to do the query, and here you must put the name taken from the keyValue db
 
                             switch (choiceStatistics) {
                                 case "A":
