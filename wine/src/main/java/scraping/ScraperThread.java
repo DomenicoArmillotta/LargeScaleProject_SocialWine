@@ -8,6 +8,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Accumulators;
+import databases.Crud_graph;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 
 import org.bson.conversions.Bson;
@@ -16,6 +17,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.neo4j.driver.*;
 
 import java.io.*;
 
@@ -29,10 +31,18 @@ import static com.mongodb.client.model.Accumulators.sum;
 import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Aggregates.limit;
 import static com.mongodb.client.model.Sorts.descending;
+import static org.neo4j.driver.Values.parameters;
 
 public class ScraperThread implements Runnable{
+
+
+
+
+
     @Override
     public void run() {
+
+        Driver driver = GraphDatabase.driver( "bolt://localhost:7687", AuthTokens.basic( "neo4j", "0000" ) );
         MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         DB database = mongoClient.getDB("wine");
         DBCollection collection = database.getCollection("review");
@@ -150,6 +160,35 @@ public class ScraperThread implements Runnable{
                         .append("winery", map.get("Winery"));
                 collection.insert(person);
             }
+            // add the new taster to the graph database
+            try (Session session = driver.session())
+            {
+
+                Result result = session.run(
+                        "MATCH (a:User) WHERE a.taster_name=$x RETURN a.name AS name",
+                        parameters("x", map.get("taster_name")));
+
+                if( result.stream().count()==0)
+                {
+                    Record record = result.next();
+                    // Values can be extracted from a record by index or name.
+                    System.out.println(record.get("taster_name").asString());
+                    System.out.println("Empty Cursor");
+                    Crud_graph crud = new Crud_graph("bolt://localhost:7687","neo4j","0000");
+                    crud.addUser(map.get("taster_name"));
+
+                }
+                else {
+                    System.out.println("Not empty cursor");
+                }
+
+
+
+
+            }
+
+
+
         }
 
     }
