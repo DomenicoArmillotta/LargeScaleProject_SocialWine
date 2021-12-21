@@ -66,6 +66,7 @@ public class Crud_graph implements AutoCloseable  {
         createRelationBelong(titlePost,wineryName);
         createRelationCreated(titlePost , taster_name);
         addPageWinery(wineryName,country);
+        createRelationBelong(titlePost,wineryName);
     }
 
 
@@ -97,6 +98,7 @@ public class Crud_graph implements AutoCloseable  {
         try (Session session = driver.session()){
             session.writeTransaction( tx -> {
                 tx.run("MATCH (u:User{taster_name: $taster_name1}),(u1:User{taster_name: $taster_name2})\n" +
+                                "WHERE NOT EXISTS ((u)-[:Follow]->(u1))\n" +
                                 "CREATE (u)-[:Follow]->(u1)",
                         parameters("taster_name1", taster_name1 , "taster_name2", taster_name2));
                 return 1;
@@ -130,6 +132,7 @@ public class Crud_graph implements AutoCloseable  {
         try (Session session = driver.session()){
             session.writeTransaction( tx -> {
                 tx.run("MATCH (u:User{taster_name: $taster_name}),(u1:Post{titlePost: $titlePost})\n" +
+                                "WHERE NOT EXISTS ((u)-[:Like]->(u1))\n" +
                                 "CREATE (u)-[:Like]->(u1)",
                         parameters("titlePost", titlePost , "taster_name", taster_name));
                 return 1;
@@ -162,6 +165,7 @@ public class Crud_graph implements AutoCloseable  {
         try (Session session = driver.session()){
             session.writeTransaction( tx -> {
                 tx.run("MATCH (u:User{taster_name: $taster_name}),(u1:Post{titlePost: $titlePost})\n" +
+                                "WHERE NOT EXISTS ((u)-[:Created]->(u1))\n" +
                                 "CREATE (u)-[:Created]->(u1)",
                         parameters("titlePost", titlePost , "taster_name", taster_name));
                 return 1;
@@ -194,6 +198,7 @@ public class Crud_graph implements AutoCloseable  {
         try (Session session = driver.session()){
             session.writeTransaction( tx -> {
                 tx.run("MATCH (u:Post{titlePost: $titlePost}),(u1:Page{wineryName: $wineryName})\n" +
+                                "WHERE NOT EXISTS ((u)-[:Belong]->(u1))\n" +
                                 "CREATE (u)-[:Belong]->(u1)",
                         parameters("titlePost", titlePost , "wineryName", wineryName));
                 return 1;
@@ -294,5 +299,67 @@ public class Crud_graph implements AutoCloseable  {
         }
         return followedUsers;
     }
+
+    // query to extract 10 people for the follow
+    //   MATCH (p:Person) RETURN p.name LIMIT 10
+    //WORK
+    public void randomFollowByUser (final String selected_taster_name){
+        try ( Session session = driver.session() )
+        {
+            // take the 10 random user
+            List<String> random = session.readTransaction((TransactionWork<List<String>>) tx -> {
+                Result result = tx.run( "MATCH (p:User) RETURN p.taster_name as taster_name LIMIT 10");
+
+                ArrayList<String> randomUsers = new ArrayList<>();
+                while(result.hasNext())
+                {
+                    Record r = result.next();
+                    //i pick the random user
+                    if(!(r.get("taster_name").asString().equals(selected_taster_name))){
+                        String taster_name;
+                        randomUsers.add(r.get("taster_name").asString());
+                        taster_name = r.get("taster_name").asString();
+                        createRelationFollow(selected_taster_name,taster_name);
+                        createRelationFollow(taster_name,selected_taster_name);
+                    }
+
+
+
+                }
+                return randomUsers;
+            });
+            System.out.println(random);
+        }
+    }
+
+
+    //query to extract 10 post to put like
+    //  MATCH (p:Post) RETURN p.titlePost LIMIT 10
+    //WORK
+    public void randomLikeByUser (final String selected_taster_name){
+        try ( Session session = driver.session() )
+        {
+            // take the 10 random user
+            List<String> random = session.readTransaction((TransactionWork<List<String>>) tx -> {
+                Result result = tx.run( "MATCH (p:Post) RETURN p.titlePost as titlePost LIMIT 10");
+
+                ArrayList<String> randomPost = new ArrayList<>();
+                while(result.hasNext())
+                {
+                    Record r = result.next();
+                    //i pick the random title Post
+                    randomPost.add(r.get("titlePost").asString());
+                    //i save the String titlePost in the variable
+                    String titlePost;
+                    titlePost = r.get("titlePost").asString();
+                    createRelationLike(titlePost,selected_taster_name);
+
+                }
+                return randomPost;
+            });
+            System.out.println(random);
+        }
+    }
+
 
 }

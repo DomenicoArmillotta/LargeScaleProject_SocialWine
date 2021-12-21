@@ -88,14 +88,14 @@ public class Menu {
                                     Scanner inputName = new Scanner(System.in);
                                     System.out.println("Name of the User that you would select ");
                                     selected_user = inputName.next();
-                                    advgraph.randomFollowByUser(selected_user);
+                                    graph.randomFollowByUser(selected_user);
                                     break;
                                 case "E":
                                     String selected_user2;
                                     Scanner inputName2 = new Scanner(System.in);
                                     System.out.println("Name of the User that you would select ");
                                     selected_user2 = inputName2.next();
-                                    advgraph.randomLikeByUser(selected_user2);
+                                    graph.randomLikeByUser(selected_user2);
                                     break;
                                 case "F":
                                     String taster_name;
