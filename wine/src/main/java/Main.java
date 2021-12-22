@@ -1,10 +1,8 @@
 import databases.*;
-import menu.Menu;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
-        Menu menu = new Menu();
-        menu.MainMenu();
+    public static void main(String[] args){
+
        /* InitTh thread = new InitTh();
         thread.initThread();*/
 
@@ -24,19 +22,13 @@ public class Main {
         //ad_mongo.topTwentyVarietiesAvgPrice();
         //ad_mongo.topFiveUsersHighestAvgScores();
 
-/*        Crud_graph crud = new Crud_graph("bolt://localhost:7687","neo4j","0000");
-        Advanced_graph adv = new Advanced_graph("bolt://localhost:7687","neo4j","0000");*/
+        Crud_graph crud = new Crud_graph("bolt://localhost:7687","neo4j","0000");
+        Advanced_graph adv = new Advanced_graph("bolt://localhost:7687","neo4j","0000");
 
-/*       crud.addUser("Aldo");
+     /*   crud.addUser("Aldo");
         crud.addUser("Giovanni");
         crud.addUser("Giacomo");
         crud.addUser("Giuseppe");
-        //crud.randomFollowByUser("Aldo");
-        crud.addPostComplete("Aldo","titleProva" , "test" , "winery1" , "italy");
-        crud.addPostComplete("Giacomo","titleProva2" , "prova" , "winery2" , "italy");
-        crud.randomLikeByUser("Giovanni");*/
-
-        /*
         crud.addPageWinery("Enoteca","Italy");
         crud.addPageWinery("Eno","Germany");
         crud.addPost("ottimo vino","il vino era molto buono");
@@ -69,6 +61,10 @@ public class Main {
         crud.createRelationLike("Il vino era buono","Giacomo");
         crud.createRelationLike("Il vino era buono","Giuseppe");*/
         //adv.FiveMostLikePost();
+         Populating_function_social populate=new Populating_function_social();
+        populate.populateSocial();
+
+
 
 
  /*       distinctUsers user = new distinctUsers();

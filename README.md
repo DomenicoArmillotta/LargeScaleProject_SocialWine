@@ -14,8 +14,7 @@ Mongo Db:
 
 - [x] Crud in mongo Db
 - [x] 1 advanced mongo db
-- [x] 2 advanced mongo db
-- [x] 3 advanced mongo db
+- [x] 2 advanced mongo db- [x] 3 advanced mongo db
 - [x] test the mongo db query 
 
 Graph Db:

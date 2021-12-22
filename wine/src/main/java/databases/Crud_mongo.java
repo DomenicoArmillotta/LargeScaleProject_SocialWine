@@ -199,17 +199,21 @@ public class Crud_mongo {
         MongoCollection<Document> collection = database.getCollection("review");
 
         Review review = null;
-        ArrayList<Review> reviews = null;
+        ArrayList<Review> reviews = new ArrayList<Review>();
         MongoCursor<Document> cursor = collection.find().iterator();
         while (cursor.hasNext()){
             Document temp_review_doc = cursor.next();
             String points = temp_review_doc.getString("points");
-            System.out.println(points);
+            //System.out.println(points);
             String title = temp_review_doc.getString("title");
             String description = temp_review_doc.getString("description");
             String taster_name = temp_review_doc.getString("taster_name");
             String taster_twitter_handle = temp_review_doc.getString("taster_twitter_handle");
             Integer price = temp_review_doc.getInteger("price");
+            if(price==null)
+            {
+                price=0;
+            }
             String designation = temp_review_doc.getString("designation");
             String variety = temp_review_doc.getString("variety");
             String region_1 = temp_review_doc.getString("region_1");

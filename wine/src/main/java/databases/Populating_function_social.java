@@ -9,7 +9,7 @@ public class Populating_function_social {
     public void populateSocial(){
         MongoClient mongoClient = MongoClients.create();
         Crud_mongo mongo = new Crud_mongo();
-        Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "root");
+        Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
         ArrayList<Review> reviews = null;
         reviews = mongo.findAllReview();
         for (Review review : reviews) {
