@@ -61,7 +61,10 @@ public class Main {
         crud.createRelationLike("Il vino era buono","Giacomo");
         crud.createRelationLike("Il vino era buono","Giuseppe");*/
         //adv.FiveMostLikePost();
-        adv.test("TYfg");
+         Populating_function_social populate=new Populating_function_social();
+        populate.populateSocial();
+
+
 
 
  /*       distinctUsers user = new distinctUsers();

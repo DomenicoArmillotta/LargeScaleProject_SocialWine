@@ -13,6 +13,7 @@ import org.apache.poi.xssf.usermodel.XSSFRow;
 
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
+import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -45,11 +46,14 @@ public class ScraperThread implements Runnable{
         Driver driver = GraphDatabase.driver( "bolt://localhost:7687", AuthTokens.basic( "neo4j", "0000" ) );
         MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         DB database = mongoClient.getDB("wine");
-        DBCollection collection = database.getCollection("review");
+        DBCollection collection = database.getCollection("reviewTest");
+        DBCollection usersCollection = database.getCollection("user_credentials");
 
         Document doc = null;
         try {
             doc = Jsoup.connect("https://www.winemag.com/?s=&drink_type=wine&page=1&sort_by=pub_date_web&sort_dir=desc").get();
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -160,34 +164,30 @@ public class ScraperThread implements Runnable{
                         .append("winery", map.get("Winery"));
                 collection.insert(person);
             }
-            // add the new taster to the graph database
-            try (Session session = driver.session())
+            // add users to mongoDb database
+            query = new BasicDBObject("Name", map.get("taster_name"));
+            System.out.println(query.toString());
+             cursor = usersCollection.find(query);
+            if( (cursor.count()>= 1))
             {
+                System.out.println("Not empty Cursor");
+            }
+            else
+            {
+                System.out.println("empty Cursor");
+                DBObject user = new BasicDBObject("Name", map.get("taster_name"))
+                        .append("Password", "abcd");
 
-                Result result = session.run(
-                        "MATCH (a:User) WHERE a.taster_name=$x RETURN a.name AS name",
-                        parameters("x", map.get("taster_name")));
-
-                if( result.stream().count()==0)
-                {
-                    Record record = result.next();
-                    // Values can be extracted from a record by index or name.
-                    System.out.println(record.get("taster_name").asString());
-                    System.out.println("Empty Cursor");
-                    Crud_graph crud = new Crud_graph("bolt://localhost:7687","neo4j","0000");
-                    crud.addUser(map.get("taster_name"));
-
-                }
-                else {
-                    System.out.println("Not empty cursor");
-                }
-
-
-
-
+                usersCollection.insert(user);
             }
 
 
+
+            // add the new taster to the graph database
+            Crud_graph crud = new Crud_graph("bolt://localhost:7687","neo4j","0000");
+
+                crud.addUser(map.get("taster_name"));
+                crud.addPostComplete(map.get("taster_name"),map.get("title"),map.get("description"),map.get("Winery"),map.get("Country"));
 
         }
 
