@@ -4,9 +4,11 @@ Application:
 - [x] Scraper
 - [x] implement scraper on app
 - [x] finish the menu
-- [ ] create the login with a search in mongo db to login and connect to menu
-- [ ] implement auto update of the review scraped on mongo db in the two collection (user , winery) ----> the winery collection is missing
-- [ ] implement auto adding of the user scraped on graph db using the function addPostComplete and addUser
+- [x] implement auto update of the review scraped on mongo db in the two collection (user , winery) ----> the winery collection is missing
+- [ ] implement auto adding of the user scraped on graph db using the function addPostComplete and addUser  --> BASHAR
+- [ ] create the login with a search in mongo db to login and connect to menu --> LEO
+- [ ] fix the menu the add post with operation in mongo -->DOMENICO
+
 
 Mongo Db:
 
@@ -21,18 +23,18 @@ Graph Db:
 - [x] 1 advanced og graph ----> TESTED
 - [x] 2 advanced on graph ---->TESTED
 - [x] Create query ADD_POST where you specify the winery, the title, the description, the creator. In order to create the "created" and "Belong" relationships ----> TESTED
-- [x] create the random follow between user (a function that admin can launch)[randomFollowByUser] ----> TO BE TESTED
-- [x] create the random like between user and post (a function that admin can launch) [randomLikeByUser] ----> TO BE TESTED
+- [x] create the random follow between user (a function that admin can launch)[randomFollowByUser] ----> TESTED
+- [x] create the random like between user and post (a function that admin can launch) [randomLikeByUser] ----> TESTED
 - [x] Testing the graph advanced query
-- [ ] populating the graph db with user -----> <name>
-- [ ] populating the graph db with Post (review) ----> <title,description>
 - [x] create a function to see all friends in graph db 
+- [ ] populating the graph db with user and post scanning the review in mongo db -----> TO BE TESTED ---> BASHAR 
+
 
 
 
 
 Distruibuited : 
-- [ ] Create the replica on the linux servers
+- [ ] Create the replica on the linux servers ---> DOMENICO
 
   
   
