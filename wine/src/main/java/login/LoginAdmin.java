@@ -1,24 +1,23 @@
 package login;
 
 import com.mongodb.*;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.result.DeleteResult;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 import static com.mongodb.client.model.Filters.eq;
 
 public class LoginAdmin {
+    SaveLogin level = new SaveLogin();
 
-    public boolean logIn() {
+    public String logIn() {
         Scanner input1 = new Scanner(System.in);
         System.out.println("Enter Username : ");
         String username = input1.next();
@@ -27,22 +26,22 @@ public class LoginAdmin {
         System.out.println("Enter Password : ");
         String password = input2.next();
 
-        if (username.equals(getNameAdmin()) && password.equals(getPwdAdmin())) {
-            System.out.println("Access Granted! Welcome!");
-            return true;
-        } else if (username.equals(getNameAdmin())) {
-            System.out.println("Invalid Password!");
-            return false;
-        } else if (password.equals(getPwdAdmin())) {
-            System.out.println("Invalid Username!");
-            return false;
-        } else {
-            System.out.println("Invalid Username & Password!");
-            return false;
+        try {
+            if (username.equals(getNameAdmin(username)) &&
+                    password.equals(getPwdAdmin(password))) {
+                System.out.println("Access Granted! Welcome Admin!");
+                level.putAsString(username, password);
+                ArrayList<String> name = level.findKeysByPrefix(password);
+                String str = Arrays.toString(name.toArray());
+                return str;
+            }
+        } catch (Exception e) {
+            System.out.println("Admin credentials are incorrect!");
         }
+        return null;
     }
 
-    protected void addAdmin() {
+    public void addAdmin() {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("user_credentials");
@@ -62,32 +61,43 @@ public class LoginAdmin {
         mongoClient.close();
     }
 
-    public String getNameAdmin() {
+    public Object getNameAdmin(String username) {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("user_credentials");
         Bson filter = eq("Name", "admin");
-        FindIterable<Document> resultName = collection.find(filter);
-        String name = "";
-        for (Document document : resultName) {
-            name = name + document.toJson() + "\n";
+        MongoCursor<Document> resultName = collection.find(filter).iterator();
+        BasicDBList list = new BasicDBList();
+        Object name = null;
+        if (!resultName.next().isEmpty()) {
+            Document doc = resultName.next();
+            list.add(doc);
+            name = doc.get("Name");
         }
         return name;
     }
 
-    public String getPwdAdmin() {
+    public Object getPwdAdmin(String password) {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("user_credentials");
         Bson filter = eq("Password", "root");
-        FindIterable<Document> resultPwd = collection.find(filter);
-        String pwd = "";
-        for (Document document : resultPwd) {
-            pwd = pwd + document.toJson() + "\n";
+        MongoCursor<Document> resultPwd = collection.find(filter).iterator();
+        BasicDBList list = new BasicDBList();
+        Object pwd = null;
+        if (!resultPwd.next().isEmpty()) {
+            Document doc = resultPwd.next();
+            list.add(doc);
+            pwd = doc.get("Password");
         }
         return pwd;
     }
 
-
+    public Boolean checkLogIn () throws IOException {
+        if (logIn() != null){
+            return true;
+        }
+        return false;
+    }
 }
 

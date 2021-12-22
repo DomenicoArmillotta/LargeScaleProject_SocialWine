@@ -6,6 +6,7 @@ import databases.Advanced_graph;
 import databases.Advanced_mongo;
 import databases.Crud_graph;
 import databases.Crud_mongo;
+import login.DistinctUsers;
 import login.LoginAdmin;
 import login.LoginUser;
 import login.SaveLogin;
@@ -24,8 +25,11 @@ public class Menu {
         LoginAdmin logAdm = new LoginAdmin();
         LoginUser logUse = new LoginUser();
         SaveLogin level = new SaveLogin();
-        InitTh thread = new InitTh();
-        thread.initThread();
+        DistinctUsers us = new DistinctUsers();
+        logAdm.addAdmin();
+        us.distinctUser();
+     /*   InitTh thread = new InitTh();
+        thread.initThread();*/
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("wine");
         ScraperThread scraper = new ScraperThread();
@@ -55,9 +59,10 @@ public class Menu {
                     break;
                 //admin login
                 case 1:
+                    level.openDB();
                     while (true) {
                         System.out.println("\nPlease insert your name and your password or press X to exit:");
-                        if (logAdm.logIn()) {
+                        if (logAdm.checkLogIn()) {
                             System.out.println("You can do this statistics:");
                             System.out.println("A" + " Top 10 countries that have most wineries in descending order");
                             System.out.println("B" + " Display top-20 wines' varieties according to their mean price");
@@ -132,6 +137,9 @@ public class Menu {
                                     System.out.println("Name of the winery that you want to drop:");
                                     win = inputWin.next();
                                     mongo.deleteWinery(win);
+                                    break;
+                                default:
+                                    System.out.println("This is not a valid menu option... Please try again!");
                                     break;
                             }
 
@@ -225,7 +233,9 @@ public class Menu {
                                     System.out.println("This is the list of all followed user by this account ");
                                     graph.allFollowedUserByTaster_name(myName);
                                     break;
-
+                                default:
+                                    System.out.println("This is not a valid menu option... Please try again!");
+                                    break;
                             }
 
                         }
