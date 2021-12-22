@@ -15,9 +15,8 @@ import java.util.Scanner;
 import static com.mongodb.client.model.Filters.eq;
 
 public class LoginAdmin {
-    SaveLogin level = new SaveLogin();
 
-    public String logIn() {
+    public Boolean logIn() {
         Scanner input1 = new Scanner(System.in);
         System.out.println("Enter Username : ");
         String username = input1.next();
@@ -30,15 +29,12 @@ public class LoginAdmin {
             if (username.equals(getNameAdmin(username)) &&
                     password.equals(getPwdAdmin(password))) {
                 System.out.println("Access Granted! Welcome Admin!");
-                level.putAsString(username, password);
-                ArrayList<String> name = level.findKeysByPrefix(password);
-                String str = Arrays.toString(name.toArray());
-                return str;
+                return true;
             }
         } catch (Exception e) {
             System.out.println("Admin credentials are incorrect!");
         }
-        return null;
+        return false;
     }
 
     public void addAdmin() {
@@ -91,13 +87,6 @@ public class LoginAdmin {
             pwd = doc.get("Password");
         }
         return pwd;
-    }
-
-    public Boolean checkLogIn () throws IOException {
-        if (logIn() != null){
-            return true;
-        }
-        return false;
     }
 }
 

@@ -9,7 +9,6 @@ import databases.Crud_mongo;
 import login.DistinctUsers;
 import login.LoginAdmin;
 import login.LoginUser;
-import login.SaveLogin;
 import scraping.InitTh;
 import scraping.ScraperThread;
 import static com.mongodb.client.model.Filters.eq;
@@ -24,7 +23,6 @@ public class Menu {
     public void MainMenu() throws Exception {
         LoginAdmin logAdm = new LoginAdmin();
         LoginUser logUse = new LoginUser();
-        SaveLogin level = new SaveLogin();
         DistinctUsers us = new DistinctUsers();
         logAdm.addAdmin();
         us.distinctUser();
@@ -59,10 +57,9 @@ public class Menu {
                     break;
                 //admin login
                 case 1:
-                    level.openDB();
                     while (true) {
                         System.out.println("\nPlease insert your name and your password or press X to exit:");
-                        if (logAdm.checkLogIn()) {
+                        if (logAdm.logIn()) {
                             System.out.println("You can do this statistics:");
                             System.out.println("A" + " Top 10 countries that have most wineries in descending order");
                             System.out.println("B" + " Display top-20 wines' varieties according to their mean price");
@@ -148,7 +145,6 @@ public class Menu {
 
                     //user login
                 case 2:
-                    level.openDB();
                     while (true) {
                         System.out.println("\nPlease insert your name and your password or press X to exit:");
                         if (logUse.checkLogIn()) {

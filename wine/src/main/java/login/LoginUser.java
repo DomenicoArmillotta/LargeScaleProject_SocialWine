@@ -8,40 +8,50 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.iq80.leveldb.DB;
+import org.iq80.leveldb.DBComparator;
+import org.iq80.leveldb.Options;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Base64;
 import java.util.Scanner;
 
 import static com.mongodb.client.model.Filters.eq;
+import static java.lang.System.exit;
+import static org.iq80.leveldb.impl.Iq80DBFactory.*;
 
 public class LoginUser {
-    SaveLogin level = new SaveLogin();
 
     public String logIn() throws IOException {
+        Options options = new Options();
+        options.createIfMissing(true);
+        DB db = factory.open(new File("user_log"), options);
         BufferedReader input1 = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Enter Username : ");
         String username = input1.readLine();
-
+        byte[] byteArrrayUsername = username.getBytes();
 
         Scanner input2 = new Scanner(System.in);
         System.out.println("Enter Password : ");
         String password = input2.next();
+        byte[] byteArrrayPassword = password.getBytes();
+
 
         try {
             if (username.equals(getNameUser(username)) &&
                     password.equals(getPwdUser(password))) {
                 System.out.println("Access Granted! Welcome!");
-                level.putAsString(username, password);
-                ArrayList<String> name = level.findKeysByPrefix(password);
-                String str = Arrays.toString(name.toArray());
-                return str;
+                db.put(byteArrrayPassword, byteArrrayUsername);
+                byte[] name = db.get(byteArrrayPassword);
+                String st = Base64.getEncoder().encodeToString(name);
+                return st;
             }
         } catch (Exception e) {
             System.out.println("User credentials are incorrect!");
+            exit(0);
         }
         return null;
     }
@@ -87,5 +97,4 @@ public class LoginUser {
         }
         return false;
     }
-
 }
