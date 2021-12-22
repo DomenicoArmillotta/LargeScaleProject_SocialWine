@@ -6,9 +6,9 @@ import databases.Advanced_graph;
 import databases.Advanced_mongo;
 import databases.Crud_graph;
 import databases.Crud_mongo;
+import login.DistinctUsers;
 import login.LoginAdmin;
 import login.LoginUser;
-import login.SaveLogin;
 import scraping.InitTh;
 import scraping.ScraperThread;
 import static com.mongodb.client.model.Filters.eq;
@@ -23,9 +23,11 @@ public class Menu {
     public void MainMenu() throws Exception {
         LoginAdmin logAdm = new LoginAdmin();
         LoginUser logUse = new LoginUser();
-        SaveLogin level = new SaveLogin();
-        InitTh thread = new InitTh();
-        thread.initThread();
+        DistinctUsers us = new DistinctUsers();
+        logAdm.addAdmin();
+        us.distinctUser();
+     /*   InitTh thread = new InitTh();
+        thread.initThread();*/
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("wine");
         ScraperThread scraper = new ScraperThread();
@@ -88,14 +90,14 @@ public class Menu {
                                     Scanner inputName = new Scanner(System.in);
                                     System.out.println("Name of the User that you would select ");
                                     selected_user = inputName.next();
-                                    advgraph.randomFollowByUser(selected_user);
+                                    graph.randomFollowByUser(selected_user);
                                     break;
                                 case "E":
                                     String selected_user2;
                                     Scanner inputName2 = new Scanner(System.in);
                                     System.out.println("Name of the User that you would select ");
                                     selected_user2 = inputName2.next();
-                                    advgraph.randomLikeByUser(selected_user2);
+                                    graph.randomLikeByUser(selected_user2);
                                     break;
                                 case "F":
                                     String taster_name;
@@ -133,6 +135,9 @@ public class Menu {
                                     win = inputWin.next();
                                     mongo.deleteWinery(win);
                                     break;
+                                default:
+                                    System.out.println("This is not a valid menu option... Please try again!");
+                                    break;
                             }
 
                         }
@@ -140,7 +145,6 @@ public class Menu {
 
                     //user login
                 case 2:
-                    level.openDB();
                     while (true) {
                         System.out.println("\nPlease insert your name and your password or press X to exit:");
                         if (logUse.checkLogIn()) {
@@ -225,7 +229,9 @@ public class Menu {
                                     System.out.println("This is the list of all followed user by this account ");
                                     graph.allFollowedUserByTaster_name(myName);
                                     break;
-
+                                default:
+                                    System.out.println("This is not a valid menu option... Please try again!");
+                                    break;
                             }
 
                         }

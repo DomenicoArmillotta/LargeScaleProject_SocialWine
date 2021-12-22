@@ -11,6 +11,8 @@ import com.mongodb.client.result.UpdateResult;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import java.util.ArrayList;
+
 import static com.mongodb.client.model.Filters.*;
 
 
@@ -185,6 +187,41 @@ public class Crud_mongo {
         }
         mongoClient.close();
         return review;
+    }
+
+
+
+
+    //find all reviews
+    public ArrayList<Review> findAllReview (){
+        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
+        MongoDatabase database = mongoClient.getDatabase("wine");
+        MongoCollection<Document> collection = database.getCollection("review");
+
+        Review review = null;
+        ArrayList<Review> reviews = null;
+        MongoCursor<Document> cursor = collection.find().iterator();
+        while (cursor.hasNext()){
+            Document temp_review_doc = cursor.next();
+            String points = temp_review_doc.getString("points");
+            System.out.println(points);
+            String title = temp_review_doc.getString("title");
+            String description = temp_review_doc.getString("description");
+            String taster_name = temp_review_doc.getString("taster_name");
+            String taster_twitter_handle = temp_review_doc.getString("taster_twitter_handle");
+            Integer price = temp_review_doc.getInteger("price");
+            String designation = temp_review_doc.getString("designation");
+            String variety = temp_review_doc.getString("variety");
+            String region_1 = temp_review_doc.getString("region_1");
+            String region_2 = temp_review_doc.getString("region_2");
+            String province = temp_review_doc.getString("province");
+            String country = temp_review_doc.getString("country");
+            String winery = temp_review_doc.getString("winery");
+            review = new Review(points,title,description,taster_name,taster_twitter_handle,price,designation,variety,region_1,region_2,province,country,winery);
+            reviews.add(review);
+        }
+        mongoClient.close();
+        return reviews;
     }
 
 
