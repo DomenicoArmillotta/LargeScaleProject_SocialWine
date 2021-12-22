@@ -4,7 +4,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 
 import java.util.ArrayList;
-
+//this function search all the review in mongo db database and then create the graph db node
 public class Populating_function_social {
     public void populateSocial(){
         MongoClient mongoClient = MongoClients.create();
