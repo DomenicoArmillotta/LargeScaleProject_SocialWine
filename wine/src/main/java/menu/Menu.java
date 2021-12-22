@@ -19,14 +19,11 @@ public class Menu {
     public void MainMenu() throws Exception {
         LoginAdmin logAdm = new LoginAdmin();
         LoginUser logUse = new LoginUser();
-        DistinctUsers us = new DistinctUsers();
         logAdm.addAdmin();
-        us.distinctUser();
-     /*   InitTh thread = new InitTh();
-        thread.initThread();*/
+        InitTh thread = new InitTh();
+        thread.initThread();
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("wine");
-        ScraperThread scraper = new ScraperThread();
         Crud_mongo mongo = new Crud_mongo();
         Advanced_mongo adv = new Advanced_mongo();
         Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");

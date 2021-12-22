@@ -2,18 +2,8 @@ package scraping;
 
 import com.mongodb.*;
 
-
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Accumulators;
 import databases.Crud_graph;
 import org.apache.poi.xssf.usermodel.XSSFRow;
-
-import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -23,22 +13,11 @@ import org.neo4j.driver.*;
 import java.io.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
-import static com.mongodb.client.model.Accumulators.avg;
-import static com.mongodb.client.model.Accumulators.sum;
-import static com.mongodb.client.model.Aggregates.*;
-import static com.mongodb.client.model.Aggregates.limit;
-import static com.mongodb.client.model.Sorts.descending;
-import static org.neo4j.driver.Values.parameters;
 
 public class ScraperThread implements Runnable{
-
-
-
-
 
     @Override
     public void run() {
@@ -170,11 +149,10 @@ public class ScraperThread implements Runnable{
              cursor = usersCollection.find(query);
             if( (cursor.count()>= 1))
             {
-                System.out.println("Not empty Cursor");
+                System.out.println("Adding to MongoDB");
             }
             else
             {
-                System.out.println("empty Cursor");
                 DBObject user = new BasicDBObject("Name", map.get("taster_name"))
                         .append("Password", "abcd");
 
