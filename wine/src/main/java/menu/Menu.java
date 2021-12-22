@@ -1,6 +1,5 @@
 package menu;
 
-
 import com.mongodb.client.*;
 import databases.Advanced_graph;
 import databases.Advanced_mongo;
@@ -11,9 +10,6 @@ import login.LoginAdmin;
 import login.LoginUser;
 import scraping.InitTh;
 import scraping.ScraperThread;
-import static com.mongodb.client.model.Filters.eq;
-
-import java.util.List;
 import java.util.Scanner;
 
 public class Menu {
@@ -33,8 +29,8 @@ public class Menu {
         ScraperThread scraper = new ScraperThread();
         Crud_mongo mongo = new Crud_mongo();
         Advanced_mongo adv = new Advanced_mongo();
-        Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "root");
-        Advanced_graph advgraph = new Advanced_graph("bolt://localhost:7687", "neo4j", "root");
+        Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
+        Advanced_graph advgraph = new Advanced_graph("bolt://localhost:7687", "neo4j", "0000");
 
         System.out.println("\n***SOCIAL WINE APPLICATION***\n");
 
@@ -70,6 +66,8 @@ public class Menu {
                             System.out.println("G" + " Ban an user");
                             System.out.println("H" + " Add a winery");
                             System.out.println("I" + " Drop a winery");
+                            System.out.println("X" + " Terminate program");
+
                             System.out.println("\nWhat you want to do?");
                             Scanner scan = new Scanner(System.in);
                             String next = scan.nextLine();
@@ -109,6 +107,7 @@ public class Menu {
                                     System.out.println("Twitter name of the taster that you want to add:");
                                     taster_twitter_handle = inputTwitter.next();
                                     mongo.addUser(taster_name, taster_twitter_handle);
+                                    graph.addUser(taster_name);
                                     break;
                                 case "G":
                                     String twitter;
@@ -116,6 +115,7 @@ public class Menu {
                                     System.out.println("Twitter name of the taster that you want to ban:");
                                     twitter = inputTwitterName.next();
                                     mongo.deleteUser(twitter);
+                                    graph.deleteUser(twitter);
                                     break;
                                 case "H":
                                     String country;
@@ -127,6 +127,7 @@ public class Menu {
                                     System.out.println("Country of the winery that you want to add:");
                                     country = inputCountry.next();
                                     mongo.addWinery(winery, country);
+                                    graph.addPageWinery(winery, country);
                                     break;
                                 case "I":
                                     String win;
@@ -134,14 +135,19 @@ public class Menu {
                                     System.out.println("Name of the winery that you want to drop:");
                                     win = inputWin.next();
                                     mongo.deleteWinery(win);
+                                    graph.deletePage(win);
+                                    break;
+                                case "X":
+                                    System.out.println("Exiting program...");
+                                    System.exit(0);
                                     break;
                                 default:
                                     System.out.println("This is not a valid menu option... Please try again!");
                                     break;
                             }
-
                         }
                     }
+
 
                     //user login
                 case 2:
@@ -157,6 +163,8 @@ public class Menu {
                             System.out.println("F" + " Suggested friends' list");
                             System.out.println("G" + " Discover the top 5 trending Post on the social");
                             System.out.println("H" + " See all user followed");
+                            System.out.println("X" + " Terminate program");
+
                             System.out.println("\nWhat you want to do?");
                             Scanner scan = new Scanner(System.in);
                             String next = scan.nextLine();
@@ -228,6 +236,10 @@ public class Menu {
                                 case "H":
                                     System.out.println("This is the list of all followed user by this account ");
                                     graph.allFollowedUserByTaster_name(myName);
+                                    break;
+                                case "X":
+                                    System.out.println("Exiting program...");
+                                    System.exit(0);
                                     break;
                                 default:
                                     System.out.println("This is not a valid menu option... Please try again!");

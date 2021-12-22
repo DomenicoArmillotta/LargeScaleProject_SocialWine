@@ -46,7 +46,7 @@ public class Crud_mongo {
 
         try {
             collection.insertOne(doc);
-            System.out.println("Successfully inserted documents. \n");
+            System.out.println("Successfully inserted review. \n");
         } catch (MongoWriteException mwe) {
             if (mwe.getError().getCategory().equals(ErrorCategory.DUPLICATE_KEY)) {
                 System.out.println("Document with that id already exists");
@@ -64,7 +64,7 @@ public class Crud_mongo {
                 .append("taster_twitter_handle" , "" + taster_twitter_handle + "");
         try {
             collection.insertOne(doc);
-            System.out.println("Successfully inserted documents. \n");
+            System.out.println("Successfully inserted user (MongoDB). \n");
         } catch (MongoWriteException mwe) {
             if (mwe.getError().getCategory().equals(ErrorCategory.DUPLICATE_KEY)) {
                 System.out.println("Document with that id already exists");
@@ -82,7 +82,7 @@ public class Crud_mongo {
                 .append("country" , "" + country + "");
         try {
             collection.insertOne(doc);
-            System.out.println("Successfully inserted documents. \n");
+            System.out.println("Successfully inserted winery (MongoDB). \n");
         } catch (MongoWriteException mwe) {
             if (mwe.getError().getCategory().equals(ErrorCategory.DUPLICATE_KEY)) {
                 System.out.println("Document with that id already exists");
@@ -96,7 +96,7 @@ public class Crud_mongo {
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("review");
         collection.deleteOne(Filters.eq("taster_twitter_handle", ""+twitterName+""));
-        System.out.println("Document deleted successfully...");
+        System.out.println("User deleted successfully...(MongoDB).");
     }
 
     public void deleteWinery (String winery) {
@@ -104,7 +104,7 @@ public class Crud_mongo {
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("review");
         collection.deleteOne(Filters.eq("winery", ""+winery+""));
-        System.out.println("Document deleted successfully...");
+        System.out.println("Winery deleted successfully... (MongoDB).");
     }
 
 
@@ -134,7 +134,7 @@ public class Crud_mongo {
             Bson query = eq("taster_name" , "" +  taster_name + "");
             DeleteResult deleteResult = collection.deleteMany(query);
             System.out.println("Document dropped successfully");
-            System.out.println("Were dropped "  + deleteResult.getDeletedCount() + " reviews");
+            System.out.println("Were dropped "  + deleteResult.getDeletedCount() + " (MongoDB).");
         } catch (MongoException me){
             me.printStackTrace();
         }
@@ -150,7 +150,7 @@ public class Crud_mongo {
         try {
         BasicDBObject set = new BasicDBObject("price","" + newPrice + "");
         UpdateResult updateResult = collection.updateMany(lt("price", "" + selectOldPrice + ""), set);
-        System.out.println("Document updated successfully");
+        System.out.println("Document updated successfully (MongoDB).");
         System.out.println(updateResult.getModifiedCount());
         } catch (MongoException me){
             me.printStackTrace();
