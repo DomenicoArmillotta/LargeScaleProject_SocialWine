@@ -169,6 +169,7 @@ public class Menu {
                             System.out.println("F" + " Suggested friends' list");
                             System.out.println("G" + " Discover the top 5 trending Post on the social");
                             System.out.println("H" + " See all user followed");
+                            System.out.println("H" + " See all review from taster_name");
                             System.out.println("X" + " Terminate program");
 
                             System.out.println("\nWhat you want to do?");
