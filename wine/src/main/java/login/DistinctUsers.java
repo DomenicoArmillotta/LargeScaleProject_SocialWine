@@ -6,9 +6,18 @@ import com.mongodb.client.MongoClient;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 
-
+/**
+ * Class that works to store all the user credentials in a MongoDB collection
+ */
 public class DistinctUsers {
 
+    /**
+     * The method will take from the review collection in MongoDB the distinct users
+     * and will give them a passowrd and will store the data (username and password)
+     * in a MongoDB collection called user_credentials. More, the method will check
+     * if that username and password are already inside the collection in order to
+     * don't add them again.
+     */
     public void distinctUser() {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("wine");
@@ -46,9 +55,7 @@ public class DistinctUsers {
         } catch (MongoException me) {
             System.err.println("Unable to insert due to an error: " + me);
         }
-
     }
-
 }
 
 

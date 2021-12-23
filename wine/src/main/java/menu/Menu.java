@@ -2,22 +2,33 @@ package menu;
 
 import com.mongodb.client.*;
 import databases.*;
+import login.DistinctUsers;
 import login.LoginAdmin;
 import login.LoginUser;
 import scraping.InitTh;
 import java.util.Scanner;
 
+/**
+ * The class contains the core of user/admin choice. From here the user could choice what hw wants to do
+ */
 public class Menu {
 
-    //this class is used to create and show the menu for the admin and the user
-    //in the variable myName is stored the name of the user that is logged in this session
+
+    /**
+     * Here there are the two different menus that will appear with respect to if the
+     * person that want to login ia a narmal user or an admin.
+     * Here, also, are initialized all the other classes like LoginAdmin, LoginUser,
+     * DistinctUser, Crud_mongo, Advanced_mongo, Crud_graph, Advanced_graph
+     * @throws Exception
+     */
     public void MainMenu() throws Exception {
         LoginAdmin logAdm = new LoginAdmin();
         LoginUser logUse = new LoginUser();
-        //Populating_function_social populate=new Populating_function_social();
+        Populating_function_social populate=new Populating_function_social();
       /* InitTh thread = new InitTh();
         thread.initThread();*/
-
+        DistinctUsers us = new DistinctUsers();
+        us.distinctUser();
         logAdm.addAdmin();
         Crud_mongo mongo = new Crud_mongo();
         Advanced_mongo adv = new Advanced_mongo();

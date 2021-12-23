@@ -22,9 +22,22 @@ import static com.mongodb.client.model.Filters.eq;
 import static java.lang.System.exit;
 import static org.iq80.leveldb.impl.Iq80DBFactory.*;
 
+/**
+ *This class provides a login system for the users. In deep, check if the credentials
+ * that have been inserted from the user are correct or not, comparing  the users credentials
+ * stored in user_credentials stored on MongoDB
+ */
 public class LoginUser {
 
-    public String logIn() throws IOException {
+    /**
+     * This method it's called by the menu and user could insert his credentials.
+     * If the credentials are correct the user can access to the social otherwise
+     * will be rejected. If the credentials are correct, the name will be stored
+     * inside Level DB (Key Value Database).
+     * @return str: the user's name taken from Level DB;
+     * @return null: if the user's credentials are incorrect;
+     */
+    private String logIn() throws IOException {
         Options options = new Options();
         options.createIfMissing(true);
         DB db = openDB();
@@ -57,11 +70,22 @@ public class LoginUser {
         return null;
     }
 
+    /**
+     * It's to take only the user's name
+     * @return name: the user's name derived from the login method
+     * @throws IOException
+     */
     public String getName() throws IOException {
         String name = logIn();
         return name;
     }
 
+    /**
+     * Executes the comparison between the name that the user has inserted and the username stored
+     * in mongoDB collection that store all the users' name and passwords.
+     * @param username: the user's name coming from the input scanner
+     * @return name:
+     */
     public Object getNameUser(String username) {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
@@ -79,7 +103,12 @@ public class LoginUser {
     }
 
 
-
+    /**
+     * Executes the comparison between the name that the user has inserted and the username stored
+     * in mongoDB collection that store all the users' name and passwords.
+     * @param password: the user's password coming from the input scanner
+     * @return
+     */
     public Object getPwdUser(String password){
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
@@ -96,7 +125,10 @@ public class LoginUser {
         return pwd;
     }
 
-
+    /**
+     * Open connection with LevelDB
+     * @return db: the folder userlog that stores the temporarly name and password of the user that want to access
+     */
     private DB openDB() {
         Options options = new Options();
         options.createIfMissing(true);
@@ -108,6 +140,4 @@ public class LoginUser {
         catch (IOException ioe) {  }
         return null;
     }
-
-
 }

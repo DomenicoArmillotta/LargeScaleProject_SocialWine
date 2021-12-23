@@ -10,6 +10,11 @@ import java.util.Scanner;
 
 import static com.mongodb.client.model.Filters.eq;
 
+/**
+ * This class provides a login system for the admin. In deep, check if the credentials
+ * that have been inserted from the admin are correct or not, comparing  the users credentials
+ * stored in user_credentials stored on MongoBB
+ */
 public class LoginAdmin {
 
     public Boolean logIn() {
@@ -33,6 +38,9 @@ public class LoginAdmin {
         return false;
     }
 
+    /**
+     *Add the admin figure to the user_credentials collection with name and password
+     */
     public void addAdmin() {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
@@ -52,6 +60,12 @@ public class LoginAdmin {
         mongoClient.close();
     }
 
+    /**
+     * Executes the comparison between the name that the admin has inserted and the username stored
+     * in mongoDB collection that store all the users' name and passwords.
+     * @param username: the admin's name coming from the input scanner
+     * @return name: the admin's name
+     */
     public Object getNameAdmin(String username) {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
@@ -68,6 +82,12 @@ public class LoginAdmin {
         return name;
     }
 
+    /**
+     * Executes the comparison between the password that the admin has inserted and the username stored
+     * in mongoDB collection that store all the users' name and passwords.
+     * @param password: the user's password coming from the input scanner
+     * @return pwd: the user's password
+     */
     public Object getPwdAdmin(String password) {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
