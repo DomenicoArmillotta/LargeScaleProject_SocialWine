@@ -292,8 +292,7 @@ public class Crud_graph implements AutoCloseable  {
         try (Session session = driver.session()) {
             followedUsers = session.readTransaction((TransactionWork<ArrayList<User>>) tx -> {
                 Result result = tx.run("MATCH p=(n:User{taster_name: $taster_name})-[:Follow]->(u:User)\n" +
-                                "RETURN u.taster_name AS taster_name\n" +
-                                "ORDER BY number\n" ,
+                                "RETURN u.taster_name AS taster_name",
                         parameters("taster_name", taster_name));
                 ArrayList<User> users = new ArrayList<>();
                 while (result.hasNext()) {
