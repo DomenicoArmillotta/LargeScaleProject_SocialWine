@@ -5,9 +5,9 @@ Application:
 - [x] implement scraper on app
 - [x] finish the menu
 - [x] implement auto update of the review scraped on mongo db in the two collection (user , winery) ----> the winery collection is missing
-- [ ] implement auto adding of the user scraped on graph db using the function addPostComplete and addUser  --> BASHAR
-- [ ] create the login with a search in mongo db to login and connect to menu --> LEO
-- [ ] fix the menu the add post with operation in mongo -->DOMENICO
+- [x] implement auto adding of the user scraped on graph db using the function addPostComplete and addUser  --> BASHAR
+- [x] create the login with a search in mongo db to login and connect to menu --> LEO
+- [x] fix the menu the add post with operation in mongo -->DOMENICO
 
 
 Mongo Db:
@@ -26,7 +26,8 @@ Graph Db:
 - [x] create the random like between user and post (a function that admin can launch) [randomLikeByUser] ----> TESTED
 - [x] Testing the graph advanced query
 - [x] create a function to see all friends in graph db 
-- [ ] populating the graph db with user and post scanning the review in mongo db -----> TO BE TESTED ---> BASHAR 
+- [x] populating the graph db with user and post scanning the review in mongo db  TESTED ---> BASHAR 
+- [ ] create a function that show the post and description fot a selected user
 
 
 
