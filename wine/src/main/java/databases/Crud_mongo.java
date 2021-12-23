@@ -189,6 +189,28 @@ public class Crud_mongo {
         return review;
     }
 
+    //show all review by taster_name
+    public void showReviewFromTaster_name (String taster_name){
+        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
+        MongoDatabase database = mongoClient.getDatabase("wine");
+        MongoCollection<Document> collection = database.getCollection("review");
+
+        Review review = null;
+        Bson query = eq("taster_name" , "" + taster_name + "");
+        MongoCursor<Document> cursor = collection.find(query).iterator();
+        while (cursor.hasNext()){
+            Document temp_review_doc = cursor.next();
+
+            String title = temp_review_doc.getString("title");
+            String description = temp_review_doc.getString("description");
+            System.out.println("Title of the post = " + title);
+            System.out.println("Description of the post = " + description);
+
+
+        }
+        mongoClient.close();
+    }
+
 
 
 

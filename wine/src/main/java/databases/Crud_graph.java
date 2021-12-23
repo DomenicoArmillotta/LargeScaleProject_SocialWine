@@ -1,5 +1,6 @@
 package databases;
 
+import beans.Review;
 import beans.User;
 import org.neo4j.driver.*;
 import org.neo4j.driver.types.Node;
@@ -312,6 +313,8 @@ public class Crud_graph implements AutoCloseable  {
         }
         return followedUsers;
     }
+    
+
 
     // query to extract 10 people for the follow
     //   MATCH (p:Person) RETURN p.name LIMIT 10
