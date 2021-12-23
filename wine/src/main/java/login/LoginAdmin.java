@@ -6,10 +6,6 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -48,7 +44,6 @@ public class LoginAdmin {
 
         try {
             collection.insertOne(document);
-            System.out.println("Successfully inserted documents. \n");
         } catch (MongoWriteException mwe) {
             if (mwe.getError().getCategory().equals(ErrorCategory.DUPLICATE_KEY)) {
                 System.out.println("Document with that id already exists");

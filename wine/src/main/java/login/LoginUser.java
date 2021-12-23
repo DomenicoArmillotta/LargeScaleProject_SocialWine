@@ -9,14 +9,13 @@ import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.iq80.leveldb.DB;
-import org.iq80.leveldb.DBComparator;
 import org.iq80.leveldb.Options;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Base64;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -28,7 +27,7 @@ public class LoginUser {
     public String logIn() throws IOException {
         Options options = new Options();
         options.createIfMissing(true);
-        DB db = factory.open(new File("user_log"), options);
+        DB db = openDB();
         BufferedReader input1 = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Enter Username : ");
         String username = input1.readLine();
@@ -46,8 +45,10 @@ public class LoginUser {
                 System.out.println("Access Granted! Welcome!");
                 db.put(byteArrrayPassword, byteArrrayUsername);
                 byte[] name = db.get(byteArrrayPassword);
-                String st = Base64.getEncoder().encodeToString(name);
-                return st;
+                String str = new String(name, StandardCharsets.UTF_8);
+                db.close();
+                return str;
+
             }
         } catch (Exception e) {
             System.out.println("User credentials are incorrect!");
@@ -56,6 +57,10 @@ public class LoginUser {
         return null;
     }
 
+    public String getName() throws IOException {
+        String name = logIn();
+        return name;
+    }
 
     public Object getNameUser(String username) {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
@@ -91,10 +96,18 @@ public class LoginUser {
         return pwd;
     }
 
-    public Boolean checkLogIn () throws IOException {
-        if (logIn() != null){
-            return true;
+
+    private DB openDB() {
+        Options options = new Options();
+        options.createIfMissing(true);
+        try{
+            factory.destroy(new File("userlog"), options);
+            DB db = factory.open(new File("userlog"), options);
+            return db;
         }
-        return false;
+        catch (IOException ioe) {  }
+        return null;
     }
+
+
 }
