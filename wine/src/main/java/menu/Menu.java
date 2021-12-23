@@ -251,6 +251,13 @@ public class Menu {
                                     System.out.println("This is the list of all followed user by this account ");
                                     graph.allFollowedUserByTaster_name(myName); //CHECK
                                     break;
+                                case "I":
+                                    System.out.println("Insert the name of the taster that you would see  reviews");
+                                    String tasterName2;
+                                    Scanner inputTasterName2 = new Scanner(System.in);
+                                    tasterName2 = inputTasterName2.next();
+                                    mongo.showReviewFromTaster_name(tasterName2);
+                                    break;
                                 case "X":
                                     System.out.println("Exiting program...");
                                     System.exit(0);
