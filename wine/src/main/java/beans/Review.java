@@ -1,7 +1,7 @@
 package beans;
 
 public class Review {
-    String points;
+    Integer points;
     String title;
     String description;
     String taster_name;
@@ -16,7 +16,7 @@ public class Review {
     String winery;
 
     public Review(String points, String title, String description, String taster_name, String taster_twitter_handle, int price, String designation, String variety, String region_1, String region_2, String province, String country, String winery) {
-        this.points = points;
+        setPoints(points);
         this.title = title;
         this.description = description;
         this.taster_name = taster_name;
@@ -31,12 +31,25 @@ public class Review {
         this.winery = winery;
     }
 
-    public String getPoints() {
+    public Integer getPoints() {
         return points;
     }
 
     public void setPoints(String points) {
-        this.points = points;
+
+        int number = 0;
+        try
+        {
+            if(points != null && points!="")
+                number = Integer.parseInt(points);
+
+        }
+        catch (NumberFormatException e)
+        {
+            number = 0;
+        }
+
+        this.points = number;
     }
 
     public String getTitle() {

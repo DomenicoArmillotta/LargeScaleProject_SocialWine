@@ -15,6 +15,6 @@ public class InitTh {
         final ScheduledFuture<?> scraperHandle =scheduler.scheduleAtFixedRate(new ScraperThread(), 0, 1, TimeUnit.MINUTES);
         scheduler.schedule(new Runnable() {
             public void run() { scraperHandle.cancel(true); }
-        }, 0, TimeUnit.MINUTES);
+        }, 10, TimeUnit.MINUTES);
     }
 }
