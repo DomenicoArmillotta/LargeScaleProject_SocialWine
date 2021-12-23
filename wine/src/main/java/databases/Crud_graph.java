@@ -1,56 +1,43 @@
 package databases;
 
-import beans.Review;
 import beans.User;
 import org.neo4j.driver.*;
-import org.neo4j.driver.types.Node;
-import org.neo4j.driver.types.Path;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import static org.neo4j.driver.Values.parameters;
-// query to do :
 
-// add user  ------ ok
-// add review Post ------- ok
-// add pageWinery ------- ok
-
-// delete user -----ok
-// delete review  -----ok
-// delete PageWinery  ------ok
-
-// add relation Like ------ok
-// add relation FOLLOW ------- ok
-// add relation belong of ------ok
-// add relation post created by ----ok
-
-// remove relation follow ------ok
-//remove relation like -----ok
-// remove relation belong of  -----ok
-//remove relation post created by -----ok
-
-//search user
-//search post
-//search page
-
-
-
+/**
+ * Contains all the crud operation that could be done on Neo4J.
+ */
 public class Crud_graph implements AutoCloseable  {
     private final Driver driver;
 
-
+    /**
+     * Constructer that allow to start the connection with Neo4J.
+     * @param uri: address of Neo4J where the DB is on;
+     * @param user: user's name;
+     * @param password: DB's password;
+     */
     public Crud_graph(String uri, String user, String password ) {
             driver = GraphDatabase.driver( uri, AuthTokens.basic( user, password ) );
     }
 
+    /**
+     * Close Neo4J connection;
+     * @throws Exception
+     */
     @Override
     public void close() throws Exception {
         driver.close();
     }
 
-    //add people
+    /**
+     * Create a new user.
+     * @param taster_name: user'name.
+     */
     public void addUser( final String taster_name ) {
         try ( Session session = driver.session() ) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -62,7 +49,14 @@ public class Crud_graph implements AutoCloseable  {
         }
     }
 
-    //this query is used to add a post and make the connection "created by" and "belong"
+    /**
+     * Add a post on graph adding the relations "created by" (user-post) and "belong" (post-winery).
+     * @param taster_name: user's name;
+     * @param titlePost: review'title;
+     * @param description: review's body;
+     * @param wineryName: winery's name;
+     * @param country: winery's country.
+     */
     public void addPostComplete(final String taster_name, final String titlePost, final String description , final String wineryName, final String country) {
         addPost(titlePost ,description );
         createRelationBelong(titlePost,wineryName);
@@ -73,8 +67,11 @@ public class Crud_graph implements AutoCloseable  {
 
     }
 
-
-        //add post
+    /**
+     * Add a post.
+     * @param titlePost: review's title;
+     * @param description: review's body.
+     */
     public void addPost( final String titlePost, final String description ) {
         try ( Session session = driver.session() ) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -86,7 +83,11 @@ public class Crud_graph implements AutoCloseable  {
         }
     }
 
-    //add Page winery
+    /**
+     * Add a winery.
+     * @param wineryName: winery's name;
+     * @param country: winery's country.
+     */
     public void addPageWinery( final String wineryName, final String country ) {
         try ( Session session = driver.session() ) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -98,7 +99,12 @@ public class Crud_graph implements AutoCloseable  {
         }
     }
 
-    //create follow between user and the edge have direction
+    /**
+     * Create the relation "follow" between two user of the social, if that relation doesn't exist.
+     * @param taster_name1: user's name that want to follow someone;
+     * @param taster_name2: user's name that will be followed from taster_name1.
+     * @return result: indicates if the operation has been done successfully.
+     */
     public boolean createRelationFollow(final String taster_name1, final String taster_name2){
         boolean result = true;
         try (Session session = driver.session()){
@@ -116,7 +122,12 @@ public class Crud_graph implements AutoCloseable  {
         return result;
     }
 
-    //delete the relation follow between two user
+    /**
+     * Drop the relation "follow" between two user.
+     * @param taster_name1: user's name that want to drop relation "follow" w.r.t another user;
+     * @param taster_name2: user's name that will not have anymore taster_name1's follow.
+     * @return result: indicates if the operation has been done successfully.
+     */
     public boolean deleteRelationFollow(final String taster_name1, final String taster_name2){
         boolean result = true;
         try (Session session = driver.session()){

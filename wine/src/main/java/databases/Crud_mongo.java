@@ -1,7 +1,6 @@
 package databases;
 import beans.Review;
 import com.mongodb.*;
-import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
@@ -15,17 +14,27 @@ import java.util.ArrayList;
 
 import static com.mongodb.client.model.Filters.*;
 
-
+/**
+ * Contains all the crud operation that could be done on MongoDB.
+ */
 public class Crud_mongo {
 
-    //find review by winery review DONE
-    //create review DONE
-    //delete all review by taster_name DONE
-    //update all price under a threshold DONE
-    //findReviewFromId DONE
-
-
-    //insert the review inside the collection review
+    /**
+     * Create a new review inside review collection.
+     * @param points: the score that user give for a certain wine;
+     * @param title: title of the reivew;
+     * @param description: the body of the review;
+     * @param taster_name: user's name;
+     * @param taster_twitter_handle: user twitter nickname;
+     * @param price: wine's price that has been reviewed;
+     * @param designation: wine's name;
+     * @param variety: wine's typology;
+     * @param region_1: region's origin;
+     * @param region_2: region's origin;
+     * @param province: province's origin of the wine;
+     * @param country: winery's origin country;
+     * @param winery: name of the winery that produces the wine.
+     */
     public void createReview (String points , String title , String description , String taster_name , String taster_twitter_handle, int price , String designation, String variety , String region_1 , String region_2 , String province , String country , String winery   ) {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
@@ -55,7 +64,11 @@ public class Crud_mongo {
         mongoClient.close();
     }
 
-    //add a user
+    /**
+     * Create a new user.
+     * @param taster_name: user's name;
+     * @param taster_twitter_handle: user's twitter nickname.
+     */
     public void addUser (String taster_name , String taster_twitter_handle) {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
@@ -73,7 +86,11 @@ public class Crud_mongo {
         mongoClient.close();
     }
 
-    //add winery
+    /**
+     * Create a new winery.
+     * @param winery: winery's name;
+     * @param country: country's name of the winery.
+     */
     public void addWinery (String winery, String country) {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
@@ -91,6 +108,10 @@ public class Crud_mongo {
         mongoClient.close();
     }
 
+    /**
+     * Delete an user.
+     * @param twitterName: user's nickname to drop.
+     */
     public void deleteUser (String twitterName) {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
@@ -99,6 +120,10 @@ public class Crud_mongo {
         System.out.println("User deleted successfully...(MongoDB).");
     }
 
+    /**
+     * Delete a winery.
+     * @param winery: winery's name to drop.
+     */
     public void deleteWinery (String winery) {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
@@ -108,7 +133,10 @@ public class Crud_mongo {
     }
 
 
-    //find all review by name of winery
+    /**
+     * Retrieve all the review that refers to a specific winery.
+     * @param winery: winery's name.
+     */
     public  void findReviewByWinery (String winery){
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
@@ -125,7 +153,10 @@ public class Crud_mongo {
         mongoClient.close();
     }
 
-    //delete all review by taster name
+    /**
+     * Delete all the reviews of a specific user.
+     * @param taster_name: user's name.
+     */
     public void deleteReviewsByTaster_Name (String taster_name) {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
@@ -142,7 +173,11 @@ public class Crud_mongo {
 
     }
 
-    //update all price under a treshold with new price
+    /**
+     * Update the price under a certain threshold.
+     * @param selectOldPrice: price to update;
+     * @param newPrice: new price.
+     */
     public void updateAllPrice (int selectOldPrice , int newPrice) {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
@@ -158,7 +193,13 @@ public class Crud_mongo {
         mongoClient.close();
 
     }
-    //find a review by _id and create the beans
+
+
+    /**
+     * Find review from the _id and create a new review.
+     * @param id: review's id;
+     * @return: added review.
+     */
     public Review findReviewFromId (String id){
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
@@ -189,7 +230,10 @@ public class Crud_mongo {
         return review;
     }
 
-    //show all review by taster_name
+    /**
+     * Show all the review made by a specific user.
+     * @param taster_name: user's name.
+     */
     public void showReviewFromTaster_name (String taster_name){
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
@@ -212,9 +256,10 @@ public class Crud_mongo {
     }
 
 
-
-
-    //find all reviews
+    /**
+     * Find all the review stored in the review collection in MongoDB.
+     * @return: All the review stored.
+     */
     public ArrayList<Review> findAllReview (){
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");

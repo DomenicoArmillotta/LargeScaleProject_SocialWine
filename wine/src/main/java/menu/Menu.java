@@ -24,7 +24,8 @@ public class Menu {
     public void MainMenu() throws Exception {
         LoginAdmin logAdm = new LoginAdmin();
         LoginUser logUse = new LoginUser();
-        Populating_function_social populate=new Populating_function_social();
+       /* Populating_function_social populate=new Populating_function_social();
+        populate.populateSocial();*/
       /* InitTh thread = new InitTh();
         thread.initThread();*/
         DistinctUsers us = new DistinctUsers();
@@ -253,7 +254,7 @@ public class Menu {
                                     graph.allFollowedUserByTaster_name(myName); //CHECK
                                     break;
                                 case "I":
-                                    System.out.println("Insert the name of the taster that you would see  reviews");
+                                    System.out.println("Insert the name of the taster that you would see reviews");
                                     String tasterName2;
                                     Scanner inputTasterName2 = new Scanner(System.in);
                                     tasterName2 = inputTasterName2.next();
