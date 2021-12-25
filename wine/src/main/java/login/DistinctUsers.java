@@ -28,16 +28,12 @@ public class DistinctUsers {
             MongoCursor<String> results = docs.iterator();
             while (results.hasNext()) {
                 String user_name=results.next();
-                //checking if the user already inserted
                 BasicDBObject query = new BasicDBObject("Name", user_name);
 
                 FindIterable<Document> cursor = newCollection.find(query);
-                if( (cursor.iterator().hasNext()))
-                {
+                if( (cursor.iterator().hasNext())) {
                     System.out.println("Not empty Cursor");
-                }
-                else
-                {
+                } else {
                     Document doc = new Document("_id",new ObjectId());
                     doc.append("Name",user_name);
                     doc.append("Password","abcd");

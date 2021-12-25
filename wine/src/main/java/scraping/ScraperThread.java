@@ -3,7 +3,6 @@ package scraping;
 import com.mongodb.*;
 
 import databases.Crud_graph;
-import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -16,7 +15,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
+/**
+ * Contains scraper that allow to retrieve new reviews from winemag website.
+ * New reviews that are detected are stored automatically in MongoDB, after a check
+ * to figure out if a review is already inside or not. Automatically are added
+ * nodes in Neo4J with addPostComplete and in the same way in user-credentials' collection
+ * are stored the new user with their password.
+ */
 public class ScraperThread implements Runnable{
 
     @Override
@@ -171,15 +176,23 @@ public class ScraperThread implements Runnable{
 
     }
 
+    /**
+     * Check if something is empty or not.
+     * @param input: String to check
+     * @return input
+     */
     private String CheckEmpty(String input) {
-
-        if(input.isEmpty())
-        {
+        if(input.isEmpty()) {
             return null;
         }
         return input;
     }
 
+    /**
+     * Transform a string value in an integer value.
+     * @param value: string value.
+     * @return integer value or null.
+     */
     public Integer parseIntOrNull(String value) {
         try {
             return Integer.parseInt(value);
@@ -188,20 +201,4 @@ public class ScraperThread implements Runnable{
         }
     }
 
-    static void fillSheet(HashMap<String, String> map, String hashValue, XSSFRow row) {
-        row.createCell(0).setCellValue(map.get("Country"));
-        row.createCell(1).setCellValue(map.get("description"));
-        row.createCell(2).setCellValue(map.get("Designation"));
-        row.createCell(3).setCellValue(map.get("rating"));
-        row.createCell(4).setCellValue(map.get("Price"));
-        row.createCell(5).setCellValue(map.get("Province"));
-        row.createCell(6).setCellValue(map.get("region1"));
-        row.createCell(7).setCellValue(map.get("region2"));
-        row.createCell(8).setCellValue(map.get("Variety"));
-        row.createCell(9).setCellValue(map.get("Winery"));
-        row.createCell(10).setCellValue(map.get("title"));
-        row.createCell(11).setCellValue(map.get("taster_name"));
-        row.createCell(12).setCellValue(map.get("taster_twitter"));
-        row.createCell(13).setCellValue(hashValue);
-    }
 }

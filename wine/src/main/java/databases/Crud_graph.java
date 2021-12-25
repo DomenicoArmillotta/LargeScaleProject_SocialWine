@@ -16,7 +16,7 @@ public class Crud_graph implements AutoCloseable  {
     private final Driver driver;
 
     /**
-     * Constructer that allow to start the connection with Neo4J.
+     * Constructor that allows to start the connection with Neo4J.
      * @param uri: address of Neo4J where the DB is on;
      * @param user: user's name;
      * @param password: DB's password;
@@ -26,8 +26,8 @@ public class Crud_graph implements AutoCloseable  {
     }
 
     /**
-     * Close Neo4J connection;
-     * @throws Exception
+     * Close the connection with Neo4J's DBMS-
+     * @throws Exception: if the connection is not closed successfully.
      */
     @Override
     public void close() throws Exception {
@@ -145,7 +145,12 @@ public class Crud_graph implements AutoCloseable  {
     }
 
 
-    //crete the relation like between one post and one user
+    /**
+     * Create the relation like between a user and a post.
+     * @param titlePost: review's title;
+     * @param taster_name: user's name;
+     * @return result: indicates if the operation has been done successfully.
+     */
     public boolean createRelationLike(final String titlePost, final String taster_name){
         boolean result = true;
         try (Session session = driver.session()){
@@ -163,7 +168,12 @@ public class Crud_graph implements AutoCloseable  {
         return result;
     }
 
-    //delete relation like between post and user
+    /**
+     * Delete the relation like between a review and a user.
+     * @param titlePost: review's title;
+     * @param taster_name: user's name;
+     * @return result: indicates if the operation has been done successfully.
+     */
     public boolean deleteRelationLike(final String titlePost, final String taster_name){
         boolean result = true;
         try (Session session = driver.session()){
@@ -180,8 +190,13 @@ public class Crud_graph implements AutoCloseable  {
         return result;
     }
 
-    //create the relation created by between post and User
-    public boolean createRelationCreated(final String titlePost, final String taster_name){
+    /**
+     * Create the relation created between a review and a user. (Who create the review).
+     * @param titlePost: review's title;
+     * @param taster_name: user's name;
+     * @return result: indicates if the operation has been done successfully.
+     */
+        public boolean createRelationCreated(final String titlePost, final String taster_name){
         boolean result = true;
         try (Session session = driver.session()){
             session.writeTransaction( tx -> {
@@ -198,8 +213,12 @@ public class Crud_graph implements AutoCloseable  {
         return result;
     }
 
-    //delete relation created between title and taster name
-    public boolean deleteRelationCreated(final String titlePost, final String taster_name){
+    /**
+     * Delete the relation created between a review and a user.
+     * @param titlePost: review's title;
+     * @param taster_name: user's name;
+     * @return result: indicates if the operation has been done successfully.
+     */    public boolean deleteRelationCreated(final String titlePost, final String taster_name){
         boolean result = true;
         try (Session session = driver.session()){
             session.writeTransaction( tx -> {
@@ -214,7 +233,13 @@ public class Crud_graph implements AutoCloseable  {
         return result;
     }
 
-    //relation between page of winery and the post
+    /**
+     * Create the relation belong between a review and a winery, to indicate to which winery
+     * that review refers to.
+     * @param titlePost: review's title;
+     * @param wineryName: winery's name;
+     * @return result: indicates if the operation has been done successfully.
+     */
     public boolean createRelationBelong(final String titlePost, final String wineryName){
         boolean result = true;
         try (Session session = driver.session()){
@@ -231,8 +256,15 @@ public class Crud_graph implements AutoCloseable  {
         return result;
     }
 
-    //delete the relation belong between the post and the page
-    public boolean deleteRelationBelong(final String titlePost, final String wineryName){
+
+    /**
+     * Delete the relation belong between a review and a winery, to indicate to which winery
+     * that review refers to.
+     * @param titlePost: review's title;
+     * @param wineryName: winery's name;
+     * @return result: indicates if the operation has been done successfully.
+     */
+        public boolean deleteRelationBelong(final String titlePost, final String wineryName){
         boolean result = true;
         try (Session session = driver.session()){
             session.writeTransaction( tx -> {
@@ -247,6 +279,11 @@ public class Crud_graph implements AutoCloseable  {
         return result;
     }
 
+    /**
+     * Delete an user from the social.
+     * @param taster_name: user's name to drop.
+     * @return result: indicates if the operation has been done successfully.
+     */
     public boolean deleteUser( final String taster_name) {
         boolean result = true;
         try (Session session = driver.session()){
@@ -264,6 +301,11 @@ public class Crud_graph implements AutoCloseable  {
     }
 
 
+    /**
+     * Delete a review from the social.
+     * @param titlePost: review to drop.
+     * @return result: indicates if the operation has been done successfully.
+     */
     public boolean deletePost( final String titlePost) {
         boolean result = true;
         try (Session session = driver.session()){
@@ -280,6 +322,11 @@ public class Crud_graph implements AutoCloseable  {
         return result;
     }
 
+    /**
+     * Delete a winary from the social.
+     * @param wineryName: winery to drop.
+     * @return result: indicates if the operation has been done successfully.
+     */
     public boolean deletePage( final String wineryName) {
         boolean result = true;
         try (Session session = driver.session()){
@@ -297,8 +344,11 @@ public class Crud_graph implements AutoCloseable  {
     }
 
 
-
-
+    /**
+     * Show all users that are followed by a given user of the social.
+     * @param taster_name: user's name.
+     * @return followeUsers: list of users followed by taster_name.
+     */
     public ArrayList<User> allFollowedUserByTaster_name(final String taster_name) {
         ArrayList<User> followedUsers;
         try (Session session = driver.session()) {
@@ -324,16 +374,16 @@ public class Crud_graph implements AutoCloseable  {
         }
         return followedUsers;
     }
-    
 
 
-    // query to extract 10 people for the follow
-    //   MATCH (p:Person) RETURN p.name LIMIT 10
-    //WORK
+    /**
+     * Extract ten users randomly from the social network and add the follow relation between the users,
+     * given a tester name.
+     * @param selected_taster_name: user's name.
+     */
     public void randomFollowByUser (final String selected_taster_name){
         try ( Session session = driver.session() )
         {
-            // take the 10 random user
             List<String> random = session.readTransaction((TransactionWork<List<String>>) tx -> {
                 Result result = tx.run( "MATCH (p:User) RETURN p.taster_name as taster_name LIMIT 10");
 
@@ -341,7 +391,6 @@ public class Crud_graph implements AutoCloseable  {
                 while(result.hasNext())
                 {
                     Record r = result.next();
-                    //i pick the random user
                     if(!(r.get("taster_name").asString().equals(selected_taster_name))){
                         String taster_name;
                         randomUsers.add(r.get("taster_name").asString());
@@ -349,9 +398,6 @@ public class Crud_graph implements AutoCloseable  {
                         createRelationFollow(selected_taster_name,taster_name);
                         createRelationFollow(taster_name,selected_taster_name);
                     }
-
-
-
                 }
                 return randomUsers;
             });
@@ -360,13 +406,14 @@ public class Crud_graph implements AutoCloseable  {
     }
 
 
-    //query to extract 10 post to put like
-    //  MATCH (p:Post) RETURN p.titlePost LIMIT 10
-    //WORK
+    /**
+     * Extract ten post from the social network to put like given a
+     * tester name.
+     * @param selected_taster_name: user's name.
+     */
     public void randomLikeByUser (final String selected_taster_name){
         try ( Session session = driver.session() )
         {
-            // take the 10 random user
             List<String> random = session.readTransaction((TransactionWork<List<String>>) tx -> {
                 Result result = tx.run( "MATCH (p:Post) RETURN p.titlePost as titlePost LIMIT 10");
 
@@ -374,9 +421,7 @@ public class Crud_graph implements AutoCloseable  {
                 while(result.hasNext())
                 {
                     Record r = result.next();
-                    //i pick the random title Post
                     randomPost.add(r.get("titlePost").asString());
-                    //i save the String titlePost in the variable
                     String titlePost;
                     titlePost = r.get("titlePost").asString();
                     createRelationLike(titlePost,selected_taster_name);
