@@ -21,24 +21,17 @@ public class Menu {
      * DistinctUser, Crud_mongo, Advanced_mongo, Crud_graph, Advanced_graph
      * @throws Exception
      */
-    public void MainMenu() throws Exception {
+    public void MainMenu() throws Exception{
+        InitTh thread = new InitTh();
+        thread.initThread();
         LoginAdmin logAdm = new LoginAdmin();
         LoginUser logUse = new LoginUser();
         Populating_function_social populate=new Populating_function_social();
-        InitTh thread = new InitTh();
-        thread.initThread();
         DistinctUsers us = new DistinctUsers();
         us.distinctUser();
         logAdm.addAdmin();
         Crud_mongo mongo = new Crud_mongo();
         Advanced_mongo adv = new Advanced_mongo();
-
-        /*
-        try{
-            populate.populateSocial();
-        } catch (AlreadyPopulatedException me){
-            me.getMessage();
-        }*/
         Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
         Advanced_graph advgraph = new Advanced_graph("bolt://localhost:7687", "neo4j", "0000");
 
@@ -67,16 +60,17 @@ public class Menu {
                         System.out.println("\nPlease insert your name and your password or press X to exit:");
                         if (logAdm.logIn()) {
                             while (true) {
-                                System.out.println("You can do this statistics:");
-                                System.out.println("A" + " Top 10 countries that have most wineries in descending order");
-                                System.out.println("B" + " Display top-20 wines' varieties according to their mean price");
-                                System.out.println("C" + " Top-5 users with the highest average of them review scores.");
-                                System.out.println("D" + " Create 10 follow relation between selected user and 10 random people");
-                                System.out.println("E" + " Create 10 like relation between selected user and 10 random post");
-                                System.out.println("F" + " Add an user");
-                                System.out.println("G" + " Ban an user");
-                                System.out.println("H" + " Add a winery");
-                                System.out.println("I" + " Drop a winery");
+                                System.out.println("You can do this operations:");
+                                System.out.println("A" + " Populate Social based on review collection of MongoDB");
+                                System.out.println("B" + " Top 10 countries that have most wineries in descending order");
+                                System.out.println("C" + " Display top-20 wines' varieties according to their mean price");
+                                System.out.println("D" + " Top-5 users with the highest average of them review scores.");
+                                System.out.println("E" + " Create 10 follow relation between selected user and 10 random people");
+                                System.out.println("F" + " Create 10 like relation between selected user and 10 random post");
+                                System.out.println("G" + " Add an user");
+                                System.out.println("H" + " Ban an user");
+                                System.out.println("I" + " Add a winery");
+                                System.out.println("L" + " Drop a winery");
                                 System.out.println("X" + " Terminate program");
 
                                 System.out.println("\nWhat you want to do?");
@@ -86,29 +80,36 @@ public class Menu {
 
                                 switch (choiceStatistics) {
                                     case "A":
-                                        adv.topTenCountriesWineries();
+                                        try {
+                                            populate.populateSocial();
+                                        } catch (AlreadyPopulatedException e){
+                                            System.out.println("Graph already populated You can't do this now!"+"\n");
+                                        }
                                         break;
                                     case "B":
-                                        adv.topTwentyVarietiesAvgPrice();
+                                        adv.topTenCountriesWineries();
                                         break;
                                     case "C":
-                                        adv.topFiveUsersHighestAvgScores();
+                                        adv.topTwentyVarietiesAvgPrice();
                                         break;
                                     case "D":
+                                        adv.topFiveUsersHighestAvgScores();
+                                        break;
+                                    case "E":
                                         String selected_user;
                                         Scanner inputName = new Scanner(System.in);
                                         System.out.println("Name of the User that you would select ");
                                         selected_user = inputName.next();
                                         graph.randomFollowByUser(selected_user);
                                         break;
-                                    case "E":
+                                    case "F":
                                         String selected_user2;
                                         Scanner inputName2 = new Scanner(System.in);
                                         System.out.println("Name of the User that you would select ");
                                         selected_user2 = inputName2.next();
                                         graph.randomLikeByUser(selected_user2);
                                         break;
-                                    case "F":
+                                    case "G":
                                         String taster_name;
                                         String taster_twitter_handle;
                                         Scanner inputTaster = new Scanner(System.in);
@@ -120,7 +121,7 @@ public class Menu {
                                         mongo.addUser(taster_name, taster_twitter_handle);
                                         graph.addUser(taster_name);
                                         break;
-                                    case "G":
+                                    case "H":
                                         String twitter;
                                         Scanner inputTwitterName = new Scanner(System.in);
                                         System.out.println("Twitter name of the taster that you want to ban:");
@@ -128,7 +129,7 @@ public class Menu {
                                         mongo.deleteUser(twitter);
                                         graph.deleteUser(twitter);
                                         break;
-                                    case "H":
+                                    case "I":
                                         String country;
                                         String winery;
                                         Scanner inputWinery = new Scanner(System.in);
@@ -140,7 +141,7 @@ public class Menu {
                                         mongo.addWinery(winery, country);
                                         graph.addPageWinery(winery, country);
                                         break;
-                                    case "I":
+                                    case "L":
                                         String win;
                                         Scanner inputWin = new Scanner(System.in);
                                         System.out.println("Name of the winery that you want to drop:");

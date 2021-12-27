@@ -455,10 +455,10 @@ public class Crud_graph implements AutoCloseable {
     /**
      * Method that count the nodes in the Social
      */
-    public void countGraphNodes() {
-        ArrayList<String> counted = null;
+    public ArrayList<String> countGraphNodes() {
+        ArrayList<String> random;
         try (Session session = driver.session()) {
-            List<String> random = session.readTransaction((TransactionWork<List<String>>) tx -> {
+            random = (ArrayList<String>) session.readTransaction((TransactionWork<List<String>>) tx -> {
                 Result result = tx.run("MATCH (n) RETURN count(n) as count");
 
                 ArrayList<String> count = new ArrayList<>();
@@ -469,5 +469,6 @@ public class Crud_graph implements AutoCloseable {
                 return count;
             });
         }
+        return random;
     }
 }

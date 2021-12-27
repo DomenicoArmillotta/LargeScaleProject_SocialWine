@@ -3,6 +3,8 @@ package scraping;
 import com.mongodb.*;
 
 import databases.Crud_graph;
+import exception.AlreadyPopulatedException;
+import exception.ServerWinmagOufOfServiceException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -36,10 +38,13 @@ public class ScraperThread implements Runnable{
         Document doc = null;
         try {
             doc = Jsoup.connect("https://www.winemag.com/?s=&drink_type=wine&page=1&sort_by=pub_date_web&sort_dir=desc").get();
-
-
         } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                throw new ServerWinmagOufOfServiceException("WineMag server is down, the execution will resume taking in consideration" +
+                        " the 96 k reviews already in review collection.");
+            } catch (ServerWinmagOufOfServiceException ex) {
+                ex.printStackTrace();
+            }
         }
         List<String> links = doc.getElementsByClass("review-listing").eachAttr("href");
         for(String link : links) {

@@ -2,7 +2,6 @@ package databases;
 import beans.Review;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-import databases.Crud_graph;
 import exception.AlreadyPopulatedException;
 
 import java.util.ArrayList;
@@ -23,12 +22,11 @@ public class Populating_function_social {
         Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
         ArrayList<Review> reviews = null;
 
-        //Put th ecount function and check if the nodes are over 10000 for example
-        //throw AlreadyPopException that means that the graph is already populated
-        //and execution has to go further without execution populateSocial in main.
-        reviews = mongo.findAllReview();
-        for (Review review : reviews) {
-            graph.addPostComplete(review.getTaster_name(),review.getTitle(),review.getDescription(),review.getWinery(),review.getCountry());
-        }
+        if (graph.countGraphNodes().get(0).length()==1){
+            reviews = mongo.findAllReview();
+            for (Review review : reviews) {
+                graph.addPostComplete(review.getTaster_name(),review.getTitle(),review.getDescription(),review.getWinery(),review.getCountry());
+            }
+        } else throw new AlreadyPopulatedException("Graph is already populated!");
     }
 }
