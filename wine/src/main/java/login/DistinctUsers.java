@@ -32,7 +32,6 @@ public class DistinctUsers {
 
                 FindIterable<Document> cursor = newCollection.find(query);
                 if( (cursor.iterator().hasNext())) {
-                    System.out.println("Not empty Cursor");
                 } else {
                     Document doc = new Document("_id",new ObjectId());
                     doc.append("Name",user_name);
@@ -47,7 +46,6 @@ public class DistinctUsers {
                 }
 
             }
-            System.out.println("Success!");
         } catch (MongoException me) {
             System.err.println("Unable to insert due to an error: " + me);
         }

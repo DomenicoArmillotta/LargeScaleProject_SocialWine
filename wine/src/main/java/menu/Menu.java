@@ -1,7 +1,7 @@
 package menu;
 
-import com.mongodb.client.*;
 import databases.*;
+import exception.AlreadyPopulatedException;
 import login.DistinctUsers;
 import login.LoginAdmin;
 import login.LoginUser;
@@ -24,16 +24,21 @@ public class Menu {
     public void MainMenu() throws Exception {
         LoginAdmin logAdm = new LoginAdmin();
         LoginUser logUse = new LoginUser();
-       /* Populating_function_social populate=new Populating_function_social();
-        populate.populateSocial();*/
-      /* InitTh thread = new InitTh();
-        thread.initThread();*/
+        Populating_function_social populate=new Populating_function_social();
+        InitTh thread = new InitTh();
+        thread.initThread();
         DistinctUsers us = new DistinctUsers();
         us.distinctUser();
         logAdm.addAdmin();
         Crud_mongo mongo = new Crud_mongo();
         Advanced_mongo adv = new Advanced_mongo();
-       // populate.populateSocial();
+
+        /*
+        try{
+            populate.populateSocial();
+        } catch (AlreadyPopulatedException me){
+            me.getMessage();
+        }*/
         Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
         Advanced_graph advgraph = new Advanced_graph("bolt://localhost:7687", "neo4j", "0000");
 
@@ -170,7 +175,7 @@ public class Menu {
                             System.out.println("F" + " Suggested friends' list");
                             System.out.println("G" + " Discover the top 5 trending Post on the social");
                             System.out.println("H" + " See all user followed");
-                            System.out.println("H" + " See all review from taster_name");
+                            System.out.println("I" + " See all review from taster_name");
                             System.out.println("X" + " Terminate program");
 
                             System.out.println("\nWhat you want to do?");
@@ -257,7 +262,7 @@ public class Menu {
                                     System.out.println("Insert the name of the taster that you would see reviews");
                                     String tasterName2;
                                     Scanner inputTasterName2 = new Scanner(System.in);
-                                    tasterName2 = inputTasterName2.next();
+                                    tasterName2 = inputTasterName2.nextLine();
                                     mongo.showReviewFromTaster_name(tasterName2);
                                     break;
                                 case "X":

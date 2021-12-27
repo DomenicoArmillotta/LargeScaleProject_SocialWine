@@ -238,19 +238,15 @@ public class Crud_mongo {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("review");
-
-        Review review = null;
         Bson query = eq("taster_name" , "" + taster_name + "");
+
         MongoCursor<Document> cursor = collection.find(query).iterator();
         while (cursor.hasNext()){
             Document temp_review_doc = cursor.next();
-
             String title = temp_review_doc.getString("title");
             String description = temp_review_doc.getString("description");
             System.out.println("Title of the post = " + title);
             System.out.println("Description of the post = " + description);
-
-
         }
         mongoClient.close();
     }
@@ -277,8 +273,7 @@ public class Crud_mongo {
             String taster_name = temp_review_doc.getString("taster_name");
             String taster_twitter_handle = temp_review_doc.getString("taster_twitter_handle");
             Integer price = temp_review_doc.getInteger("price");
-            if(price==null)
-            {
+            if(price==null) {
                 price=0;
             }
             String designation = temp_review_doc.getString("designation");
