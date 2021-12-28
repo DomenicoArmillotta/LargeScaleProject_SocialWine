@@ -39,6 +39,7 @@ public class ScraperThread implements Runnable{
         try {
             doc = Jsoup.connect("https://www.winemag.com/?s=&drink_type=wine&page=1&sort_by=pub_date_web&sort_dir=desc").get();
         } catch (IOException e) {
+            e.printStackTrace();
             try {
                 throw new ServerWinmagOufOfServiceException("WineMag server is down, the execution will resume taking in consideration" +
                         " the 96 k reviews already in review collection.");
