@@ -3,10 +3,10 @@ package menu;
 import beans.User;
 import databases.*;
 import exception.AlreadyPopulatedException;
+import exception.InsertedWrongNumberException;
 import login.DistinctUsers;
 import login.LoginAdmin;
 import login.LoginUser;
-import scraping.InitTh;
 
 import java.util.*;
 
@@ -24,8 +24,7 @@ public class Menu {
      * @throws Exception
      */
     public void MainMenu() throws Exception{
-        InitTh thread = new InitTh();
-        thread.initThread();
+
         LoginAdmin logAdm = new LoginAdmin();
         LoginUser logUse = new LoginUser();
         Populating_function_social populate=new Populating_function_social();
@@ -175,9 +174,9 @@ public class Menu {
                             System.out.println("C" + " Put like on a Post");
                             System.out.println("D" + " Delete like on a Post");
                             System.out.println("E" + " Add a Post on the social");
-                            System.out.println("F" + " Suggested friends' list");
-                            System.out.println("G" + " Discover the top 5 trending Post on the social");
-                            System.out.println("H" + " See all user followed");
+                            System.out.println("F" + " Suggested friends' list and follow one of them");
+                            System.out.println("G" + " Discover the top 5 trending Post on the social and put like on one of them");
+                            System.out.println("H" + " See all user followed and unfollow one of them");
                             System.out.println("I" + " See all review from taster_name");
                             System.out.println("X" + " Terminate program");
 
@@ -254,7 +253,7 @@ public class Menu {
                                     advgraph.suggestedUserByFriends(myName);
                                     User[] users = advgraph.suggestedUserByFriends(myName).toArray(new User[advgraph.suggestedUserByFriends(myName).size()]);
                                     ArrayList<User> arrusr = new ArrayList<>(Arrays.asList(users));
-                                    int j = 0;
+                                    int j = 1;
                                     HashMap<Integer, String> friendCounter = new HashMap<>();
                                     for (int i = 0; i < arrusr.size(); i++) {
                                         friendCounter.put(j++, arrusr.get(i).getTaster_name() );
@@ -266,17 +265,18 @@ public class Menu {
                                     Scanner scannerF = new Scanner(System.in);
                                     System.out.print("Enter the number (0 if the list is empty): ");
                                     int numb = scannerF.nextInt();
-                                    if (numb < friendCounter.size()) {
+                                    if (numb <= friendCounter.size()) {
                                         if (friendCounter.containsKey(numb)) {
                                             String friend = friendCounter.get(numb);
                                             graph.createRelationFollow(myName, friend);
                                         }
-                                    }
+                                    } else throw new InsertedWrongNumberException("Inserted number doesn't exists!");
+
                                     break;
                                 case "G":
                                     System.out.println("This is the list of the tranding post on SocialWine (title = num like");
                                     advgraph.FiveMostLikePost();
-                                    int y = 0;
+                                    int y = 1;
                                     HashMap<Integer, String> likeCounter = new HashMap<>();
                                     List keysrev = new ArrayList(advgraph.FiveMostLikePost().keySet());
                                     for (int i=0; i<keysrev.size();i++){
@@ -287,18 +287,43 @@ public class Menu {
                                     System.out.println("This is the list with the numbers:");
                                     System.out.println(likeCounter);
                                     Scanner scanner = new Scanner(System.in);
-                                    System.out.print("Enter the number: ");
+                                    System.out.print("Enter the number (0 if the list is empty): ");
                                     int num = scanner.nextInt();
-                                    if (num<likeCounter.size()){
-                                        if (likeCounter.containsKey(num)){
-                                            String post = likeCounter.get(num);
-                                            graph.createRelationLike(String.valueOf(post),myName);
-                                        }
+                                    try{
+                                        if (num <= likeCounter.size()){
+                                            if (likeCounter.containsKey(num)){
+                                                String post = likeCounter.get(num);
+                                                graph.createRelationLike(String.valueOf(post),myName);
+                                            }
+                                        } else throw new InsertedWrongNumberException("Inserted number doesn't exists!");
+                                    } catch (InsertedWrongNumberException exc){
+                                        exc.getMessage();
                                     }
-                                    break;
+
+
+                            break;
                                 case "H":
-                                    System.out.println("This is the list of all followed user by this account ");
                                     graph.allFollowedUserByTaster_name(myName);
+                                    User[] allus = graph.allFollowedUserByTaster_name(myName).toArray(new User[graph.allFollowedUserByTaster_name(myName).size()]);
+                                    ArrayList<User> allusarr = new ArrayList<>(Arrays.asList(allus));
+                                    int w = 1;
+                                    HashMap<Integer, String> frCounter = new HashMap<>();
+                                    for (int i = 0; i < allusarr.size(); i++) {
+                                        frCounter.put(w++, allusarr.get(i).getTaster_name() );
+                                    }
+                                    System.out.println("For each of your friend  is assigned a value! Write the number corresponding to the friend" +
+                                            " that you want to unfollow...");
+                                    System.out.println("This is the list with the numbers:");
+                                    System.out.println(frCounter);
+                                    Scanner scannerFr = new Scanner(System.in);
+                                    System.out.print("Enter the number (0 if the list is empty): ");
+                                    int number = scannerFr.nextInt();
+                                    if (number <= frCounter.size()) {
+                                        if (frCounter.containsKey(number)) {
+                                            String friend = frCounter.get(number);
+                                            graph.deleteRelationFollow(myName, friend);
+                                        }
+                                    } else throw new InsertedWrongNumberException("Inserted number doesn't exists!");
                                     break;
                                 case "I":
                                     System.out.println("Insert the name of the taster that you would see reviews");

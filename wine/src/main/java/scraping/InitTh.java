@@ -1,9 +1,6 @@
 package scraping;
 
 
-
-import exception.ServerWinmagOufOfServiceException;
-
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -19,6 +16,6 @@ public class InitTh {
         final ScheduledFuture<?> scraperHandle =scheduler.scheduleAtFixedRate(new ScraperThread(), 0, 1, TimeUnit.MINUTES);
         scheduler.schedule(new Runnable() {
             public void run() { scraperHandle.cancel(true); }
-        }, 10, TimeUnit.MINUTES);
+        }, 0, TimeUnit.MINUTES);
     }
 }

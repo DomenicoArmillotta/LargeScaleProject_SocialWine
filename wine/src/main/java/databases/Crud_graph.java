@@ -4,9 +4,7 @@ import beans.User;
 import exception.AlreadyPopulatedException;
 import org.neo4j.driver.*;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static org.neo4j.driver.Values.parameters;
 
@@ -369,22 +367,18 @@ public class Crud_graph implements AutoCloseable {
      * @param taster_name: user's name.
      * @return followeUsers: list of users followed by taster_name.
      */
-    public ArrayList<User> allFollowedUserByTaster_name(final String taster_name) {
-        ArrayList<User> followedUsers;
+    public HashSet<User> allFollowedUserByTaster_name(final String taster_name) {
+        HashSet<User> followedUsers;
         try (Session session = driver.session()) {
-            followedUsers = session.readTransaction((TransactionWork<ArrayList<User>>) tx -> {
+            followedUsers = session.readTransaction((TransactionWork<HashSet<User>>) tx -> {
                 Result result = tx.run("MATCH p=(n:User{taster_name: $taster_name})-[:Follow]->(u:User)\n" +
                                 "RETURN u.taster_name AS taster_name",
                         parameters("taster_name", taster_name));
-                ArrayList<User> users = new ArrayList<>();
+                HashSet<User> users = new HashSet<>();
                 while (result.hasNext()) {
                     Record r = result.next();
                     User u = new User(r.get("taster_name").asString());
                     users.add(u);
-                }
-                Iterator<User> us = users.iterator();
-                while (us.hasNext()) {
-                    System.out.println(us.next().getTaster_name());
                 }
 
                 return users;

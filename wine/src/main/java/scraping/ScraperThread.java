@@ -3,7 +3,6 @@ package scraping;
 import com.mongodb.*;
 
 import databases.Crud_graph;
-import exception.AlreadyPopulatedException;
 import exception.ServerWinmagOufOfServiceException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -32,12 +31,12 @@ public class ScraperThread implements Runnable{
         Driver driver = GraphDatabase.driver( "bolt://localhost:7687", AuthTokens.basic( "neo4j", "0000" ) );
         MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         DB database = mongoClient.getDB("wine");
-        DBCollection collection = database.getCollection("reviewTest");
+        DBCollection collection = database.getCollection("review");
         DBCollection usersCollection = database.getCollection("user_credentials");
 
         Document doc = null;
         try {
-            doc = Jsoup.connect("https://www.winemag.com/?s=&drink_type=wine&page=1&sort_by=pub_date_web&sort_dir=desc").get();
+            doc = Jsoup.connect("https://www.winemag.com/ratings/#").get();
         } catch (IOException e) {
             e.printStackTrace();
             try {
