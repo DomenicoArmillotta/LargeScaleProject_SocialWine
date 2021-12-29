@@ -29,10 +29,10 @@ public class Advanced_graph implements AutoCloseable {
      * @param taster_name: user's name.
      * @return
      */
-    public ArrayList<User> suggestedUserByFriends(final String taster_name) {
-        ArrayList<User> suggestedUsers;
+    public HashSet<User> suggestedUserByFriends (final String taster_name) {
+        HashSet<User> suggestedUsers;
         try (Session session = driver.session()) {
-            suggestedUsers = session.readTransaction((TransactionWork<ArrayList<User>>) tx -> {
+            suggestedUsers = session.readTransaction((TransactionWork<HashSet<User>>) tx -> {
                 Result result = tx.run("MATCH p=(n:User{taster_name: $taster_name})-[:Follow]->(:User)<-[:Follow]-(u:User)\n" +
                                 "WHERE NOT EXISTS ((n)-[:Follow]-(u))\n" +
                                 "WITH u, rand() AS number\n" +
@@ -40,17 +40,12 @@ public class Advanced_graph implements AutoCloseable {
                                 "ORDER BY number\n" +
                                 "LIMIT 5",
                         parameters("taster_name", taster_name));
-                ArrayList<User> users = new ArrayList<>();
+                HashSet<User> users = new HashSet<>();
                 while (result.hasNext()) {
                     Record r = result.next();
                     User u = new User(r.get("taster_name").asString());
                     users.add(u);
                 }
-                Iterator<User> us = users.iterator();
-                while (us.hasNext()){
-                    System.out.println(us.next().getTaster_name());
-                }
-
                 return users;
             });
         } catch (Exception e){
@@ -78,7 +73,7 @@ public class Advanced_graph implements AutoCloseable {
                     Record r = result.next();
                     likeResult.put(r.get("titlePost").asString(), r.get("numLike").toString());
                 }
-                System.out.println(Arrays.asList(likeResult));
+                System.out.println(likeResult);
                 return likeResult;
             });
         }catch (Exception e){

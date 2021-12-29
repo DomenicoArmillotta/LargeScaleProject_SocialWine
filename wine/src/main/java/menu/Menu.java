@@ -1,12 +1,14 @@
 package menu;
 
+import beans.User;
 import databases.*;
 import exception.AlreadyPopulatedException;
 import login.DistinctUsers;
 import login.LoginAdmin;
 import login.LoginUser;
 import scraping.InitTh;
-import java.util.Scanner;
+
+import java.util.*;
 
 /**
  * The class contains the core of user/admin choice. From here the user could choice what hw wants to do
@@ -250,14 +252,53 @@ public class Menu {
                                 case "F":
                                     System.out.println("This is the list of suggested user for you: ");
                                     advgraph.suggestedUserByFriends(myName);
+                                    User[] users = advgraph.suggestedUserByFriends(myName).toArray(new User[advgraph.suggestedUserByFriends(myName).size()]);
+                                    ArrayList<User> arrusr = new ArrayList<>(Arrays.asList(users));
+                                    int j = 0;
+                                    HashMap<Integer, String> friendCounter = new HashMap<>();
+                                    for (int i = 0; i < arrusr.size(); i++) {
+                                        friendCounter.put(j++, arrusr.get(i).getTaster_name() );
+                                    }
+                                    System.out.println("For each suggested user of the list is assigned a value! Write the number corresponding to the user" +
+                                            " that you want as friend...");
+                                    System.out.println("This is the list with the numbers:");
+                                    System.out.println(friendCounter);
+                                    Scanner scannerF = new Scanner(System.in);
+                                    System.out.print("Enter the number (0 if the list is empty): ");
+                                    int numb = scannerF.nextInt();
+                                    if (numb < friendCounter.size()) {
+                                        if (friendCounter.containsKey(numb)) {
+                                            String friend = friendCounter.get(numb);
+                                            graph.createRelationFollow(myName, friend);
+                                        }
+                                    }
                                     break;
                                 case "G":
-                                    System.out.println("This is the list of the tranding post on SocialWine ");
+                                    System.out.println("This is the list of the tranding post on SocialWine (title = num like");
                                     advgraph.FiveMostLikePost();
+                                    int y = 0;
+                                    HashMap<Integer, String> likeCounter = new HashMap<>();
+                                    List keysrev = new ArrayList(advgraph.FiveMostLikePost().keySet());
+                                    for (int i=0; i<keysrev.size();i++){
+                                        likeCounter.put(y++, (String) keysrev.get(i));
+                                    }
+                                    System.out.println("For each tranding post is assigned a value! Write the number corresponding to the post" +
+                                            " to put like on...");
+                                    System.out.println("This is the list with the numbers:");
+                                    System.out.println(likeCounter);
+                                    Scanner scanner = new Scanner(System.in);
+                                    System.out.print("Enter the number: ");
+                                    int num = scanner.nextInt();
+                                    if (num<likeCounter.size()){
+                                        if (likeCounter.containsKey(num)){
+                                            String post = likeCounter.get(num);
+                                            graph.createRelationLike(String.valueOf(post),myName);
+                                        }
+                                    }
                                     break;
                                 case "H":
                                     System.out.println("This is the list of all followed user by this account ");
-                                    graph.allFollowedUserByTaster_name(myName); //CHECK
+                                    graph.allFollowedUserByTaster_name(myName);
                                     break;
                                 case "I":
                                     System.out.println("Insert the name of the taster that you would see reviews");
