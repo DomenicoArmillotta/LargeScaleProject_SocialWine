@@ -74,7 +74,7 @@ public class ScraperThread implements Runnable{
 
 
             map.put("title", reviewDoc.getElementsByClass("header__title").first().getElementsByTag("h1").first().text());
-            map.put("description", reviewDoc.getElementsByClass("description").first().text());
+            map.put("description", reviewDoc.getElementsByClass("description").first().ownText());
             Element attribuiteTable = reviewDoc.select("ul.primary-info").first();
             Elements rows = attribuiteTable.select("li.row");
             for (Element row : rows) {
