@@ -46,31 +46,32 @@ public class LoginUser {
         String username = input1.readLine();
         byte[] byteArrrayUsername = username.getBytes();
 
-        if (username.equals("X"))
+        if (username.equals("X")){
             System.out.println("Exiting program...");
-        System.exit(0);
+            System.exit(0);
+        }else{
+            Scanner input2 = new Scanner(System.in);
+            System.out.println("Enter Password : ");
+            String password = input2.next();
+            byte[] byteArrrayPassword = password.getBytes();
 
-        Scanner input2 = new Scanner(System.in);
-        System.out.println("Enter Password : ");
-        String password = input2.next();
-        byte[] byteArrrayPassword = password.getBytes();
-
-        try {
-            if (username.equals(getNameUser(username)) &&
-                    password.equals(getPwdUser(password))) {
-                System.out.println("Access Granted! Welcome!");
-                db.put(byteArrrayPassword, byteArrrayUsername);
-                byte[] name = db.get(byteArrrayPassword);
-                String str = new String(name, StandardCharsets.UTF_8);
-                db.close();
-                return str;
-
+            try {
+                if (username.equals(getNameUser(username)) &&
+                        password.equals(getPwdUser(password))) {
+                    System.out.println("Access Granted! Welcome!");
+                    db.put(byteArrrayPassword, byteArrrayUsername);
+                    byte[] name = db.get(byteArrrayPassword);
+                    String str = new String(name, StandardCharsets.UTF_8);
+                    db.close();
+                    return str;
+                }
+            } catch (Exception e) {
+                System.out.println("User credentials are incorrect!");
+                exit(0);
             }
-        } catch (Exception e) {
-            System.out.println("User credentials are incorrect!");
-            exit(0);
+            return null;
         }
-        return null;
+        return username;
     }
 
     /**

@@ -17,31 +17,34 @@ import static com.mongodb.client.model.Filters.eq;
  */
 public class LoginAdmin {
 
-    public Boolean logIn() {
+    public boolean logIn() {
         Scanner input1 = new Scanner(System.in);
         System.out.println("Enter Username : ");
         String username = input1.next();
 
-        if (username.equals("X"))
+        if (username.equals("X")) {
             System.out.println("Exiting program...");
-        System.exit(0);
+            System.exit(0);
+        } else {
+            Scanner input2 = new Scanner(System.in);
+            System.out.println("Enter Password : ");
+            String password = input2.next();
 
-        Scanner input2 = new Scanner(System.in);
-        System.out.println("Enter Password : ");
-        String password = input2.next();
 
-
-        try {
-            if (username.equals(getNameAdmin(username)) &&
-                    password.equals(getPwdAdmin(password))) {
-                System.out.println("Access Granted! Welcome Admin!");
-                return true;
+            try {
+                if (username.equals(getNameAdmin(username)) &&
+                        password.equals(getPwdAdmin(password))) {
+                    System.out.println("Access Granted! Welcome Admin!");
+                    return true;
+                }
+            } catch (Exception e) {
+                System.out.println("Admin credentials are incorrect!");
             }
-        } catch (Exception e) {
-            System.out.println("Admin credentials are incorrect!");
+            return false;
         }
         return false;
     }
+
 
     /**
      *Add the admin figure to the user_credentials collection with name and password
