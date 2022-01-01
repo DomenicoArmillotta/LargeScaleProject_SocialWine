@@ -34,7 +34,7 @@ public class Review {
      * @param country
      * @param winery
      */
-    public Review(String points, String title, String description, String taster_name, String taster_twitter_handle, int price, String designation, String variety, String region_1, String region_2, String province, String country, String winery) {
+    public Review(Object points, String title, String description, String taster_name, String taster_twitter_handle, int price, String designation, String variety, String region_1, String region_2, String province, String country, String winery) {
         setPoints(points);
         this.title = title;
         this.description = description;
@@ -62,18 +62,29 @@ public class Review {
      * Points setter.
      * @param points
      */
-    public void setPoints(String points) {
+    public void setPoints(Object points) {
 
         int number = 0;
-        try {
-            if(points != null && points!="")
-                number = Integer.parseInt(points);
+        if (points instanceof String){
+            try {
+                if(points != null && points!="")
+                    number = Integer.parseInt((String) points);
 
-        } catch (NumberFormatException e) {
-            number = 0;
+            } catch (NumberFormatException e) {
+                number = 0;
+            }
+            this.points = number;
+        }else{
+            try {
+                if(points != null && points!="")
+                    number = (Integer) points;
+
+            } catch (NumberFormatException e) {
+                number = 0;
+            }
+            this.points = number;
         }
 
-        this.points = number;
     }
 
     /**
@@ -97,7 +108,10 @@ public class Review {
      * @return
      */
     public String getDescription() {
-        return description;
+        if (description.equals(null))
+            return "empty";
+        else
+            return description;
     }
 
     /**

@@ -153,13 +153,13 @@ public class Crud_graph implements AutoCloseable {
 
 
     /**
-     * Create the relation like between a user and a post.
+     * Create the relation like between a user and a post taking in consideration title post.
      *
      * @param titlePost:   review's title;
      * @param taster_name: user's name;
      * @return result: indicates if the operation has been done successfully.
      */
-    public boolean createRelationLike(final String titlePost, final String taster_name) {
+    public boolean createRelationLikeByTitle(final String titlePost, final String taster_name) {
         boolean result = true;
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
@@ -176,6 +176,29 @@ public class Crud_graph implements AutoCloseable {
         return result;
     }
 
+    /**
+     * Create the relation like between a user and a post taking in consideration description post.
+     *
+     * @param descriptionPost: body of the post
+     * @param taster_name: user's name;
+     * @return result: indicates if the operation has been done successfully.
+     */
+    public boolean createRelationLikeByDescription(final String descriptionPost, final String taster_name) {
+        boolean result = true;
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (u:User{taster_name: $taster_name}),(u1:Post{description: $description})\n" +
+                                "WHERE NOT EXISTS ((u)-[:Like]->(u1))\n" +
+                                "CREATE (u)-[:Like]->(u1)",
+                        parameters("description", descriptionPost, "taster_name", taster_name));
+                System.out.println("Like reaction successfully inserted (Neo4J)." + "\n");
+                return 1;
+            });
+        } catch (Exception e) {
+            result = false;
+        }
+        return result;
+    }
     /**
      * Delete the relation like between a review and a user.
      *
@@ -436,7 +459,7 @@ public class Crud_graph implements AutoCloseable {
                     randomPost.add(r.get("titlePost").asString());
                     String titlePost;
                     titlePost = r.get("titlePost").asString();
-                    createRelationLike(titlePost, selected_taster_name);
+                    createRelationLikeByTitle(titlePost, selected_taster_name);
 
                 }
                 return randomPost;
@@ -461,6 +484,48 @@ public class Crud_graph implements AutoCloseable {
                     count.add(String.valueOf(r.get("count").asInt()));
                 }
                 return count;
+            });
+        }
+        return random;
+    }
+
+    /**
+     * Return list of reviews that are in Social Netwrk but only the description (body)
+     * @return
+     */
+    public ArrayList<String> returnAllReviews() {
+        ArrayList<String> random;
+        try (Session session = driver.session()) {
+            random = session.readTransaction((TransactionWork<ArrayList<String>>) tx -> {
+                Result result = tx.run("MATCH (p:Post) RETURN p.description as description");
+
+                ArrayList<String> rev = new ArrayList<>();
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    rev.add(r.get("description").asString() + "\n");
+                }
+                return rev;
+            });
+        }
+        return random;
+    }
+
+    /**
+     * Return the list of wineries (name) that are inside Social Network
+     * @return rev: list of wineris
+     */
+    public ArrayList<String> returnAllWinery() {
+        ArrayList<String> random;
+        try (Session session = driver.session()) {
+            random = session.readTransaction((TransactionWork<ArrayList<String>>) tx -> {
+                Result result = tx.run("MATCH (p:Page) RETURN p.country, p.wineryName as winery");
+
+                ArrayList<String> rev = new ArrayList<>();
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    rev.add(r.get("winery").asString() + "\n");
+                }
+                return rev;
             });
         }
         return random;

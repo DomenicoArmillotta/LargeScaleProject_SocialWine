@@ -266,7 +266,11 @@ public class Crud_mongo {
         MongoCursor<Document> cursor = collection.find().iterator();
         while (cursor.hasNext()){
             Document temp_review_doc = cursor.next();
-            String points = temp_review_doc.getString("points");
+            Object points = temp_review_doc.get("points");
+            if (points instanceof String)
+                points = temp_review_doc.getString("points");
+            else
+                points = temp_review_doc.getInteger("points");
             //System.out.println(points);
             String title = temp_review_doc.getString("title");
             String description = temp_review_doc.getString("description");

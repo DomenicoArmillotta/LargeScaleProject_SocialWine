@@ -94,20 +94,24 @@ public class Menu {
                                         adv.topTwentyVarietiesAvgPrice();
                                         break;
                                     case "D":
-                                        adv.topFiveUsersHighestAvgScores();
+                                        try{
+                                            adv.topFiveUsersHighestAvgScores();
+                                        } catch (NumberFormatException e){
+                                            System.out.println("There is some problem with Points field!");
+                                        }
                                         break;
                                     case "E":
                                         String selected_user;
                                         Scanner inputName = new Scanner(System.in);
                                         System.out.println("Name of the User that you would select ");
-                                        selected_user = inputName.next();
+                                        selected_user = inputName.nextLine();
                                         graph.randomFollowByUser(selected_user);
                                         break;
                                     case "F":
                                         String selected_user2;
                                         Scanner inputName2 = new Scanner(System.in);
                                         System.out.println("Name of the User that you would select ");
-                                        selected_user2 = inputName2.next();
+                                        selected_user2 = inputName2.nextLine();
                                         graph.randomLikeByUser(selected_user2);
                                         break;
                                     case "G":
@@ -115,10 +119,10 @@ public class Menu {
                                         String taster_twitter_handle;
                                         Scanner inputTaster = new Scanner(System.in);
                                         System.out.println("Name of the taster that you want to add:");
-                                        taster_name = inputTaster.next();
+                                        taster_name = inputTaster.nextLine();
                                         Scanner inputTwitter = new Scanner(System.in);
                                         System.out.println("Twitter name of the taster that you want to add:");
-                                        taster_twitter_handle = inputTwitter.next();
+                                        taster_twitter_handle = inputTwitter.nextLine();
                                         mongo.addUser(taster_name, taster_twitter_handle);
                                         graph.addUser(taster_name);
                                         break;
@@ -135,18 +139,20 @@ public class Menu {
                                         String winery;
                                         Scanner inputWinery = new Scanner(System.in);
                                         System.out.println("Name of the winery that you want to add:");
-                                        winery = inputWinery.next();
+                                        winery = inputWinery.nextLine();
                                         Scanner inputCountry = new Scanner(System.in);
                                         System.out.println("Country of the winery that you want to add:");
-                                        country = inputCountry.next();
+                                        country = inputCountry.nextLine();
                                         mongo.addWinery(winery, country);
                                         graph.addPageWinery(winery, country);
                                         break;
                                     case "L":
                                         String win;
                                         Scanner inputWin = new Scanner(System.in);
+                                        System.out.println("Here the list of all wineries of the social:");
+                                        System.out.println(graph.returnAllWinery());
                                         System.out.println("Name of the winery that you want to drop:");
-                                        win = inputWin.next();
+                                        win = inputWin.nextLine();
                                         mongo.deleteWinery(win);
                                         graph.deletePage(win);
                                         break;
@@ -171,13 +177,14 @@ public class Menu {
                             System.out.println("You can do the following things:");
                             System.out.println("A" + " Follow your friend");
                             System.out.println("B" + " Unfollow a  friend");
-                            System.out.println("C" + " Put like on a Post");
-                            System.out.println("D" + " Delete like on a Post");
-                            System.out.println("E" + " Add a Post on the social");
-                            System.out.println("F" + " Suggested friends' list and follow one of them");
-                            System.out.println("G" + " Discover the top 5 trending Post on the social and put like on one of them");
-                            System.out.println("H" + " See all user followed and unfollow one of them");
-                            System.out.println("I" + " See all review from taster_name");
+                            System.out.println("C" + " Put like on a Post by Title");
+                            System.out.println("D" + " Put like on a Post by its Description (body)");
+                            System.out.println("E" + " Delete like on a Post");
+                            System.out.println("F" + " Add a Post on the social");
+                            System.out.println("G" + " Suggested friends' list and follow one of them");
+                            System.out.println("H" + " Discover the top 5 trending Post on the social and put like on one of them");
+                            System.out.println("I" + " See all user followed and unfollow one of them");
+                            System.out.println("L" + " See all review from taster_name");
                             System.out.println("X" + " Terminate program");
 
                             System.out.println("\nWhat you want to do?");
@@ -207,10 +214,18 @@ public class Menu {
                                     Scanner inputC = new Scanner(System.in);
                                     System.out.println("Which post you want to like? TitlePost: ");
                                     titlePostToPutLike = inputC.next();
-                                    graph.createRelationLike(titlePostToPutLike, myName);//CHECK
+                                    graph.createRelationLikeByTitle(titlePostToPutLike, myName);
                                     System.out.println("Done");
                                     break;
                                 case "D":
+                                    String descriptionPostToPutLike;
+                                    Scanner inputZX = new Scanner(System.in);
+                                    System.out.println("Which post you want to like? Description: ");
+                                    descriptionPostToPutLike = inputZX.next();
+                                    graph.createRelationLikeByDescription(descriptionPostToPutLike, myName);
+                                    System.out.println("Done");
+                                    break;
+                                case "E":
                                     String titlePostToDeleteLike;
                                     Scanner inputD = new Scanner(System.in);
                                     System.out.println("Which post you want to delete like? TitlePost: ");
@@ -218,7 +233,7 @@ public class Menu {
                                     graph.deleteRelationLike(titlePostToDeleteLike, myName);
                                     System.out.println("Done");
                                     break;
-                                case "E":
+                                case "F":
                                     System.out.println("Add post in the social network");
                                     System.out.println("Insert the title of the post");
                                     String titleofthepost;
@@ -248,7 +263,7 @@ public class Menu {
                                     graph.addPostComplete(myName, titleofthepost, descriptionofthepost, wineryName, wineryCountry);
                                     System.out.println("Done");
                                     break;
-                                case "F":
+                                case "G":
                                     System.out.println("This is the list of suggested user for you: ");
                                     advgraph.suggestedUserByFriends(myName);
                                     User[] users = advgraph.suggestedUserByFriends(myName).toArray(new User[advgraph.suggestedUserByFriends(myName).size()]);
@@ -273,8 +288,8 @@ public class Menu {
                                     } else throw new InsertedWrongNumberException("Inserted number doesn't exists!");
 
                                     break;
-                                case "G":
-                                    System.out.println("This is the list of the tranding post on SocialWine (title = num like");
+                                case "H":
+                                    System.out.println("This is the list of the tranding post on SocialWine (title = num like)");
                                     advgraph.FiveMostLikePost();
                                     int y = 1;
                                     HashMap<Integer, String> likeCounter = new HashMap<>();
@@ -293,7 +308,7 @@ public class Menu {
                                         if (num <= likeCounter.size()){
                                             if (likeCounter.containsKey(num)){
                                                 String post = likeCounter.get(num);
-                                                graph.createRelationLike(String.valueOf(post),myName);
+                                                graph.createRelationLikeByTitle(String.valueOf(post),myName);
                                             }
                                         } else throw new InsertedWrongNumberException("Inserted number doesn't exists!");
                                     } catch (InsertedWrongNumberException exc){
@@ -302,7 +317,7 @@ public class Menu {
 
 
                             break;
-                                case "H":
+                                case "I":
                                     graph.allFollowedUserByTaster_name(myName);
                                     User[] allus = graph.allFollowedUserByTaster_name(myName).toArray(new User[graph.allFollowedUserByTaster_name(myName).size()]);
                                     ArrayList<User> allusarr = new ArrayList<>(Arrays.asList(allus));
@@ -325,7 +340,12 @@ public class Menu {
                                         }
                                     } else throw new InsertedWrongNumberException("Inserted number doesn't exists!");
                                     break;
-                                case "I":
+                                case "L":
+                                    System.out.println("This is the list of all post that are in Social Wine (");
+                                    graph.returnAllReviews();
+                                    System.out.println(graph.returnAllReviews());
+                                    break;
+                                case "M":
                                     System.out.println("Insert the name of the taster that you would see reviews");
                                     String tasterName2;
                                     Scanner inputTasterName2 = new Scanner(System.in);

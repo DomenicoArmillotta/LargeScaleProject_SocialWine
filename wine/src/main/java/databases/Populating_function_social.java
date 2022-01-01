@@ -25,6 +25,7 @@ public class Populating_function_social {
         if (graph.countGraphNodes().get(0).length()==1){
             reviews = mongo.findAllReview();
             for (Review review : reviews) {
+                graph.addUser(review.getTaster_name());
                 graph.addPostComplete(review.getTaster_name(),review.getTitle(),review.getDescription(),review.getWinery(),review.getCountry());
             }
         } else throw new AlreadyPopulatedException("Graph is already populated!");
