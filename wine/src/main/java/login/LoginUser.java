@@ -46,11 +46,14 @@ public class LoginUser {
         String username = input1.readLine();
         byte[] byteArrrayUsername = username.getBytes();
 
+        if (username.equals("X"))
+            System.out.println("Exiting program...");
+        System.exit(0);
+
         Scanner input2 = new Scanner(System.in);
         System.out.println("Enter Password : ");
         String password = input2.next();
         byte[] byteArrrayPassword = password.getBytes();
-
 
         try {
             if (username.equals(getNameUser(username)) &&

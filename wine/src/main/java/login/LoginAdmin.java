@@ -22,9 +22,14 @@ public class LoginAdmin {
         System.out.println("Enter Username : ");
         String username = input1.next();
 
+        if (username.equals("X"))
+            System.out.println("Exiting program...");
+        System.exit(0);
+
         Scanner input2 = new Scanner(System.in);
         System.out.println("Enter Password : ");
         String password = input2.next();
+
 
         try {
             if (username.equals(getNameAdmin(username)) &&
