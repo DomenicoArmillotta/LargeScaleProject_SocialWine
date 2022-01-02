@@ -1,3 +1,5 @@
+import databases.Crud_graph;
+import exception.WrongInsertionException;
 import menu.Menu;
 import scraping.InitTh;
 
@@ -16,10 +18,13 @@ public class Main {
         try {
             Thread.sleep(180000);
             Menu cd = new Menu();
-            cd.MainMenu();
+            try {
+                cd.MainMenu();
+            } catch (WrongInsertionException wex){
+                wex.printStackTrace();
+            }
         } catch (InterruptedException e) {
             System.out.println("Thread is interrupted due to some error!");
         }
-        //comment line 11,12,15,16,17 to test without the intentional delay
     }
 }

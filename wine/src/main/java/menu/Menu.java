@@ -191,7 +191,7 @@ public class Menu {
                                 System.out.println("G" + " Suggested friends' list and follow one of them");
                                 System.out.println("H" + " Discover the top 5 trending Post on the social and put like on one of them");
                                 System.out.println("I" + " See all user followed and unfollow one of them");
-                                System.out.println("L" + " See all reviews in Social Wine");
+                                System.out.println("L" + " See all reviews in Social Wine by description");
                                 System.out.println("M" + " See all review from taster_name");
                                 System.out.println("X" + " Terminate program");
 
