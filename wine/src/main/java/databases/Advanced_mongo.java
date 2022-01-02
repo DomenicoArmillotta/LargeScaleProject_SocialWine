@@ -28,6 +28,8 @@ public class Advanced_mongo {
      * Top ten countries that own most wineries.
      */
     public void topTenCountriesWineries() {
+        //final com.mongodb.client.MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017,localhost:27018,localhost:27020/\" + \"?retryWrites=true&w=majority&readPreference=nearest&wtimeout=10000");
+
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("review");
@@ -46,6 +48,8 @@ public class Advanced_mongo {
      * Display to twenty wines' varietis according to thei mean price.
      */
     public void topTwentyVarietiesAvgPrice() {
+        //final com.mongodb.client.MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017,localhost:27018,localhost:27020/\" + \"?retryWrites=true&w=majority&readPreference=nearest&wtimeout=10000");
+
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("review");
@@ -64,6 +68,8 @@ public class Advanced_mongo {
      * Top five users with the highest aerage of them review scores.
      */
     public void topFiveUsersHighestAvgScores() throws NumberFormatException {
+        //final com.mongodb.client.MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017,localhost:27018,localhost:27020/\" + \"?retryWrites=true&w=majority&readPreference=nearest&wtimeout=10000");
+
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("review");
