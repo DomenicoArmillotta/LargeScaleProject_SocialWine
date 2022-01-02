@@ -1,7 +1,6 @@
 package databases;
 
 import beans.User;
-import exception.AlreadyPopulatedException;
 import org.neo4j.driver.*;
 
 import java.util.*;
