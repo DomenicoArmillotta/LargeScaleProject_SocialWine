@@ -59,5 +59,8 @@ Distruibuited :
 Link for Neo4j:
 https://github.com/andrealagna/FUTDataMining/tree/08253590b90f68caf3d70c00e288dedeb94394ac/FUTPersistence/src/main/java/neo4j
 
+User manual = https://docs.google.com/document/d/1qGGY2ld8lJal46kBZe_8i1bTXNwPNSvw_v76yK9VolY/edit?usp=sharing
+Reposrt = https://docs.google.com/document/d/1dvJHs1KYRrj2huomCd_QPCu4NnofHzKxxiLzIMnW674/edit?usp=sharing
+
 
 
