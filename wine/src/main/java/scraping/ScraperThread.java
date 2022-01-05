@@ -2,6 +2,10 @@ package scraping;
 
 import com.mongodb.*;
 
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 import databases.Crud_graph;
 import exception.ServerWinmagOufOfServiceException;
 import org.jsoup.Jsoup;
@@ -30,12 +34,21 @@ public class ScraperThread implements Runnable{
 
         Driver driver = GraphDatabase.driver( "bolt://localhost:7687", AuthTokens.basic( "neo4j", "0000" ) );
         MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
-        DB database = mongoClient.getDB("wine");
-        DBCollection collection = database.getCollection("review");
-        DBCollection usersCollection = database.getCollection("user_credentials");
+        //com.mongodb.client.MongoClient mongoClient = MongoClients.create("mongodb://localhost:27018,localhost:27019,localhost:27020/" + "?retryWrites=true&w=majority&wtimeout=10000");
+
+        //ConnectionString uri= new ConnectionString("mongodb://localhost:27018");
+     // MongoClientSettings mcs= MongoClientSettings.builder().applyConnectionString(uri).readPreference(ReadPreference.nearest()).retryWrites(true).writeConcern(WriteConcern.ACKNOWLEDGED).build();
+     // com.mongodb.client.MongoClient mongoClient=  MongoClients.create(mcs);
+
+
+        MongoDatabase database = mongoClient.getDatabase("wine");
+        MongoCollection<org.bson.Document> collection = database.getCollection("review");
+        MongoCollection<org.bson.Document> usersCollection = database.getCollection("user_credentials");
 
         Document doc = null;
         try {
+            //doc = Jsoup.connect("https://www.winemag.com/ratings/#").get();
+
             doc = Jsoup.connect("https://www.winemag.com/ratings/#").get();
         } catch (IOException e) {
             e.printStackTrace();
@@ -116,11 +129,11 @@ public class ScraperThread implements Runnable{
             obj1.add(new BasicDBObject("winery", map.get("Winery")));
             query.put("$and", obj1);
             //System.out.println(query.toString());
-            DBCursor cursor = collection.find(query);
-            if( (cursor.count()>= 1))
+            MongoCursor<org.bson.Document> cursor = collection.find(query).iterator();
+            if( (cursor.hasNext()))
             {
                 System.out.println("Not empty Cursor");
-                DBObject currentObject= cursor.next();
+                org.bson.Document currentObject= cursor.next();
 
 
                 BasicDBObject newDocument = new BasicDBObject();
@@ -131,14 +144,14 @@ public class ScraperThread implements Runnable{
                 BasicDBObject updateObject = new BasicDBObject();
                 updateObject.put("$set", newDocument);
 
-                collection.update(currentObject, updateObject);
+                collection.updateOne(currentObject, updateObject);
 
 
             }
             else
             {
                 System.out.println("empty Cursor");
-                DBObject person = new BasicDBObject("points", map.get("rating"))
+                org.bson.Document  person = new   org.bson.Document ("points", map.get("rating"))
                         .append("title", map.get("title"))
                         .append("description", map.get("description"))
                         .append("taster_name", map.get("taster_name"))
@@ -151,22 +164,22 @@ public class ScraperThread implements Runnable{
                         .append("province", map.get("Province"))
                         .append("country", map.get("Country"))
                         .append("winery", map.get("Winery"));
-                collection.insert(person);
+                collection.insertOne(person);
             }
             // add users to mongoDb database
             query = new BasicDBObject("Name", map.get("taster_name"));
             System.out.println(query.toString());
-             cursor = usersCollection.find(query);
-            if( (cursor.count()>= 1))
+             cursor = usersCollection.find(query).iterator();
+            if( (cursor.hasNext()))
             {
-                System.out.println("Adding to MongoDB");
+                System.out.println("Not added to MongoDB");
             }
             else
             {
-                DBObject user = new BasicDBObject("Name", map.get("taster_name"))
+                org.bson.Document user = new org.bson.Document("Name", map.get("taster_name"))
                         .append("Password", "abcd");
 
-                usersCollection.insert(user);
+                usersCollection.insertOne(user);
             }
 
 
