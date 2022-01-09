@@ -33,7 +33,8 @@ public class LoginUser {
      * This method it's called by the menu and user could insert his credentials.
      * If the credentials are correct the user can access to the social otherwise
      * will be rejected. If the credentials are correct, the name will be stored
-     * inside Level DB (Key Value Database).
+     * inside Level DB (Key Value Database) becouse is used in the menu for not reinser each time
+     * the name of the user.
      * @return str: the user's name taken from Level DB;
      * @return null: if the user's credentials are incorrect;
      */

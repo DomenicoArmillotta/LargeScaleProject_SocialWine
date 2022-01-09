@@ -21,7 +21,7 @@ import static com.mongodb.client.model.Filters.*;
 public class Crud_mongo {
 
     /**
-     * Create a new review inside review collection.
+     * Create a new review inside review collection taking from parameters and insert it in the document
      * @param points: the score that user give for a certain wine;
      * @param title: title of the reivew;
      * @param description: the body of the review;
@@ -123,6 +123,7 @@ public class Crud_mongo {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("review");
+        //use the function "DeleteONE" filtering by taster_twitter_handle
         collection.deleteOne(Filters.eq("taster_twitter_handle", ""+twitterName+""));
         System.out.println("User deleted successfully...(MongoDB).");
     }
@@ -137,6 +138,7 @@ public class Crud_mongo {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("review");
+        // use the function "DeleteONE" filtering by winery name
         collection.deleteOne(Filters.eq("winery", ""+winery+""));
         System.out.println("Winery deleted successfully... (MongoDB).");
     }
@@ -151,7 +153,9 @@ public class Crud_mongo {
 
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("wine");
+        //we select collection review
         MongoCollection<Document> collection = database.getCollection("review");
+        //retrieve all winery review
         Bson query = eq("winery" , "" + winery + "");
         try{
             MongoCursor<Document> cursor = collection.find(query).iterator();
@@ -176,6 +180,7 @@ public class Crud_mongo {
         MongoCollection<Document> collection = database.getCollection("review");
         try {
             Bson query = eq("taster_name" , "" +  taster_name + "");
+            //used deleteMany becouse one user could write a lot of reviews
             DeleteResult deleteResult = collection.deleteMany(query);
             System.out.println("Document dropped successfully");
             System.out.println("Were dropped "  + deleteResult.getDeletedCount() + " (MongoDB).");

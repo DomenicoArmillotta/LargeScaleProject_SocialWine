@@ -413,8 +413,8 @@ public class Crud_graph implements AutoCloseable {
 
 
     /**
-     * Extract ten users randomly from the social network and add the follow relation between the users,
-     * given a tester name.
+     * Extract ten users randomly from the social network and add the follow relation between the users and the selected user
+     *
      *
      * @param selected_taster_name: user's name.
      */
@@ -489,7 +489,7 @@ public class Crud_graph implements AutoCloseable {
     }
 
     /**
-     * Return list of reviews that are in Social Netwrk but only the description (body)
+     * Return list of reviews that are in Social Network but only the description (body)
      * @return
      */
     public ArrayList<String> returnAllReviews() {

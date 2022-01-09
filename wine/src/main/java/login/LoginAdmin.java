@@ -47,7 +47,7 @@ public class LoginAdmin {
 
 
     /**
-     *Add the admin figure to the user_credentials collection with name and password
+     *Add the admin figure to the user_credentials collection with name and password "admin & root"
      */
     public void addAdmin() {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));

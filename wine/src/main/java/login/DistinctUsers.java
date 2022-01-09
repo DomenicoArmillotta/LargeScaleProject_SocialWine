@@ -8,6 +8,7 @@ import org.bson.types.ObjectId;
 
 /**
  * Class that works to store all the user credentials in a MongoDB collection
+ * Create a collection of user and password to simualate account of user and Admin, add the user if don't exist already
  */
 public class DistinctUsers {
 

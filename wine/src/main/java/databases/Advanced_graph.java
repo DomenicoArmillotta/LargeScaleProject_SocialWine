@@ -26,6 +26,7 @@ public class Advanced_graph implements AutoCloseable {
 
     /**
      * Suggest five users to given user, that are friend of friend that are not yet followed
+     * Dom--> Matt <--Giov ==> to Dom the friendship Giov is suggested
      * @param taster_name: user's name.
      * @return
      */
@@ -56,8 +57,8 @@ public class Advanced_graph implements AutoCloseable {
 
 
     /**
-     * Find the top five post on the social according to their like,
-     * in a descending order.
+     * Find the top five post on the social according to their number of like,
+     * in descending order.
      * @return likePost: list of post with their likes.
      */
     public HashMap<String,String> FiveMostLikePost(){

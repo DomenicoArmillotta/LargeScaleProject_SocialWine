@@ -48,7 +48,7 @@ public class ScraperThread implements Runnable{
         Document doc = null;
         try {
             //doc = Jsoup.connect("https://www.winemag.com/ratings/#").get();
-
+            //connection to the website
             doc = Jsoup.connect("https://www.winemag.com/ratings/#").get();
         } catch (IOException e) {
             e.printStackTrace();
