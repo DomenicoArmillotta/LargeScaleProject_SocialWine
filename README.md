@@ -1,4 +1,4 @@
-# SocialWine
+# SocialWine LARGE SCALE PROJECT
 
 Application:
 - [x] Scraper
