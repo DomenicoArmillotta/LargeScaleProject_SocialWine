@@ -28,52 +28,12 @@ public class Advanced_graph implements AutoCloseable {
     public void close() throws Exception {
         driver.close();
     }
-}
-
-
-
-
-
-
-/*
-    *//**
-     * Suggest five users to given user, that are friend of friend that are not yet followed
-     * Dom--> Matt <--Giov ==> to Dom the friendship Giov is suggested
-     * @param taster_name: user's name.
-     * @return
-     *//*
-    public HashSet<User> suggestedUserByFriends (final String taster_name) {
-        HashSet<User> suggestedUsers;
-        try (Session session = driver.session()) {
-            suggestedUsers = session.readTransaction((TransactionWork<HashSet<User>>) tx -> {
-                Result result = tx.run("MATCH p=(n:User{taster_name: $taster_name})-[:Follow]->(:User)<-[:Follow]-(u:User)\n" +
-                                "WHERE NOT EXISTS ((n)-[:Follow]-(u))\n" +
-                                "WITH u, rand() AS number\n" +
-                                "RETURN u.taster_name AS taster_name\n" +
-                                "ORDER BY number\n" +
-                                "LIMIT 5",
-                        parameters("taster_name", taster_name));
-                HashSet<User> users = new HashSet<>();
-                while (result.hasNext()) {
-                    Record r = result.next();
-                    User u = new User(r.get("taster_name").asString());
-                    users.add(u);
-                }
-                return users;
-            });
-        } catch (Exception e){
-            suggestedUsers = null;
-        }
-        return suggestedUsers;
-    }
-
-
-    *//**
+    /**
      * Find the top five post on the social according to their number of like,
      * in descending order.
      * @return likePost: list of post with their likes.
-     *//*
-    public HashMap<String,String> FiveMostLikePost(){
+     */
+    public HashMap<String,String> showFiveMostLikePost(){
         HashMap<String,String>  likePost;
         try (Session session = driver.session()) {
             likePost = session.readTransaction((TransactionWork<HashMap<String,String> >) tx -> {
@@ -84,7 +44,10 @@ public class Advanced_graph implements AutoCloseable {
                 HashMap<String,String>  likeResult = new HashMap<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    likeResult.put(r.get("titlePost").asString(), r.get("numLike").toString());
+                    System.out.print("title: ");
+                    System.out.print(r.get("titlePost").asString());
+                    System.out.print("num of like: ");
+                    System.out.print( r.get("numLike").toString());
                 }
                 System.out.println(likeResult);
                 return likeResult;
@@ -95,9 +58,39 @@ public class Advanced_graph implements AutoCloseable {
         return likePost;
     }
 
-    *//**
-     * Close the connection with Neo4J's DBMS.
-     * @throws Exception: if the connection is not closed successfully.
-     *//*
-        */
+    /**
+     * Suggest five users to given user, that are friend of friend that are not yet followed
+     * Dom--> Matt <--Giov ==> to Dom the friendship Giov is suggested
+     * @param taster_name: user's name.
+     * @return
+     */
+    public HashSet<User> showSuggestedUserByFriends (final String taster_name) {
+        HashSet<User> suggestedUsers;
+        try (Session session = driver.session()) {
+            suggestedUsers = session.readTransaction((TransactionWork<HashSet<User>>) tx -> {
+                Result result = tx.run("MATCH (n:User{taster_name: $taster_name})-[:Follow]->(:User)<-[:Follow]-(u:User)\n" +
+                                "WHERE NOT EXISTS ((n)-[:Follow]-(u))\n" +
+                                "WITH u, rand() AS number\n" +
+                                "RETURN u.taster_name AS taster_name , u.country as country\n" +
+                                "ORDER BY number\n" +
+                                "LIMIT 5",
+                        parameters("taster_name", taster_name));
+                HashSet<User> users = new HashSet<>();
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    User u = new User(r.get("taster_name").asString());
+                    users.add(u);
+                    System.out.print("name: ");
+                    System.out.print(r.get("taster_name" ).asString());
+                    System.out.print("country: ");
+                    System.out.println(r.get("country" ).asString());
+                }
+                return users;
+            });
+        } catch (Exception e){
+            suggestedUsers = null;
+        }
+        return suggestedUsers;
+    }
 
+}

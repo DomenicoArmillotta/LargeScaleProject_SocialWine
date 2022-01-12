@@ -13,7 +13,7 @@ public class Crud_graph implements AutoCloseable {
 
     //registerUser -- ok
     //banUserByUsername -- ok
-    //searchUserWithPrefix -- FARE
+    //searchUserWithPrefix -- DA TESTARE PROB SBAGLIATA
 
 
 
@@ -28,7 +28,7 @@ public class Crud_graph implements AutoCloseable {
     //deleteLikeByTitle -- ok
     //showAllReviews -- ok
 
-    //showReviewFriends -- FARE
+    //showReviewFriends -- ok
 
     //CREATED----------------
     //createRelationCreated -- ok
@@ -46,6 +46,7 @@ public class Crud_graph implements AutoCloseable {
 
     //operation must be closed at the end of each operation?
     //quando dobbiamo visualizzare le review degli utenti da dove li prendiamo? mongo db o neo4j? o il titolo da qui e poi mongo?
+    //quando facciamo le operazioni di mostrare le recensioni, le mostriamo da mongo o da neo4j?  --> secondo me su mongo perche abbiamo tutte le info, su neo4j abbiamo le info solo per creare le relazioni
 
 
 
@@ -108,10 +109,26 @@ public class Crud_graph implements AutoCloseable {
         }
     }
 
-    public void searchUserByPrefix() {
-        //MATCH (n:Person)
-        //WHERE n.name STARTS WITH 'Pet'
-        //RETURN n.name, n.age
+    public void searchUserByPrefix(final String prefixUsername) {
+        HashSet<User> suggestedUsers;
+        try (Session session = driver.session()) {
+            suggestedUsers = session.readTransaction((TransactionWork<HashSet<User>>) tx -> {
+                Result result = tx.run("MATCH (u:User)\n" +
+                                "WHERE  u.username STARTS WITH '$prefixUsername'\n" +
+                                "RETURN u.username AS username , u.country AS country \n",
+                        parameters("prefixUsername", prefixUsername ));
+                HashSet<User> users = new HashSet<>();
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    System.out.println("Nome ");
+                    System.out.println(r.get("username").asString());
+                    System.out.println("Country : ");
+                    System.out.println(r.get("country").asString());
+                }
+                return null;
+            });
+
+        }
 
     }
 
@@ -175,6 +192,32 @@ public class Crud_graph implements AutoCloseable {
             });
         }
     }
+
+    public void showReviewsFriends (final String myUsername , final String usernameFriend ) {
+        HashSet<Review> suggestedUsers;
+        try (Session session = driver.session()) {
+            suggestedUsers = session.readTransaction((TransactionWork<HashSet<Review>>) tx -> {
+                Result result = tx.run("MATCH (u:User{username: $myUsername}),(u1:User{username: $usernameFriend}) , (p:Post)\n" +
+                                "WHERE  EXISTS ((u)-[:Follow]-(u1))\n" +
+                                "WHERE  EXISTS ((u1)-[:Created]-(p))\n" +
+                                "RETURN p.title AS title , p.description AS description , p.rating AS rating\n",
+                        parameters("myUsername", myUsername ,"usernameFriend" , usernameFriend ));
+                HashSet<User> users = new HashSet<>();
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    System.out.println("Titolo della Review : ");
+                    System.out.println(r.get("title").asString());
+                    System.out.println("Descrizione della Review : ");
+                    System.out.println(r.get("description").asString());
+                    System.out.println("Rating della Review : ");
+                    System.out.println(r.get("rating").asString());
+                }
+                return null;
+            });
+
+    }
+
+}
 
 
 
@@ -311,27 +354,6 @@ public class Crud_graph implements AutoCloseable {
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
