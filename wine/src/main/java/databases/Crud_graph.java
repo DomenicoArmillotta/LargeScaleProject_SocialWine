@@ -33,12 +33,36 @@ public class Crud_graph implements AutoCloseable {
     public void close() throws Exception {
         driver.close();
     }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Create a new user.
      *
      * @param taster_name: user'name.
-     */
+     *//*
     public void addUser(final String taster_name) {
         try (Session session = driver.session()) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -50,7 +74,7 @@ public class Crud_graph implements AutoCloseable {
         }
     }
 
-    /**
+    *//**
      * Add a post on graph adding the relations "created by" (user-post) and "belong" (post-winery).
      *
      * @param taster_name: user's name;
@@ -58,7 +82,7 @@ public class Crud_graph implements AutoCloseable {
      * @param description: review's body;
      * @param wineryName:  winery's name;
      * @param country:     winery's country.
-     */
+     *//*
     public void addPostComplete(final String taster_name, final String titlePost, final String description, final String wineryName, final String country) {
         addPost(titlePost, description);
         createRelationBelong(titlePost, wineryName);
@@ -69,12 +93,12 @@ public class Crud_graph implements AutoCloseable {
 
     }
 
-    /**
+    *//**
      * Add a post.
      *
      * @param titlePost:   review's title;
      * @param description: review's body.
-     */
+     *//*
     public void addPost(final String titlePost, final String description) {
         try (Session session = driver.session()) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -86,12 +110,12 @@ public class Crud_graph implements AutoCloseable {
         }
     }
 
-    /**
+    *//**
      * Add a winery.
      *
      * @param wineryName: winery's name;
      * @param country:    winery's country.
-     */
+     *//*
     public void addPageWinery(final String wineryName, final String country) {
         try (Session session = driver.session()) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
@@ -103,13 +127,13 @@ public class Crud_graph implements AutoCloseable {
         }
     }
 
-    /**
+    *//**
      * Create the relation "follow" between two user of the social, if that relation doesn't exist.
      *
      * @param taster_name1: user's name that want to follow someone;
      * @param taster_name2: user's name that will be followed from taster_name1.
      * @return result: indicates if the operation has been done successfully.
-     */
+     *//*
     public boolean createRelationFollow(final String taster_name1, final String taster_name2) {
         boolean result = true;
         try (Session session = driver.session()) {
@@ -127,13 +151,13 @@ public class Crud_graph implements AutoCloseable {
         return result;
     }
 
-    /**
+    *//**
      * Drop the relation "follow" between two user.
      *
      * @param taster_name1: user's name that want to drop relation "follow" w.r.t another user;
      * @param taster_name2: user's name that will not have anymore taster_name1's follow.
      * @return result: indicates if the operation has been done successfully.
-     */
+     *//*
     public boolean deleteRelationFollow(final String taster_name1, final String taster_name2) {
         boolean result = true;
         try (Session session = driver.session()) {
@@ -151,13 +175,13 @@ public class Crud_graph implements AutoCloseable {
     }
 
 
-    /**
+    *//**
      * Create the relation like between a user and a post taking in consideration title post.
      *
      * @param titlePost:   review's title;
      * @param taster_name: user's name;
      * @return result: indicates if the operation has been done successfully.
-     */
+     *//*
     public boolean createRelationLikeByTitle(final String titlePost, final String taster_name) {
         boolean result = true;
         try (Session session = driver.session()) {
@@ -175,13 +199,13 @@ public class Crud_graph implements AutoCloseable {
         return result;
     }
 
-    /**
+    *//**
      * Create the relation like between a user and a post taking in consideration description post.
      *
      * @param descriptionPost: body of the post
      * @param taster_name: user's name;
      * @return result: indicates if the operation has been done successfully.
-     */
+     *//*
     public boolean createRelationLikeByDescription(final String descriptionPost, final String taster_name) {
         boolean result = true;
         try (Session session = driver.session()) {
@@ -198,13 +222,13 @@ public class Crud_graph implements AutoCloseable {
         }
         return result;
     }
-    /**
+    *//**
      * Delete the relation like between a review and a user.
      *
      * @param titlePost:   review's title;
      * @param taster_name: user's name;
      * @return result: indicates if the operation has been done successfully.
-     */
+     *//*
     public boolean deleteRelationLike(final String titlePost, final String taster_name) {
         boolean result = true;
         try (Session session = driver.session()) {
@@ -221,13 +245,13 @@ public class Crud_graph implements AutoCloseable {
         return result;
     }
 
-    /**
+    *//**
      * Create the relation created between a review and a user. (Who create the review).
      *
      * @param titlePost:   review's title;
      * @param taster_name: user's name;
      * @return result: indicates if the operation has been done successfully.
-     */
+     *//*
     public boolean createRelationCreated(final String titlePost, final String taster_name) {
         boolean result = true;
         try (Session session = driver.session()) {
@@ -245,13 +269,13 @@ public class Crud_graph implements AutoCloseable {
         return result;
     }
 
-    /**
+    *//**
      * Delete the relation created between a review and a user.
      *
      * @param titlePost:   review's title;
      * @param taster_name: user's name;
      * @return result: indicates if the operation has been done successfully.
-     */
+     *//*
     public boolean deleteRelationCreated(final String titlePost, final String taster_name) {
         boolean result = true;
         try (Session session = driver.session()) {
@@ -267,14 +291,14 @@ public class Crud_graph implements AutoCloseable {
         return result;
     }
 
-    /**
+    *//**
      * Create the relation belong between a review and a winery, to indicate to which winery
      * that review refers to.
      *
      * @param titlePost:  review's title;
      * @param wineryName: winery's name;
      * @return result: indicates if the operation has been done successfully.
-     */
+     *//*
     public boolean createRelationBelong(final String titlePost, final String wineryName) {
         boolean result = true;
         try (Session session = driver.session()) {
@@ -292,14 +316,14 @@ public class Crud_graph implements AutoCloseable {
     }
 
 
-    /**
+    *//**
      * Delete the relation belong between a review and a winery, to indicate to which winery
      * that review refers to.
      *
      * @param titlePost:  review's title;
      * @param wineryName: winery's name;
      * @return result: indicates if the operation has been done successfully.
-     */
+     *//*
     public boolean deleteRelationBelong(final String titlePost, final String wineryName) {
         boolean result = true;
         try (Session session = driver.session()) {
@@ -315,12 +339,12 @@ public class Crud_graph implements AutoCloseable {
         return result;
     }
 
-    /**
+    *//**
      * Delete an user from the social.
      *
      * @param taster_name: user's name to drop.
      * @return result: indicates if the operation has been done successfully.
-     */
+     *//*
     public boolean deleteUser(final String taster_name) {
         boolean result = true;
         try (Session session = driver.session()) {
@@ -338,12 +362,12 @@ public class Crud_graph implements AutoCloseable {
     }
 
 
-    /**
+    *//**
      * Delete a review from the social.
      *
      * @param titlePost: review to drop.
      * @return result: indicates if the operation has been done successfully.
-     */
+     *//*
     public boolean deletePost(final String titlePost) {
         boolean result = true;
         try (Session session = driver.session()) {
@@ -360,12 +384,12 @@ public class Crud_graph implements AutoCloseable {
         return result;
     }
 
-    /**
+    *//**
      * Delete a winary from the social.
      *
      * @param wineryName: winery to drop.
      * @return result: indicates if the operation has been done successfully.
-     */
+     *//*
     public boolean deletePage(final String wineryName) {
         boolean result = true;
         try (Session session = driver.session()) {
@@ -383,12 +407,12 @@ public class Crud_graph implements AutoCloseable {
     }
 
 
-    /**
+    *//**
      * Show all users that are followed by a given user of the social.
      *
      * @param taster_name: user's name.
      * @return followeUsers: list of users followed by taster_name.
-     */
+     *//*
     public HashSet<User> allFollowedUserByTaster_name(final String taster_name) {
         HashSet<User> followedUsers;
         try (Session session = driver.session()) {
@@ -412,12 +436,12 @@ public class Crud_graph implements AutoCloseable {
     }
 
 
-    /**
+    *//**
      * Extract ten users randomly from the social network and add the follow relation between the users and the selected user
      *
      *
      * @param selected_taster_name: user's name.
-     */
+     *//*
     public void randomFollowByUser(final String selected_taster_name) {
         try (Session session = driver.session()) {
             List<String> random = session.readTransaction((TransactionWork<List<String>>) tx -> {
@@ -441,12 +465,12 @@ public class Crud_graph implements AutoCloseable {
     }
 
 
-    /**
+    *//**
      * Extract ten post from the social network to put like given a
      * tester name.
      *
      * @param selected_taster_name: user's name.
-     */
+     *//*
     public void randomLikeByUser(final String selected_taster_name) {
         try (Session session = driver.session()) {
             List<String> random = session.readTransaction((TransactionWork<List<String>>) tx -> {
@@ -468,9 +492,9 @@ public class Crud_graph implements AutoCloseable {
     }
 
 
-    /**
+    *//**
      * Method that count the nodes in the Social
-     */
+     *//*
     public ArrayList<String> countGraphNodes() {
         ArrayList<String> random;
         try (Session session = driver.session()) {
@@ -488,10 +512,10 @@ public class Crud_graph implements AutoCloseable {
         return random;
     }
 
-    /**
+    *//**
      * Return list of reviews that are in Social Network but only the description (body)
      * @return
-     */
+     *//*
     public ArrayList<String> returnAllReviews() {
         ArrayList<String> random;
         try (Session session = driver.session()) {
@@ -509,10 +533,10 @@ public class Crud_graph implements AutoCloseable {
         return random;
     }
 
-    /**
+    *//**
      * Return the list of wineries (name) that are inside Social Network
      * @return rev: list of wineris
-     */
+     *//*
     public ArrayList<String> returnAllWinery() {
         ArrayList<String> random;
         try (Session session = driver.session()) {
@@ -528,5 +552,4 @@ public class Crud_graph implements AutoCloseable {
             });
         }
         return random;
-    }
-}
+    }*/

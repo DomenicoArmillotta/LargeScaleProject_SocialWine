@@ -15,21 +15,33 @@ public class Advanced_graph implements AutoCloseable {
 
     /**
      * Constructor that allows to start the connection with Neo4J.
-     * @param uri: address of Neo4J where the DB is on;
-     * @param user: user's name;
+     *
+     * @param uri:      address of Neo4J where the DB is on;
+     * @param user:     user's name;
      * @param password: DB's password;
      */
-    public Advanced_graph(String uri, String user, String password ) {
-        driver = GraphDatabase.driver( uri, AuthTokens.basic( user, password ) );
+    public Advanced_graph(String uri, String user, String password) {
+        driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
     }
 
+    @Override
+    public void close() throws Exception {
+        driver.close();
+    }
+}
 
-    /**
+
+
+
+
+
+/*
+    *//**
      * Suggest five users to given user, that are friend of friend that are not yet followed
      * Dom--> Matt <--Giov ==> to Dom the friendship Giov is suggested
      * @param taster_name: user's name.
      * @return
-     */
+     *//*
     public HashSet<User> suggestedUserByFriends (final String taster_name) {
         HashSet<User> suggestedUsers;
         try (Session session = driver.session()) {
@@ -56,11 +68,11 @@ public class Advanced_graph implements AutoCloseable {
     }
 
 
-    /**
+    *//**
      * Find the top five post on the social according to their number of like,
      * in descending order.
      * @return likePost: list of post with their likes.
-     */
+     *//*
     public HashMap<String,String> FiveMostLikePost(){
         HashMap<String,String>  likePost;
         try (Session session = driver.session()) {
@@ -83,12 +95,9 @@ public class Advanced_graph implements AutoCloseable {
         return likePost;
     }
 
-    /**
+    *//**
      * Close the connection with Neo4J's DBMS.
      * @throws Exception: if the connection is not closed successfully.
-     */
-        @Override
-    public void close() throws Exception {
-        driver.close();
-    }
-}
+     *//*
+        */
+

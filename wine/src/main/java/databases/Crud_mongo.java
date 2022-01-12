@@ -20,7 +20,36 @@ import static com.mongodb.client.model.Filters.*;
  */
 public class Crud_mongo {
 
-    /**
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   /* *//**
      * Create a new review inside review collection taking from parameters and insert it in the document
      * @param points: the score that user give for a certain wine;
      * @param title: title of the reivew;
@@ -35,7 +64,7 @@ public class Crud_mongo {
      * @param province: province's origin of the wine;
      * @param country: winery's origin country;
      * @param winery: name of the winery that produces the wine.
-     */
+     *//*
     public void createReview (String points , String title , String description , String taster_name , String taster_twitter_handle, int price , String designation, String variety , String region_1 , String region_2 , String province , String country , String winery   ) {
         //final com.mongodb.client.MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017,localhost:27018,localhost:27020/\" + \"?retryWrites=true&w=majority&readPreference=nearest&wtimeout=10000");
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
@@ -66,11 +95,11 @@ public class Crud_mongo {
         mongoClient.close();
     }
 
-    /**
+    *//**
      * Create a new user.
      * @param taster_name: user's name;
      * @param taster_twitter_handle: user's twitter nickname.
-     */
+     *//*
     public void addUser (String taster_name , String taster_twitter_handle) {
         //final com.mongodb.client.MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017,localhost:27018,localhost:27020/\" + \"?retryWrites=true&w=majority&readPreference=nearest&wtimeout=10000");
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
@@ -89,11 +118,11 @@ public class Crud_mongo {
         mongoClient.close();
     }
 
-    /**
+    *//**
      * Create a new winery.
      * @param winery: winery's name;
      * @param country: country's name of the winery.
-     */
+     *//*
     public void addWinery (String winery, String country) {
         final com.mongodb.client.MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017,localhost:27018,localhost:27020/\" + \"?retryWrites=true&w=majority&readPreference=nearest&wtimeout=10000");
 
@@ -113,10 +142,10 @@ public class Crud_mongo {
         mongoClient.close();
     }
 
-    /**
+    *//**
      * Delete an user.
      * @param twitterName: user's nickname to drop.
-     */
+     *//*
     public void deleteUser (String twitterName) {
         //final com.mongodb.client.MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017,localhost:27018,localhost:27020/\" + \"?retryWrites=true&w=majority&readPreference=nearest&wtimeout=10000");
 
@@ -128,10 +157,10 @@ public class Crud_mongo {
         System.out.println("User deleted successfully...(MongoDB).");
     }
 
-    /**
+    *//**
      * Delete a winery.
      * @param winery: winery's name to drop.
-     */
+     *//*
     public void deleteWinery (String winery) {
         //final com.mongodb.client.MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017,localhost:27018,localhost:27020/\" + \"?retryWrites=true&w=majority&readPreference=nearest&wtimeout=10000");
 
@@ -144,10 +173,10 @@ public class Crud_mongo {
     }
 
 
-    /**
+    *//**
      * Retrieve all the review that refers to a specific winery.
      * @param winery: winery's name.
-     */
+     *//*
     public  void findReviewByWinery (String winery){
         //final com.mongodb.client.MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017,localhost:27018,localhost:27020/\" + \"?retryWrites=true&w=majority&readPreference=nearest&wtimeout=10000");
 
@@ -168,10 +197,10 @@ public class Crud_mongo {
         mongoClient.close();
     }
 
-    /**
+    *//**
      * Delete all the reviews of a specific user.
      * @param taster_name: user's name.
-     */
+     *//*
     public void deleteReviewsByTaster_Name (String taster_name) {
         //final com.mongodb.client.MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017,localhost:27018,localhost:27020/\" + \"?retryWrites=true&w=majority&readPreference=nearest&wtimeout=10000");
 
@@ -191,11 +220,11 @@ public class Crud_mongo {
 
     }
 
-    /**
+    *//**
      * Update the price under a certain threshold.
      * @param selectOldPrice: price to update;
      * @param newPrice: new price.
-     */
+     *//*
     public void updateAllPrice (int selectOldPrice , int newPrice) {
         //final com.mongodb.client.MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017,localhost:27018,localhost:27020/\" + \"?retryWrites=true&w=majority&readPreference=nearest&wtimeout=10000");
 
@@ -215,11 +244,11 @@ public class Crud_mongo {
     }
 
 
-    /**
+    *//**
      * Find review from the _id and create a new review.
      * @param id: review's id;
      * @return: added review.
-     */
+     *//*
     public Review findReviewFromId (String id){
         //final com.mongodb.client.MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017,localhost:27018,localhost:27020/\" + \"?retryWrites=true&w=majority&readPreference=nearest&wtimeout=10000");
 
@@ -252,10 +281,10 @@ public class Crud_mongo {
         return review;
     }
 
-    /**
+    *//**
      * Show all the review made by a specific user.
      * @param taster_name: user's name.
-     */
+     *//*
     public void showReviewFromTaster_name (String taster_name){
         //final com.mongodb.client.MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017,localhost:27018,localhost:27020/\" + \"?retryWrites=true&w=majority&readPreference=nearest&wtimeout=10000");
 
@@ -276,10 +305,10 @@ public class Crud_mongo {
     }
 
 
-    /**
+    *//**
      * Find all the review stored in the review collection in MongoDB.
      * @return: All the review stored.
-     */
+     *//*
     public ArrayList<Review> findAllReview (){
         //final com.mongodb.client.MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017,localhost:27018,localhost:27020/\" + \"?retryWrites=true&w=majority&readPreference=nearest&wtimeout=10000");
 
@@ -319,9 +348,9 @@ public class Crud_mongo {
         mongoClient.close();
         return reviews;
     }
+*/
 
 
-}
 
 
 

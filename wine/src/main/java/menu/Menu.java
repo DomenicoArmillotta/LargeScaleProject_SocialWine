@@ -19,13 +19,27 @@ import java.util.regex.Pattern;
 public class Menu {
 
 
-    /**
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+    *//**
      * Here there are the two different menus that will appear with respect to if the
      * person that want to login ia a narmal user or an admin.
      * Here, also, are initialized all the other classes like LoginAdmin, LoginUser,
      * DistinctUser, Crud_mongo, Advanced_mongo, Crud_graph, Advanced_graph
      * @throws Exception
-     */
+     *//*
     public void MainMenu() throws Exception{
 
         LoginAdmin logAdm = new LoginAdmin();
@@ -351,7 +365,7 @@ public class Menu {
                                     case "L":
                                         System.out.println("This is the list of all post that are in Social Wine:");
                                         graph.returnAllReviews();
-                                        System.out.println(graph.returnAllReviews());
+                                        //System.out.println(graph.returnAllReviews());
                                         break;
                                     case "M":
                                         System.out.println("Insert the name of the taster that you would see reviews");
@@ -376,7 +390,9 @@ public class Menu {
             }
 
         }
-    }
+        }*/
+
+
 
     /**
      * Check if,given a string, its contains only digits and
@@ -385,12 +401,12 @@ public class Menu {
      * @return: boolean that gives true if string contains only number
      * otherwise false;
 
-     */
+     *//*
     private static boolean onlyDigits(String str){
         String regex = "[0-9]+";
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(str);
         return m.matches();
-    }
-}
+    }*/
+
 

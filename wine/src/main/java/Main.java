@@ -10,7 +10,22 @@ import scraping.InitTh;
  */
 public class Main {
     public static void main(String[] args)throws Exception  {
-        System.out.println("Program will start in 3 minutes from now");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        /*System.out.println("Program will start in 3 minutes from now");
         InitTh thread = new InitTh();
         System.out.println("Scraper in action:");
         thread.initThread();
@@ -25,6 +40,6 @@ public class Main {
             }
         } catch (InterruptedException e) {
             System.out.println("Thread is interrupted due to some error!");
-        }
+        }*/
     }
 }

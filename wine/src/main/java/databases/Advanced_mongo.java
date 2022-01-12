@@ -24,9 +24,45 @@ import static com.mongodb.client.model.Sorts.descending;
  */
 public class Advanced_mongo {
 
-    /**
-     * Top ten countries that own most wineries.
-     */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /*
     public void topTenCountriesWineries() {
         //final com.mongodb.client.MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017,localhost:27018,localhost:27020/\" + \"?retryWrites=true&w=majority&readPreference=nearest&wtimeout=10000");
         MongoClient mongoClient = MongoClients.create();
@@ -54,9 +90,7 @@ public class Advanced_mongo {
         results.forEach(doc -> System.out.println(doc.toJson()));
     }
 
-    /**
-     *  Display top-20 wines' varieties according to their mean price in descending order.
-     */
+
     public void topTwentyVarietiesAvgPrice() {
         //final com.mongodb.client.MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017,localhost:27018,localhost:27020/\" + \"?retryWrites=true&w=majority&readPreference=nearest&wtimeout=10000");
 
@@ -79,9 +113,7 @@ public class Advanced_mongo {
         results.forEach(doc -> System.out.println(doc.toJson()));
     }
 
-    /**
-     * Top five users with the highest average of them review scores.
-     */
+
     public void topFiveUsersHighestAvgScores() throws NumberFormatException {
         //final com.mongodb.client.MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017,localhost:27018,localhost:27020/\" + \"?retryWrites=true&w=majority&readPreference=nearest&wtimeout=10000");
 
@@ -119,5 +151,7 @@ public class Advanced_mongo {
         results.forEach(doc -> System.out.println(doc.toJson()));
     }
 
-}
+    */
+
+
 
