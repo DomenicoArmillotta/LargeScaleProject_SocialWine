@@ -1,7 +1,10 @@
+import beans.User;
 import databases.Crud_graph;
 import exception.WrongInsertionException;
 import menu.Menu;
 import scraping.InitTh;
+
+import java.util.HashSet;
 
 /**
  * In the main class is called the scraper that works before all programs.
@@ -10,6 +13,18 @@ import scraping.InitTh;
  */
 public class Main {
     public static void main(String[] args)throws Exception  {
+
+        Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
+        //graph.registerUser("dom","00","0","@bho","it","prova@gmail.com");
+        //graph.registerUser("giovanni","00","0","@bho","it","prova@gmail.com");
+        //graph.createRelationFollow("dom" , "giovanni");
+        //graph.registerUser("bob","00","0","@bho","it","prova@gmail.com");
+        //graph.createRelationFollow("dom" , "bob");
+        //graph.showFollowedUsers("dom");
+        //graph.addReview("titolo","descrizione","rating");
+        //graph.showAllReviews();
+        //graph.showAllUser();
+        graph.checkLoginByUsername("dom" , "00");
 
 
 
