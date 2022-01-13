@@ -46,46 +46,15 @@ public class Menu {
                         break;
                     //admin login
                     case 1:
-                        System.out.println("Please enter your username: ");
-                        Scanner scanLoginAdminUsername = new Scanner(System.in);
-                        String loginAdminName = scanLoginAdminUsername.nextLine();
-                        System.out.println("Please enter your password: ");
-                        Scanner scanLoginAdminPsw = new Scanner(System.in);
-                        String loginAdminPsw = scanLoginAdminPsw.nextLine();
-                        if(crud_graph.checkLoginByUsername(loginAdminName,loginAdminPsw,"1") == true){
-                            System.out.println("Caro Admin sei Entrato");
-                        }
+
                         break;
                     //user login
                     case 2:
-                        System.out.println("Please enter your username: ");
-                        Scanner scanLoginUserUsername = new Scanner(System.in);
-                        String loginUserName = scanLoginUserUsername.nextLine();
-                        System.out.println("Please enter your password: ");
-                        Scanner scanLoginUserPsw = new Scanner(System.in);
-                        String loginUserPsw = scanLoginUserPsw.nextLine();
-                        if(crud_graph.checkLoginByUsername(loginUserName,loginUserPsw,"0") == true){
-                            System.out.println("Caro User sei Entrato");
-                        }
+
                         break;
                     //user sign-up and add in neo4j database
                     case 3:
-                        System.out.println("Please enter your username: ");
-                        Scanner scanLoginName = new Scanner(System.in);
-                        String loginName = scanLoginName.nextLine();
-                        System.out.println("Please set your password: ");
-                        Scanner scanLoginPassword = new Scanner(System.in);
-                        String loginPassword = scanLoginPassword.nextLine();
-                        System.out.println("Please set your twitter tag: ");
-                        Scanner scanLoginTwitter = new Scanner(System.in);
-                        String loginTwitter = scanLoginTwitter.nextLine();
-                        System.out.println("Please set your country: ");
-                        Scanner scanLoginCountry = new Scanner(System.in);
-                        String loginCountry = scanLoginCountry.nextLine();
-                        System.out.println("Please set your email: ");
-                        Scanner scanLoginEmail = new Scanner(System.in);
-                        String loginEmail = scanLoginEmail.nextLine();
-                        crud_graph.registerUser(loginName,loginPassword,"0",loginTwitter,loginCountry,loginEmail);
+
                         break;
                 }
 

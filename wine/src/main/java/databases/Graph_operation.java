@@ -13,7 +13,60 @@ public class Graph_operation {
     Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
     Advanced_graph adv_graph = new Advanced_graph("bolt://localhost:7687", "neo4j", "0000");
 
+    public boolean adminLogin(){
+        boolean result =false;
+        System.out.println("Please enter your username: ");
+        Scanner scanLoginAdminUsername = new Scanner(System.in);
+        String loginAdminName = scanLoginAdminUsername.nextLine();
+        System.out.println("Please enter your password: ");
+        Scanner scanLoginAdminPsw = new Scanner(System.in);
+        String loginAdminPsw = scanLoginAdminPsw.nextLine();
+        if(graph.checkLoginByUsername(loginAdminName,loginAdminPsw,"1") == true){
+            System.out.println("Caro Admin sei Entrato");
+            result=true;
+        }else{
+            result=false;
+        }
+        return result;
+    }
 
+    public boolean userLogin(){
+        boolean result =false;
+        System.out.println("Please enter your username: ");
+        Scanner scanLoginUserUsername = new Scanner(System.in);
+        String loginUserName = scanLoginUserUsername.nextLine();
+        System.out.println("Please enter your password: ");
+        Scanner scanLoginUserPsw = new Scanner(System.in);
+        String loginUserPsw = scanLoginUserPsw.nextLine();
+        if(graph.checkLoginByUsername(loginUserName,loginUserPsw,"0") == true){
+            System.out.println("Caro User sei Entrato");
+            result=true;
+        }else{
+            result=false;
+        }
+        return result;
+    }
+
+
+    //tested
+    public void registerNewUser(){
+        System.out.println("Please enter your username: ");
+        Scanner scanLoginName = new Scanner(System.in);
+        String loginName = scanLoginName.nextLine();
+        System.out.println("Please set your password: ");
+        Scanner scanLoginPassword = new Scanner(System.in);
+        String loginPassword = scanLoginPassword.nextLine();
+        System.out.println("Please set your twitter tag: ");
+        Scanner scanLoginTwitter = new Scanner(System.in);
+        String loginTwitter = scanLoginTwitter.nextLine();
+        System.out.println("Please set your country: ");
+        Scanner scanLoginCountry = new Scanner(System.in);
+        String loginCountry = scanLoginCountry.nextLine();
+        System.out.println("Please set your email: ");
+        Scanner scanLoginEmail = new Scanner(System.in);
+        String loginEmail = scanLoginEmail.nextLine();
+        graph.registerUser(loginName,loginPassword,"0",loginTwitter,loginCountry,loginEmail);
+    }
     //work tested
     public void createCommentOnWine(final String username){
         System.out.println("Enter the name of the wine to comment");
