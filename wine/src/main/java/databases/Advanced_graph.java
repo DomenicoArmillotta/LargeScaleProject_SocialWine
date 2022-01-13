@@ -78,8 +78,8 @@ public class Advanced_graph implements AutoCloseable {
                 HashSet<User> users = new HashSet<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    User u = new User(r.get("taster_name").asString());
-                    users.add(u);
+                    //User u = new User(r.get("taster_name").asString());
+                    //users.add(u);
                     System.out.print("name: ");
                     System.out.print(r.get("taster_name" ).asString());
                     System.out.print("country: ");

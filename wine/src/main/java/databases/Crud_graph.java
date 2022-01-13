@@ -2,6 +2,7 @@ package databases;
 
 import beans.Review;
 import beans.User;
+import beans.Wine;
 import org.neo4j.driver.*;
 
 import java.util.*;
@@ -63,48 +64,70 @@ public class Crud_graph implements AutoCloseable {
         }
     }
 
-    public void showUserByUsername(final String username){
+    public User showUserByUsername(final String username){
+        User user;
         try (Session session = driver.session()) {
-            session.readTransaction((TransactionWork<HashSet<User>>) tx -> {
+            user = session.readTransaction((TransactionWork<User>) tx -> {
                 Result result = tx.run("MATCH (u:User{username: $username})\n" +
-                        "RETURN u.username AS username , u.country AS country , u.email AS email , u.twitter_taster_handle as twitter_taster_handle ",
-                        parameters("username" ,username ));
+                                "RETURN u.username AS username , u.country AS country , u.email AS email , u.twitter_taster_handle as twitter_taster_handle ",
+                        parameters("username", username));
+                User userToShow = null;
                 while (result.hasNext()) {
                     Record r = result.next();
-                    System.out.print("Nome utente: ");
-                    System.out.print(r.get("username").asString());
-                    System.out.print("  nazione: ");
-                    System.out.println(r.get("country").asString());
-                    System.out.print("  email: ");
-                    System.out.println(r.get("email").asString());
-                    System.out.print("  twitter_taster_handle: ");
-                    System.out.println(r.get("twitter_taster_handle").asString());
+                    userToShow = new User(r.get("username").asString(),"",r.get("country").asString() , r.get("email").asString() , r.get("twitter_taster_handle").asString());
                 }
-                return null;
+                return userToShow;
             });
+        }catch (Exception e){
+            user = null;
         }
-
-
-
-
+        return user;
     }
 
-    public void showAllUser() {
+    public ArrayList<User> showAllUser() {
+        ArrayList<User> usertoshow;
         try (Session session = driver.session()) {
-            session.readTransaction((TransactionWork<HashSet<User>>) tx -> {
+            usertoshow = session.readTransaction((TransactionWork<ArrayList<User>>) tx -> {
                 Result result = tx.run("MATCH (u:User)\n" +
                                 "RETURN u.username AS username , u.country AS country");
+                ArrayList<User> users = new ArrayList<User>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    System.out.print("Nome utente: ");
-                    System.out.print(r.get("username").asString());
-                    System.out.print("  nazione: ");
-                    System.out.println(r.get("country").asString());
+                    User u = new User(r.get("username").asString() , "","" ,"" ,"");
+                    users.add(u);
                 }
-                return null;
+                return users;
             });
+        }catch (Exception e){
+            usertoshow = null;
         }
+        return usertoshow;
     }
+
+    //show a list of followed user ----> don't work
+    public ArrayList<User> showFollowedUsers(final String username) {
+        ArrayList<User> arrayUser;
+        try (Session session = driver.session()) {
+            arrayUser= session.readTransaction((TransactionWork<ArrayList<User>>) tx -> {
+                Result result = tx.run("MATCH (u1:User{username: $username})-[:Follow]->(u2:User)\n" +
+                                "RETURN u2.username AS username , u2.country AS country , u2.twitter_taster_handle AS twitter_taster_handle , u2.country AS country , u2.email AS email",
+                                parameters("username", username));
+                ArrayList<User> usersOutput = new ArrayList<>();
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    System.out.println("name" +r.get("username").asString());
+                    User u = new User(r.get("username").asString(),null,r.get("twitter_taster_handle").asString(),r.get("country").asString() ,r.get("email").asString() );
+                    usersOutput.add(u);
+                    System.out.println("name" + u.getUsername());
+                }
+                return usersOutput;
+            });
+        } catch (Exception e){
+            arrayUser = null;
+        }
+        return arrayUser;
+    }
+
 
     public void searchUserByPrefix(final String prefixUsername) {
         HashSet<User> suggestedUsers;
@@ -153,9 +176,10 @@ public class Crud_graph implements AutoCloseable {
         }
     }
 
-    public void showAllWine (){
+    public HashSet<Wine> showAllWine (){
+        HashSet<Wine> winetoshow;
         try (Session session = driver.session()) {
-            session.readTransaction((TransactionWork<HashSet<User>>) tx -> {
+            winetoshow= session.readTransaction((TransactionWork<HashSet<Wine>>) tx -> {
                 Result result = tx.run("MATCH (w:Wine)\n" +
                         "RETURN w.wineName AS wineName ,w.designation AS designation , w.price AS price , w.province AS province , w.variety as variety , w.winery as winery   ");
                 while (result.hasNext()) {
@@ -175,7 +199,10 @@ public class Crud_graph implements AutoCloseable {
                 }
                 return null;
             });
+        }catch (Exception e){
+            winetoshow = null;
         }
+        return winetoshow;
     }
 
 
@@ -222,14 +249,15 @@ public class Crud_graph implements AutoCloseable {
 
 
     //broswe all review of social network
-    public void showAllCommentRelatedWineName(final String wineName) {
+    public HashSet<Review> showAllCommentRelatedWineName(final String wineName) {
+        HashSet<Review> commenttoshow;
         try (Session session = driver.session()) {
-            session.readTransaction((TransactionWork<HashSet<Review>>) tx -> {
+            commenttoshow=session.readTransaction((TransactionWork<HashSet<Review>>) tx -> {
                 Result result = tx.run("MATCH (p:Post) , (w:Wine{wineName: $wineName}) \n" +
                                 "WHERE  EXISTS ((p)-[:Related]->(w))\n" +
                                 "RETURN p.description as description , p.rating as rating",
                                  parameters("wineName",wineName));
-                System.out.println("These are all the comments : ");
+                System.out.println("▀▀▀▀▀▀▀▀▀▀▀▀▀These are all the comments of the : " + wineName +"▀▀▀▀▀▀▀▀▀▀");
                 while (result.hasNext()) {
                     Record r = result.next();
                     System.out.println(r.get("description").asString());
@@ -237,18 +265,23 @@ public class Crud_graph implements AutoCloseable {
                     System.out.println(r.get("rating").asString());
                     System.out.println("______________________________");
                 }
+                System.out.println("▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀");
                 return null;
             });
+        } catch (Exception e){
+            commenttoshow = null;
         }
+        return commenttoshow;
     }
 
-    public void showCommentsFriends (final String myUsername , final String usernameFriend ) {
-        HashSet<Review> suggestedUsers;
+    public HashSet<Review> showCommentsFriends (final String myUsername , final String usernameFriend ) {
+        HashSet<Review> commenttoshow;
         try (Session session = driver.session()) {
-            suggestedUsers = session.readTransaction((TransactionWork<HashSet<Review>>) tx -> {
-                Result result = tx.run("MATCH (u:User{username: $myUsername}),(u1:User{username: $usernameFriend}) , (p:Post)-[:Related]->(w:Wine)  \n" +
+            commenttoshow = session.readTransaction((TransactionWork<HashSet<Review>>) tx -> {
+                Result result = tx.run("MATCH (u:User{username: $myUsername}),(u1:User{username: $usernameFriend}) , (p:Post),(w:Wine)  \n" +
                                 "WHERE  EXISTS ((u)-[:Follow]-(u1))\n" +
                                 "WHERE  EXISTS ((u1)-[:Created]-(p))\n" +
+                                "WHERE  EXISTS ((p)-[:Related]-(w))\n" +
                                 "RETURN  p.description AS description , p.rating AS rating , w.wineName AS wineName \n",
                         parameters("myUsername", myUsername ,"usernameFriend" , usernameFriend ));
                 HashSet<User> users = new HashSet<>();
@@ -264,9 +297,10 @@ public class Crud_graph implements AutoCloseable {
                 }
                 return null;
             });
-
-    }
-
+        } catch (Exception e){
+            commenttoshow = null;
+        }
+        return commenttoshow;
 }
 
 
@@ -304,27 +338,6 @@ public class Crud_graph implements AutoCloseable {
         }
     }
 
-    //show a list of followed user
-    public void showFollowedUsers(final String username) {
-        try (Session session = driver.session()) {
-            session.readTransaction((TransactionWork<HashSet<User>>) tx -> {
-                Result result = tx.run("MATCH p=(n:User{username: $username})-[:Follow]->(u:User)\n" +
-                                "RETURN u.username AS username , u.country as country",
-                        parameters("username", username));
-                System.out.println("*********Followed user of "+ username +"**************");
-                while (result.hasNext()) {
-                    Record r = result.next();
-                    System.out.print("Username: ");
-                    System.out.println(r.get("username").asString());
-                    System.out.print("  country: ");
-                    System.out.println(r.get("country").asString());
-
-                }
-                System.out.println("******************************");
-                return null;
-            });
-        }
-    }
 
     //relation between user that create a new review and the review
     public boolean createRelationCreated(final String description, final String username) {
