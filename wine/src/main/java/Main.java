@@ -1,6 +1,6 @@
 import beans.User;
 import databases.Crud_graph;
-import databases.Graph_operation;
+import databases.DbOperations;
 import exception.WrongInsertionException;
 import menu.Menu;
 import scraping.InitTh;
@@ -16,7 +16,7 @@ public class Main {
     public static void main(String[] args)throws Exception  {
 
         Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
-        Graph_operation graph_operation = new Graph_operation();
+        DbOperations graph_operation = new DbOperations();
 
         //graph.showCommentsFriends("bill","adam");
         //graph_operation.showFollowedUserAndUnfollow("bob");
@@ -32,7 +32,7 @@ public class Main {
         //graph_operation.showAllUserAndFollow();
         //graph.showAllWine();
         //graph_operation.showAllWineAndWriteComment();
-        graph.showCommentsFriends("bob" , "adam");
+        //graph.showCommentsFriends("bob" , "adam");
 
 
 

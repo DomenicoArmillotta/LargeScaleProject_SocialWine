@@ -9,7 +9,7 @@ import scraping.InitTh;
 
 import java.util.*;
 
-public class Graph_operation {
+public class DbOperations {
     Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
     Advanced_graph adv_graph = new Advanced_graph("bolt://localhost:7687", "neo4j", "0000");
 

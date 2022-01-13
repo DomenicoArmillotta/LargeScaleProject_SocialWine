@@ -129,28 +129,6 @@ public class Crud_graph implements AutoCloseable {
     }
 
 
-    public void searchUserByPrefix(final String prefixUsername) {
-        HashSet<User> suggestedUsers;
-        try (Session session = driver.session()) {
-            suggestedUsers = session.readTransaction((TransactionWork<HashSet<User>>) tx -> {
-                Result result = tx.run("MATCH (u:User)\n" +
-                                "WHERE  u.username STARTS WITH '$prefixUsername'\n" +
-                                "RETURN u.username AS username , u.country AS country \n",
-                        parameters("prefixUsername", prefixUsername ));
-                HashSet<User> users = new HashSet<>();
-                while (result.hasNext()) {
-                    Record r = result.next();
-                    System.out.println("Nome ");
-                    System.out.println(r.get("username").asString());
-                    System.out.println("Country : ");
-                    System.out.println(r.get("country").asString());
-                }
-                return null;
-            });
-
-        }
-
-    }
 
     public void addWine(final String wineName, final String designation , final String price, final String province , final String variety , final String winery ){
         try (Session session = driver.session()) {
@@ -211,7 +189,7 @@ public class Crud_graph implements AutoCloseable {
     }
 
 
-    public void deleteCommentByComment(final String description) {
+    public void deleteCommentByDescription(final String description) {
         boolean result = true;
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
@@ -439,14 +417,6 @@ public class Crud_graph implements AutoCloseable {
             });
         }
     }
-
-
-
-
-
-
-
-
 
 
 
