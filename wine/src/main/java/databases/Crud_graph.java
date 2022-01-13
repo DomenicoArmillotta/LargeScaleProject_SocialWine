@@ -5,6 +5,8 @@ import beans.User;
 import org.neo4j.driver.*;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.neo4j.driver.Values.parameters;
 
@@ -15,7 +17,7 @@ public class Crud_graph implements AutoCloseable {
     //banUserByUsername -- ok
     //searchUserWithPrefix -- DA TESTARE PROB SBAGLIATA
 
-
+    //showUserByUsername -- ok
 
     //FOLLOW---------------
     //showAllUser  -- ok
@@ -39,17 +41,21 @@ public class Crud_graph implements AutoCloseable {
 
 
     //LOGIN----------------------
-    //checkLoginByUsername -- FARE
-
+    //checkLoginByUsername -- ok
 
 
 
     //operation must be closed at the end of each operation?
     //quando dobbiamo visualizzare le review degli utenti da dove li prendiamo? mongo db o neo4j? o il titolo da qui e poi mongo?
     //quando facciamo le operazioni di mostrare le recensioni, le mostriamo da mongo o da neo4j?  --> secondo me su mongo perche abbiamo tutte le info, su neo4j abbiamo le info solo per creare le relazioni
+    //per la visualizzazzione potremmo fare l'homepage con tutti i post
+    //ci possono essere più recensioni per vino
+    //non abbiamo una entità vino in graph?
 
 
-
+    //IDEA=
+    //graphdb = abbiamo user , post (? = si per mettere i like) , vini per creare le relazioni (? --> potrebbero non servire dato che non abbiamo queri che usano i vini in graph, ma le usano in mongo dato che abbiamo un nested li)
+    //quindi potrebbe essere corretto avere in graph solo user + post
 
     private final Driver driver;
 
@@ -92,11 +98,33 @@ public class Crud_graph implements AutoCloseable {
         }
     }
 
+    public void showUserByUsername(final String username){
+        try (Session session = driver.session()) {
+            session.readTransaction((TransactionWork<HashSet<User>>) tx -> {
+                Result result = tx.run("MATCH (u:User{username: $username})\n" +
+                        "RETURN u.username AS username , u.country AS country",
+                        parameters("username" ,username ));
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    System.out.print("Nome utente: ");
+                    System.out.print(r.get("username").asString());
+                    System.out.print("  nazione: ");
+                    System.out.println(r.get("country").asString());
+                }
+                return null;
+            });
+        }
+
+
+
+
+    }
+
     public void showAllUser() {
         try (Session session = driver.session()) {
             session.readTransaction((TransactionWork<HashSet<User>>) tx -> {
                 Result result = tx.run("MATCH (u:User)\n" +
-                                "RETURN u.username AS username , u.country as country");
+                                "RETURN u.username AS username , u.country AS country");
                 while (result.hasNext()) {
                     Record r = result.next();
                     System.out.print("Nome utente: ");
@@ -303,11 +331,32 @@ public class Crud_graph implements AutoCloseable {
 
     }
 
-    //return 1 if access granted, 0 if is not allow to enter ---> AGGIUSTARE
-    public int checkLoginByUsername (final String username , final String passwordLogin) {
-        int result = 0;
+    //return true if access granted, false if is not allow to enter , check also if you are admin or user
+    public boolean checkLoginByUsername (final String username , final String passwordLogin , final String adminFlag) {
+        AtomicBoolean check = new AtomicBoolean(false);
+        String password = null;
+        AtomicReference<String> prova = null;
+        try (Session session = driver.session()) {
 
-        return result;
+            password = session.readTransaction((TransactionWork<String>) tx -> {
+                Result result = tx.run("MATCH (u:User{username: $username})\n" +
+                                "RETURN u.password as password , u.adminFlag as adminFlag",
+                        parameters("username", username));
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    if(( r.get("password").asString()).equals(passwordLogin) ){
+                        if((r.get("adminFlag").asString()).equals(adminFlag))
+                        {
+                            check.set(true);
+                        }
+                    }
+                }
+                return String.valueOf(check);
+            });
+
+        }
+
+        return check.get();
     }
 
     public void putLikeByTitle(final String title, final String username) {

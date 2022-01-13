@@ -33,7 +33,7 @@ public class Advanced_graph implements AutoCloseable {
      * in descending order.
      * @return likePost: list of post with their likes.
      */
-    public HashMap<String,String> showFiveMostLikePost(){
+    public HashMap<String,String> showFiveMostLikeReview(){
         HashMap<String,String>  likePost;
         try (Session session = driver.session()) {
             likePost = session.readTransaction((TransactionWork<HashMap<String,String> >) tx -> {

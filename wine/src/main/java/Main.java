@@ -24,8 +24,10 @@ public class Main {
         //graph.addReview("titolo","descrizione","rating");
         //graph.showAllReviews();
         //graph.showAllUser();
-        graph.checkLoginByUsername("dom" , "00");
-
+        //boolean result = false;
+        //result = graph.checkLoginByUsername("dom" , "0045" , "0");
+        Menu menu = new Menu();
+        menu.MainMenu();
 
 
 
