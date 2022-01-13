@@ -63,7 +63,7 @@ public class Crud_graph implements AutoCloseable {
             });
         }
     }
-
+    //work
     public User showUserByUsername(final String username){
         User user;
         try (Session session = driver.session()) {
@@ -175,29 +175,21 @@ public class Crud_graph implements AutoCloseable {
             });
         }
     }
-    
-    public HashSet<Wine> showAllWine (){
-        HashSet<Wine> winetoshow;
+
+
+    public ArrayList<Wine> showAllWine (){
+        ArrayList<Wine> winetoshow;
         try (Session session = driver.session()) {
-            winetoshow= session.readTransaction((TransactionWork<HashSet<Wine>>) tx -> {
+            winetoshow= session.readTransaction((TransactionWork<ArrayList<Wine>>) tx -> {
                 Result result = tx.run("MATCH (w:Wine)\n" +
-                        "RETURN w.wineName AS wineName ,w.designation AS designation , w.price AS price , w.province AS province , w.variety as variety , w.winery as winery   ");
+                        "RETURN w.wineName AS wineName ,w.designation AS designation , w.price AS price , w.province AS province , w.variety as variety , w.winery as winery");
+                ArrayList<Wine> wines = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    System.out.print("wine Name: ");
-                    System.out.println(r.get("wineName").asString());
-                    System.out.print("  designation: ");
-                    System.out.println(r.get("designation").asString());
-                    System.out.print("  price: ");
-                    System.out.println(r.get("price").asString());
-                    System.out.print("  province: ");
-                    System.out.println(r.get("province").asString());
-                    System.out.print("  variety: ");
-                    System.out.println(r.get("variety").asString());
-                    System.out.print("  winery: ");
-                    System.out.println(r.get("winery").asString());
+                    Wine wine = new Wine(r.get("wineName").asString(),r.get("designation").asString(),r.get("price").asString(),r.get("province").asString(),r.get("variety").asString(),r.get("winery").asString());
+                    wines.add(wine);
                 }
-                return null;
+                return wines;
             });
         }catch (Exception e){
             winetoshow = null;
@@ -248,7 +240,7 @@ public class Crud_graph implements AutoCloseable {
     }
 
 
-    //broswe all review of social network
+    //broswe all review of social network --> work
     public ArrayList<Review> showAllCommentRelatedWineName(final String wineName) {
         ArrayList<Review> commenttoshow;
         try (Session session = driver.session()) {
@@ -277,11 +269,11 @@ public class Crud_graph implements AutoCloseable {
         try (Session session = driver.session()) {
             commenttoshow = session.readTransaction((TransactionWork<HashSet<Review>>) tx -> {
                 Result result = tx.run("MATCH (u:User{username: $myUsername}),(u1:User{username: $usernameFriend}) , (p:Post),(w:Wine)  \n" +
-                                "WHERE  EXISTS ((u)-[:Follow]-(u1))\n" +
-                                "WHERE  EXISTS ((u1)-[:Created]-(p))\n" +
-                                "WHERE  EXISTS ((p)-[:Related]-(w))\n" +
+                                "WHERE  EXISTS ((u)-[:Follow]->(u1))\n" +
+                                "WHERE  EXISTS ((u1)-[:Created]->(p))\n" +
+                                "WHERE  EXISTS ((p)-[:Related]->(w))\n" +
                                 "RETURN  p.description AS description , p.rating AS rating , w.wineName AS wineName \n",
-                        parameters("myUsername", myUsername ,"usernameFriend" , usernameFriend ));
+                                parameters("myUsername", myUsername ,"usernameFriend" , usernameFriend ));
                 HashSet<User> users = new HashSet<>();
                 while (result.hasNext()) {
                     Record r = result.next();

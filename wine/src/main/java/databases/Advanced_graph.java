@@ -1,4 +1,5 @@
 package databases;
+import beans.Review;
 import beans.User;
 import org.neo4j.driver.*;
 
@@ -33,21 +34,19 @@ public class Advanced_graph implements AutoCloseable {
      * in descending order.
      * @return likePost: list of post with their likes.
      */
-    public HashMap<String,String> showFiveMostLikeReview(){
-        HashMap<String,String>  likePost;
+    public ArrayList<Review> showTrendingComment(){
+        ArrayList<Review>  likePost;
         try (Session session = driver.session()) {
-            likePost = session.readTransaction((TransactionWork<HashMap<String,String> >) tx -> {
+            likePost = session.readTransaction((TransactionWork<ArrayList<Review> >) tx -> {
                 Result result = tx.run("MATCH (p:Post)-[r:Like]-(u:User)\n" +
-                        "RETURN p.titlePost AS titlePost, COUNT(r) AS numLike \n" +
+                        "RETURN p.description AS description, p.rating AS rating , COUNT(r) AS numLike \n" +
                         "ORDER BY numLike DESC\n" +
                         "LIMIT 5");
-                HashMap<String,String>  likeResult = new HashMap<>();
+                ArrayList<Review>  likeResult = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    System.out.print("title: ");
-                    System.out.print(r.get("titlePost").asString());
-                    System.out.print("num of like: ");
-                    System.out.print( r.get("numLike").toString());
+                    Review review = new Review(r.get("description").asString() ,r.get("rating").asString() );
+                    likeResult.add(review);
                 }
                 System.out.println(likeResult);
                 return likeResult;
@@ -58,32 +57,23 @@ public class Advanced_graph implements AutoCloseable {
         return likePost;
     }
 
-    /**
-     * Suggest five users to given user, that are friend of friend that are not yet followed
-     * Dom--> Matt <--Giov ==> to Dom the friendship Giov is suggested
-     * @param taster_name: user's name.
-     * @return
-     */
-    public HashSet<User> showSuggestedUserByFriends (final String taster_name) {
-        HashSet<User> suggestedUsers;
+
+    public ArrayList<User> showSuggestedUserByFriends (final String username) {
+        ArrayList<User> suggestedUsers;
         try (Session session = driver.session()) {
-            suggestedUsers = session.readTransaction((TransactionWork<HashSet<User>>) tx -> {
-                Result result = tx.run("MATCH (n:User{taster_name: $taster_name})-[:Follow]->(:User)<-[:Follow]-(u:User)\n" +
+            suggestedUsers = session.readTransaction((TransactionWork< ArrayList<User>>) tx -> {
+                Result result = tx.run("MATCH (n:User{username: $username})-[:Follow]->(:User)<-[:Follow]-(u:User)\n" +
                                 "WHERE NOT EXISTS ((n)-[:Follow]-(u))\n" +
                                 "WITH u, rand() AS number\n" +
-                                "RETURN u.taster_name AS taster_name , u.country as country\n" +
+                                "RETURN u.username AS username , u.country as country , u.twitter_taster_handle as twitter_taster_handle\n" +
                                 "ORDER BY number\n" +
                                 "LIMIT 5",
-                        parameters("taster_name", taster_name));
-                HashSet<User> users = new HashSet<>();
+                        parameters("username", username));
+                ArrayList<User> users = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    //User u = new User(r.get("taster_name").asString());
-                    //users.add(u);
-                    System.out.print("name: ");
-                    System.out.print(r.get("taster_name" ).asString());
-                    System.out.print("country: ");
-                    System.out.println(r.get("country" ).asString());
+                    User u = new User(r.get("username").asString() , "",r.get("twitter_taster_handle").asString() ,r.get("country").asString()  ,"");
+                    users.add(u);
                 }
                 return users;
             });
