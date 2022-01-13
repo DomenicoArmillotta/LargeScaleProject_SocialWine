@@ -26,9 +26,13 @@ public class Main {
         //graph_operation.showAllUser();
         //graph_operation.showFollowedUserAndUnfollow("bill");
         //graph_operation.showUserByUsername("bill");
-        graph_operation.showFollowedUserAndUnfollow("bob");
+        //graph_operation.showFollowedUserAndUnfollow("bob");
         //graph_operation.showCommentAndPutLike("wine1");
-
+        //graph_operation.showUserByUsernameAndFollow("bob");
+        //graph_operation.showAllUserAndFollow();
+        //graph.showAllWine();
+        //graph_operation.showAllWineAndWriteComment();
+        graph.showCommentsFriends("bob" , "adam");
 
 
 
