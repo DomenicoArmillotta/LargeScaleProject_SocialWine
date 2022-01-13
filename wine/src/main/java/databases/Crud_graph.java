@@ -129,6 +129,28 @@ public class Crud_graph implements AutoCloseable {
     }
 
 
+    public void searchUserByPrefix(final String prefixUsername) {
+        HashSet<User> suggestedUsers;
+        try (Session session = driver.session()) {
+            suggestedUsers = session.readTransaction((TransactionWork<HashSet<User>>) tx -> {
+                Result result = tx.run("MATCH (u:User)\n" +
+                                "WHERE  u.username STARTS WITH '$prefixUsername'\n" +
+                                "RETURN u.username AS username , u.country AS country \n",
+                        parameters("prefixUsername", prefixUsername ));
+                HashSet<User> users = new HashSet<>();
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    System.out.println("Nome ");
+                    System.out.println(r.get("username").asString());
+                    System.out.println("Country : ");
+                    System.out.println(r.get("country").asString());
+                }
+                return null;
+            });
+
+        }
+
+    }
 
     public void addWine(final String wineName, final String designation , final String price, final String province , final String variety , final String winery ){
         try (Session session = driver.session()) {
@@ -189,7 +211,7 @@ public class Crud_graph implements AutoCloseable {
     }
 
 
-    public void deleteCommentByDescription(final String description) {
+    public void deleteCommentByComment(final String description) {
         boolean result = true;
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
@@ -242,23 +264,28 @@ public class Crud_graph implements AutoCloseable {
         return commenttoshow;
     }
 
-    public ArrayList<Review> showCommentsFriends (final String myUsername , final String usernameFriend ) {
-        ArrayList<Review> commenttoshow;
+    public HashSet<Review> showCommentsFriends (final String myUsername , final String usernameFriend ) {
+        HashSet<Review> commenttoshow;
         try (Session session = driver.session()) {
-            commenttoshow = session.readTransaction(tx -> {
-                Result result = tx.run("MATCH (u:User{username: $myUsername}),(u1:User{username: $usernameFriend}),(p:Post),(w:Wine)  \n" +
-                                "WHERE  EXISTS ((u)-[:Follow]->(u1))\n" +
-                                "AND EXISTS ((u1)-[:Created]->(p))\n" +
-                                "AND EXISTS ((p)-[:Related]->(w))\n" +
-                                "RETURN  p.description AS description , p.rating AS rating\n",
+            commenttoshow = session.readTransaction((TransactionWork<HashSet<Review>>) tx -> {
+                Result result = tx.run("MATCH (u:User{username: $myUsername}),(u1:User{username: $usernameFriend}) , (p:Post),(w:Wine)  \n" +
+                                "WHERE  EXISTS ((u)-[:Follow]-(u1))\n" +
+                                "WHERE  EXISTS ((u1)-[:Created]->(p))\n" +
+                                "WHERE  EXISTS ((p)-[:Related]-(w))\n" +
+                                "RETURN  p.description AS description , p.rating AS rating , w.wineName AS wineName \n",
                         parameters("myUsername", myUsername ,"usernameFriend" , usernameFriend ));
-                ArrayList<Review> review = new ArrayList<>();
+                HashSet<User> users = new HashSet<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    Review rev = new Review(r.get("description").asString(), r.get("rating").asString());
-                    review.add(rev);
+                    System.out.print("Vino del commento : ");
+                    System.out.println(r.get("wineName").asString());
+                    System.out.println("Descrizione della Review : ");
+                    System.out.println(r.get("description").asString());
+                    System.out.print("Rating della Review : ");
+                    System.out.println(r.get("rating").asString());
+                    System.out.println("______________________________");
                 }
-                return review;
+                return null;
             });
         } catch (Exception e){
             commenttoshow = null;
@@ -417,6 +444,14 @@ public class Crud_graph implements AutoCloseable {
             });
         }
     }
+
+
+
+
+
+
+
+
 
 
 
