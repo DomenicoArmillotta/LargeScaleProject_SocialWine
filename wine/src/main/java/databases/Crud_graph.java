@@ -84,6 +84,7 @@ public class Crud_graph implements AutoCloseable {
         return user;
     }
 
+    //work
     public ArrayList<User> showAllUser() {
         ArrayList<User> usertoshow;
         try (Session session = driver.session()) {
@@ -106,11 +107,12 @@ public class Crud_graph implements AutoCloseable {
 
     //show a list of followed user ----> don't work
     public ArrayList<User> showFollowedUsers(final String username) {
-        ArrayList<User> arrayUser;
+        ArrayList<User> arrayUser = null;
         try (Session session = driver.session()) {
             arrayUser= session.readTransaction((TransactionWork<ArrayList<User>>) tx -> {
-                Result result = tx.run("MATCH (u1:User{username: $username})-[:Follow]->(u2:User)\n" +
-                                "RETURN u2.username AS username , u2.country AS country , u2.twitter_taster_handle AS twitter_taster_handle , u2.country AS country , u2.email AS email",
+                Result result = tx.run("MATCH (u1:User{username: $username}) , (u2:User)\n" +
+                                "WHERE  EXISTS ((u1)-[:Follow]->(u2))\n" +
+                                "RETURN u2.username AS username , u2.country AS country , u2.twitter_taster_handle AS twitter_taster_handle  , u2.email AS email",
                                 parameters("username", username));
                 ArrayList<User> usersOutput = new ArrayList<>();
                 while (result.hasNext()) {
@@ -118,12 +120,12 @@ public class Crud_graph implements AutoCloseable {
                     System.out.println("name" +r.get("username").asString());
                     User u = new User(r.get("username").asString(),null,r.get("twitter_taster_handle").asString(),r.get("country").asString() ,r.get("email").asString() );
                     usersOutput.add(u);
-                    System.out.println("name" + u.getUsername());
+                    System.out.println("name" + r.get("username").asString());
                 }
                 return usersOutput;
             });
         } catch (Exception e){
-            arrayUser = null;
+            
         }
         return arrayUser;
     }
@@ -249,24 +251,27 @@ public class Crud_graph implements AutoCloseable {
 
 
     //broswe all review of social network
-    public HashSet<Review> showAllCommentRelatedWineName(final String wineName) {
-        HashSet<Review> commenttoshow;
+    public ArrayList<Review> showAllCommentRelatedWineName(final String wineName) {
+        ArrayList<Review> commenttoshow;
         try (Session session = driver.session()) {
-            commenttoshow=session.readTransaction((TransactionWork<HashSet<Review>>) tx -> {
+            commenttoshow=session.readTransaction((TransactionWork<ArrayList<Review>>) tx -> {
                 Result result = tx.run("MATCH (p:Post) , (w:Wine{wineName: $wineName}) \n" +
                                 "WHERE  EXISTS ((p)-[:Related]->(w))\n" +
                                 "RETURN p.description as description , p.rating as rating",
                                  parameters("wineName",wineName));
-                System.out.println("▀▀▀▀▀▀▀▀▀▀▀▀▀These are all the comments of the : " + wineName +"▀▀▀▀▀▀▀▀▀▀");
+                //System.out.println("▀▀▀▀▀▀▀▀▀▀▀▀▀These are all the comments of the : " + wineName +"▀▀▀▀▀▀▀▀▀▀");
+                ArrayList<Review> commentOutput = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
+                    Review review = new Review(r.get("description").asString(),r.get("rating").asString());
+                    commentOutput.add(review);
                     System.out.println(r.get("description").asString());
                     System.out.print("Rating : ");
                     System.out.println(r.get("rating").asString());
                     System.out.println("______________________________");
                 }
                 System.out.println("▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀");
-                return null;
+                return commentOutput;
             });
         } catch (Exception e){
             commenttoshow = null;

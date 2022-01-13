@@ -1,4 +1,5 @@
 package databases;
+import beans.Review;
 import beans.User;
 import databases.Crud_graph;
 import exception.WrongInsertionException;
@@ -10,6 +11,7 @@ import java.util.*;
 public class Graph_operation {
     Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
 
+    //work tested
     public void createCommentOnWine(final String username){
         System.out.println("Enter the name of the wine to comment");
         Scanner scanWine = new Scanner(System.in);
@@ -49,6 +51,15 @@ public class Graph_operation {
     public void showUserByUsername(String username){
         User user = graph.showUserByUsername("username");
         System.out.println("name  = " + user.getUsername() +"email = " + user.getEmail() + "country" + user.getCountry());
+    }
+
+    public void showCommentAndPutLike(String wineName){
+        ArrayList<Review> reviews = new ArrayList<>(graph.showAllCommentRelatedWineName(wineName));
+        int i =0;
+        System.out.println("DENTRO FUNCT =  ");
+        for (i=0;i<reviews.size();i++){
+            System.out.println("rating = " + reviews.get(i).getRating());
+        }
     }
 
 

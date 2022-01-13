@@ -16,7 +16,7 @@ import org.bson.conversions.Bson;
 public class Crud_mongo {
 
     public void createWine(String title, String variety, String country, String province, int price, String taster_name, String points,
-                           String description, String taster_twitter_handle, String country_user, String e_address, Boolean admin) throws UserAlreadyPresentException {
+                           String description, String taster_twitter_handle, String country_user, String e_address, Boolean admin)  {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
