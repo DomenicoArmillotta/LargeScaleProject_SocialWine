@@ -272,28 +272,23 @@ public class Crud_graph implements AutoCloseable {
         return commenttoshow;
     }
 
-    public HashSet<Review> showCommentsFriends (final String myUsername , final String usernameFriend ) {
-        HashSet<Review> commenttoshow;
+    public ArrayList<Review> showCommentsFriends (final String myUsername , final String usernameFriend ) {
+        ArrayList<Review> commenttoshow;
         try (Session session = driver.session()) {
-            commenttoshow = session.readTransaction((TransactionWork<HashSet<Review>>) tx -> {
-                Result result = tx.run("MATCH (u:User{username: $myUsername}),(u1:User{username: $usernameFriend}) , (p:Post),(w:Wine)  \n" +
-                                "WHERE  EXISTS ((u)-[:Follow]-(u1))\n" +
-                                "WHERE  EXISTS ((u1)-[:Created]-(p))\n" +
-                                "WHERE  EXISTS ((p)-[:Related]-(w))\n" +
-                                "RETURN  p.description AS description , p.rating AS rating , w.wineName AS wineName \n",
+            commenttoshow = session.readTransaction(tx -> {
+                Result result = tx.run("MATCH (u:User{username: $myUsername}),(u1:User{username: $usernameFriend}),(p:Post),(w:Wine)  \n" +
+                                "WHERE  EXISTS ((u)-[:Follow]->(u1))\n" +
+                                "AND EXISTS ((u1)-[:Created]->(p))\n" +
+                                "AND EXISTS ((p)-[:Related]->(w))\n" +
+                                "RETURN  p.description AS description , p.rating AS rating\n",
                         parameters("myUsername", myUsername ,"usernameFriend" , usernameFriend ));
-                HashSet<User> users = new HashSet<>();
+                ArrayList<Review> review = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    System.out.print("Vino del commento : ");
-                    System.out.println(r.get("wineName").asString());
-                    System.out.println("Descrizione della Review : ");
-                    System.out.println(r.get("description").asString());
-                    System.out.print("Rating della Review : ");
-                    System.out.println(r.get("rating").asString());
-                    System.out.println("______________________________");
+                    Review rev = new Review(r.get("description").asString(), r.get("rating").asString());
+                    review.add(rev);
                 }
-                return null;
+                return review;
             });
         } catch (Exception e){
             commenttoshow = null;
