@@ -26,9 +26,8 @@ public class Main {
         //graph_operation.showAllUser();
         //graph_operation.showFollowedUserAndUnfollow("bill");
         //graph_operation.showUserByUsername("bill");
-        //graph.showFollowedUsers("bill");
-        //graph.showAllCommentRelatedWineName("wine1");
-        graph_operation.showCommentAndPutLike("wine1");
+        graph_operation.showFollowedUserAndUnfollow("bob");
+        //graph_operation.showCommentAndPutLike("wine1");
 
 
 

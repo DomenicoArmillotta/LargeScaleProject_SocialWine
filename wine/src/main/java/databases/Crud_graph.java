@@ -105,7 +105,7 @@ public class Crud_graph implements AutoCloseable {
         return usertoshow;
     }
 
-    //show a list of followed user ----> don't work
+    //show a list of followed user ---->  work
     public ArrayList<User> showFollowedUsers(final String username) {
         ArrayList<User> arrayUser = null;
         try (Session session = driver.session()) {
@@ -117,10 +117,8 @@ public class Crud_graph implements AutoCloseable {
                 ArrayList<User> usersOutput = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    System.out.println("name" +r.get("username").asString());
                     User u = new User(r.get("username").asString(),null,r.get("twitter_taster_handle").asString(),r.get("country").asString() ,r.get("email").asString() );
                     usersOutput.add(u);
-                    System.out.println("name" + r.get("username").asString());
                 }
                 return usersOutput;
             });
@@ -177,7 +175,7 @@ public class Crud_graph implements AutoCloseable {
             });
         }
     }
-
+    
     public HashSet<Wine> showAllWine (){
         HashSet<Wine> winetoshow;
         try (Session session = driver.session()) {
@@ -259,18 +257,13 @@ public class Crud_graph implements AutoCloseable {
                                 "WHERE  EXISTS ((p)-[:Related]->(w))\n" +
                                 "RETURN p.description as description , p.rating as rating",
                                  parameters("wineName",wineName));
-                //System.out.println("▀▀▀▀▀▀▀▀▀▀▀▀▀These are all the comments of the : " + wineName +"▀▀▀▀▀▀▀▀▀▀");
                 ArrayList<Review> commentOutput = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
                     Review review = new Review(r.get("description").asString(),r.get("rating").asString());
                     commentOutput.add(review);
-                    System.out.println(r.get("description").asString());
-                    System.out.print("Rating : ");
-                    System.out.println(r.get("rating").asString());
-                    System.out.println("______________________________");
+
                 }
-                System.out.println("▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀▀");
                 return commentOutput;
             });
         } catch (Exception e){

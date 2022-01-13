@@ -28,20 +28,20 @@ public class Graph_operation {
     }
 
     public void showFollowedUserAndUnfollow(String myUsername){
-        ArrayList<User> users = new ArrayList<>();
-        users = graph.showFollowedUsers(myUsername);
+        ArrayList<User> users = new ArrayList<>(graph.showFollowedUsers(myUsername));
         int i = 0;
+        System.out.println("==============All Followed User By Me============= ");
         for (i=0;i<users.size();i++){
-            System.out.println("nome = " + users.get(i).getUsername());
+            System.out.println("name = " + users.get(i).getUsername() + "   country = " + users.get(i).getCountry());
         }
+        System.out.println("===================================================== ");
 
 
     }
 
     public  void showAllUser()
     {
-        ArrayList<User> users = new ArrayList<>();
-        users = graph.showAllUser();
+        ArrayList<User> users = new ArrayList<>(graph.showAllUser());
         int i = 0;
         for (i=0;i<users.size();i++){
             System.out.println("nome = " + users.get(i).getUsername());
@@ -53,12 +53,14 @@ public class Graph_operation {
         System.out.println("name  = " + user.getUsername() +"email = " + user.getEmail() + "country" + user.getCountry());
     }
 
-    public void showCommentAndPutLike(String wineName){
+    public void showCommentRelatedWineAndPutLike(String wineName){
         ArrayList<Review> reviews = new ArrayList<>(graph.showAllCommentRelatedWineName(wineName));
         int i =0;
-        System.out.println("DENTRO FUNCT =  ");
+        System.out.println("=================Comment of "+wineName+"=======================" );
         for (i=0;i<reviews.size();i++){
+            System.out.println( reviews.get(i).getDescription());
             System.out.println("rating = " + reviews.get(i).getRating());
+            System.out.println("=======================================================" );
         }
     }
 
