@@ -1,38 +1,272 @@
 package databases;
 
+import beans.Review;
 import beans.User;
 import org.neo4j.driver.*;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.neo4j.driver.Values.parameters;
 
-/**
- * Contains all the crud operation that could be done on Neo4J.
- */
+
 public class Crud_graph implements AutoCloseable {
+
+    //operation must be closed at the end of each operation?
+    //quando visualizzo lo faccio interamente da neo4j
+
+
+
+    //IDEA=
+    //graphdb = abbiamo user , post (? = si per mettere i like) , vini per creare le relazioni (? --> potrebbero non servire dato che non abbiamo queri che usano i vini in graph, ma le usano in mongo dato che abbiamo un nested li)
+    //quindi potrebbe essere corretto avere in graph solo user + post
+
     private final Driver driver;
 
-    /**
-     * Constructor that allows to start the connection with Neo4J.
-     *
-     * @param uri:      address of Neo4J where the DB is on;
-     * @param user:     user's name;
-     * @param password: DB's password;
-     */
+
     public Crud_graph(String uri, String user, String password) {
         driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
     }
 
-    /**
-     * Close the connection with Neo4J's DBMS-
-     *
-     * @throws Exception: if the connection is not closed successfully.
-     */
+
     @Override
     public void close() throws Exception {
         driver.close();
     }
+
+    //all operation
+
+    //registered user
+    public void registerUser(final String username, final String password , final String adminFlag , final String twitter_taster_handle , final String country , final String email ) {
+        try (Session session = driver.session()) {
+            session.writeTransaction((TransactionWork<Void>) tx -> {
+                tx.run("MERGE (p:User {username: $username , password: $password , adminFlag: $adminFlag , twitter_taster_handle: $twitter_taster_handle , country: $country , email: $email   })",
+                        parameters("username", username , "password" , password , "adminFlag" , adminFlag , "twitter_taster_handle" , twitter_taster_handle , "country" , country , "email" , email ));
+                System.out.println("User added successfully (Neo4J)." + "\n");
+                return null;
+            });
+        }
+    }
+
+    //ban user by username, this function can be done by admin only
+    public void banUserByUsername(final String username) {
+        boolean result = true;
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH path=(u:User{username : $username})\n" +
+                                "DELETE u",
+                        parameters("username", username));
+                System.out.println("User drop successfully (Neo4J)." + "\n");
+                return null;
+            });
+        }
+    }
+
+    public void showUserByUsername(final String username){
+        try (Session session = driver.session()) {
+            session.readTransaction((TransactionWork<HashSet<User>>) tx -> {
+                Result result = tx.run("MATCH (u:User{username: $username})\n" +
+                        "RETURN u.username AS username , u.country AS country , u.email AS email , u.twitter_taster_handle as twitter_taster_handle ",
+                        parameters("username" ,username ));
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    System.out.print("Nome utente: ");
+                    System.out.print(r.get("username").asString());
+                    System.out.print("  nazione: ");
+                    System.out.println(r.get("country").asString());
+                    System.out.print("  email: ");
+                    System.out.println(r.get("email").asString());
+                    System.out.print("  twitter_taster_handle: ");
+                    System.out.println(r.get("twitter_taster_handle").asString());
+                }
+                return null;
+            });
+        }
+
+
+
+
+    }
+
+    public void showAllUser() {
+        try (Session session = driver.session()) {
+            session.readTransaction((TransactionWork<HashSet<User>>) tx -> {
+                Result result = tx.run("MATCH (u:User)\n" +
+                                "RETURN u.username AS username , u.country AS country");
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    System.out.print("Nome utente: ");
+                    System.out.print(r.get("username").asString());
+                    System.out.print("  nazione: ");
+                    System.out.println(r.get("country").asString());
+                }
+                return null;
+            });
+        }
+    }
+
+    public void searchUserByPrefix(final String prefixUsername) {
+        HashSet<User> suggestedUsers;
+        try (Session session = driver.session()) {
+            suggestedUsers = session.readTransaction((TransactionWork<HashSet<User>>) tx -> {
+                Result result = tx.run("MATCH (u:User)\n" +
+                                "WHERE  u.username STARTS WITH '$prefixUsername'\n" +
+                                "RETURN u.username AS username , u.country AS country \n",
+                        parameters("prefixUsername", prefixUsername ));
+                HashSet<User> users = new HashSet<>();
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    System.out.println("Nome ");
+                    System.out.println(r.get("username").asString());
+                    System.out.println("Country : ");
+                    System.out.println(r.get("country").asString());
+                }
+                return null;
+            });
+
+        }
+
+    }
+
+    public void addWine(final String wineName, final String designation , final String price, final String province , final String variety , final String winery ){
+        try (Session session = driver.session()) {
+            session.writeTransaction((TransactionWork<Void>) tx -> {
+                tx.run("MERGE (p:Wine {wineName: $wineName , designation: $designation , price: $price , province: $province ,  variety: $variety , winery: $winery  })",
+                        parameters("wineName",wineName,"designation",designation,"price",price , "province" ,province,"variety",variety , "winery",winery));
+                System.out.println("Wine added successfully (Neo4J)." + "\n");
+                return null;
+            });
+        }
+    }
+
+    public void deleteWineByName(final String wineName) {
+        boolean result = true;
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (u:Wine{wineName : $wineName})\n" +
+                                "DELETE u",
+                        parameters("wineName", wineName));
+                System.out.println("Wine drop successfully (Neo4J)." + "\n");
+                return null;
+            });
+        }
+    }
+
+    public void showAllWine (){
+        try (Session session = driver.session()) {
+            session.readTransaction((TransactionWork<HashSet<User>>) tx -> {
+                Result result = tx.run("MATCH (w:Wine)\n" +
+                        "RETURN w.wineName AS wineName ,w.designation AS designation , w.price AS price , w.province AS province , w.variety as variety , w.winery as winery   ");
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    System.out.print("wine Name: ");
+                    System.out.println(r.get("wineName").asString());
+                    System.out.print("  designation: ");
+                    System.out.println(r.get("designation").asString());
+                    System.out.print("  price: ");
+                    System.out.println(r.get("price").asString());
+                    System.out.print("  province: ");
+                    System.out.println(r.get("province").asString());
+                    System.out.print("  variety: ");
+                    System.out.println(r.get("variety").asString());
+                    System.out.print("  winery: ");
+                    System.out.println(r.get("winery").asString());
+                }
+                return null;
+            });
+        }
+    }
+
+
+
+    public void addComment(final String description , final String rating) {
+        try (Session session = driver.session()) {
+            session.writeTransaction((TransactionWork<Void>) tx -> {
+                tx.run("MERGE (p:Post {description: $description , rating: $rating })",
+                        parameters( "description", description , "rating" , rating));
+                System.out.println("comment added successfully (Neo4J)." + "\n");
+                return null;
+            });
+        }
+    }
+
+
+    public void deleteCommentByComment(final String description) {
+        boolean result = true;
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH path=(p:Post{description : $description})\n" +
+                                "DELETE p",
+                        parameters("description", description));
+                System.out.println("comment drop successfully (Neo4J)." + "\n");
+                return null;
+            });
+        }
+    }
+
+    //delete only own review by title and username
+    public void deleteOwnCommentByDescription(final String description , final String username) {
+        boolean result = true;
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (u:User{username : $username}), (p:Post{description: $description}) \n" +
+                                "WHERE  EXISTS ((u)-[:Created]->(p))\n" +
+                                "DELETE p",
+                        parameters("description", description , "username" , username));
+                System.out.println("Review drop successfully (Neo4J)." + "\n");
+                return null;
+            });
+        }
+    }
+
+
+    //broswe all review of social network
+    public void showAllCommentRelatedWineName(final String wineName) {
+        try (Session session = driver.session()) {
+            session.readTransaction((TransactionWork<HashSet<Review>>) tx -> {
+                Result result = tx.run("MATCH (p:Post) , (w:Wine{wineName: $wineName}) \n" +
+                                "WHERE  EXISTS ((p)-[:Related]->(w))\n" +
+                                "RETURN p.description as description , p.rating as rating",
+                                 parameters("wineName",wineName));
+                System.out.println("These are all the comments : ");
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    System.out.println(r.get("description").asString());
+                    System.out.print("Rating : ");
+                    System.out.println(r.get("rating").asString());
+                    System.out.println("______________________________");
+                }
+                return null;
+            });
+        }
+    }
+
+    public void showCommentsFriends (final String myUsername , final String usernameFriend ) {
+        HashSet<Review> suggestedUsers;
+        try (Session session = driver.session()) {
+            suggestedUsers = session.readTransaction((TransactionWork<HashSet<Review>>) tx -> {
+                Result result = tx.run("MATCH (u:User{username: $myUsername}),(u1:User{username: $usernameFriend}) , (p:Post)-[:Related]->(w:Wine)  \n" +
+                                "WHERE  EXISTS ((u)-[:Follow]-(u1))\n" +
+                                "WHERE  EXISTS ((u1)-[:Created]-(p))\n" +
+                                "RETURN  p.description AS description , p.rating AS rating , w.wineName AS wineName \n",
+                        parameters("myUsername", myUsername ,"usernameFriend" , usernameFriend ));
+                HashSet<User> users = new HashSet<>();
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    System.out.print("Vino del commento : ");
+                    System.out.println(r.get("wineName").asString());
+                    System.out.println("Descrizione della Review : ");
+                    System.out.println(r.get("description").asString());
+                    System.out.print("Rating della Review : ");
+                    System.out.println(r.get("rating").asString());
+                    System.out.println("______________________________");
+                }
+                return null;
+            });
+
+    }
+
 }
 
 
@@ -40,6 +274,173 @@ public class Crud_graph implements AutoCloseable {
 
 
 
+    //create relation follow for the use, and check if not exist
+    public void createRelationFollow(final String username1, final String username2) {
+        boolean result = true;
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (u:User{username: $username1}),(u1:User{username: $username2})\n" +
+                                "WHERE NOT EXISTS ((u)-[:Follow]->(u1))\n" +
+                                "CREATE (u)-[:Follow]->(u1)",
+                        parameters("username1", username1, "username2", username2));
+                System.out.println("Follow added successfully (Neo4J)." + "\n");
+                return null;
+            });
+        }
+    }
+
+    //delete relation followed
+    public void deleteRelationFollow(final String username1, final String username2) {
+        boolean result = true;
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH path=(u:User{username : $username1})-[f:Follow]-(u1:User{username : $username2})\n" +
+                                "DELETE f",
+                        parameters("username1", username1, "username2", username2));
+                System.out.println("Follow drop successfully (Neo4J)." + "\n");
+                return null;
+            });
+
+        }
+    }
+
+    //show a list of followed user
+    public void showFollowedUsers(final String username) {
+        try (Session session = driver.session()) {
+            session.readTransaction((TransactionWork<HashSet<User>>) tx -> {
+                Result result = tx.run("MATCH p=(n:User{username: $username})-[:Follow]->(u:User)\n" +
+                                "RETURN u.username AS username , u.country as country",
+                        parameters("username", username));
+                System.out.println("*********Followed user of "+ username +"**************");
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    System.out.print("Username: ");
+                    System.out.println(r.get("username").asString());
+                    System.out.print("  country: ");
+                    System.out.println(r.get("country").asString());
+
+                }
+                System.out.println("******************************");
+                return null;
+            });
+        }
+    }
+
+    //relation between user that create a new review and the review
+    public boolean createRelationCreated(final String description, final String username) {
+        boolean result = true;
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (u:User{username: $username}),(u1:Post{description: $description})\n" +
+                                "WHERE NOT EXISTS ((u)-[:Created]->(u1))\n" +
+                                "CREATE (u)-[:Created]->(u1)",
+                        parameters("description", description, "username", username));
+                return 1;
+
+            });
+        } catch (Exception e) {
+            result = false;
+        }
+        return result;
+    }
+
+
+    public void deleteRelationCreated(final String description, final String username) {
+        boolean result = true;
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH path=(u:User{username : $username})-[f:Created]-(p:Post{description : $description})\n" +
+                                "DELETE f",
+                        parameters("description", description, "username", username));
+                return null;
+            });
+        }
+
+    }
+
+    //return true if access granted, false if is not allow to enter , check also if you are admin or user
+    public boolean checkLoginByUsername (final String username , final String passwordLogin , final String adminFlag) {
+        AtomicBoolean check = new AtomicBoolean(false);
+        String password = null;
+        AtomicReference<String> prova = null;
+        try (Session session = driver.session()) {
+
+            password = session.readTransaction((TransactionWork<String>) tx -> {
+                Result result = tx.run("MATCH (u:User{username: $username})\n" +
+                                "RETURN u.password as password , u.adminFlag as adminFlag",
+                        parameters("username", username));
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    if(( r.get("password").asString()).equals(passwordLogin) ){
+                        if((r.get("adminFlag").asString()).equals(adminFlag))
+                        {
+                            check.set(true);
+                        }
+                    }
+                }
+                return String.valueOf(check);
+            });
+
+        }
+
+        return check.get();
+    }
+
+    public void putLikeByDescription(final String description, final String username) {
+        boolean result = true;
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (u:User{username: $username}),(p:Post{description: $description})\n" +
+                                "WHERE NOT EXISTS ((u)-[:Like]->(p))\n" +
+                                "CREATE (u)-[:Like]->(p)",
+                        parameters("description", description, "username", username));
+                System.out.println("Like reaction successfully inserted (Neo4J)." + "\n");
+                return null;
+            });
+        }
+    }
+
+
+    public void deleteLikeByDescription(final String description, final String username) {
+        boolean result = true;
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH path=(u:User{username : $username})-[f:Like]-(p:Post{description : $description})\n" +
+                                "DELETE f",
+                        parameters("description", description, "username", username));
+                System.out.println("Like drop successfully made it (Neo4J)." + "\n");
+                return null;
+            });
+        }
+    }
+
+    //relation with wine and comment
+    public void createRelationRelated(final String wineName, final String description) {
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (w:Wine{wineName: $wineName}),(p:Post{description: $description})\n" +
+                                "WHERE NOT EXISTS ((p)-[:Related]->(w))\n" +
+                                "CREATE (p)-[:Related]->(w)",
+                        parameters("wineName", wineName, "description", description));
+                System.out.println("Related added successfully (Neo4J)." + "\n");
+                return null;
+            });
+        }
+    }
+
+
+    public void deleteRelationRelated(final String description, final String wineName) {
+        boolean result = true;
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH path=(p:Post{description : $description})-[f:Related]-(w:Wine{wineName : $wineName})\n" +
+                                "DELETE f",
+                        parameters("description", description, "wineName", wineName));
+                System.out.println("Relation Related drop successfully made it (Neo4J)." + "\n");
+                return null;
+            });
+        }
+    }
 
 
 
@@ -52,9 +453,7 @@ public class Crud_graph implements AutoCloseable {
 
 
 
-
-
-
+}
 
 
 

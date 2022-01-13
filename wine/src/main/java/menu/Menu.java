@@ -17,8 +17,89 @@ import java.util.regex.Pattern;
  * The class contains the core of user/admin choice. From here the user could choice what hw wants to do
  */
 public class Menu {
+    public void MainMenu() throws Exception {
 
 
+        Crud_graph crud_graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
+        Advanced_graph adv_graph = new Advanced_graph("bolt://localhost:7687", "neo4j", "0000");
+        System.out.println("\n***SOCIAL WINE APPLICATION***\n");
+        while (true) {
+            System.out.println("\nWelcome! What do you want to do?");
+            System.out.println("1" + " Login Admin");
+            System.out.println("2" + " Login User");
+            System.out.println("3" + " Sign-up User");
+            System.out.println("0" + " Terminate program");
+            Scanner scanLogin = new Scanner(System.in);
+            String nextIntString = scanLogin.nextLine();
+            if (!onlyDigits(nextIntString)) {
+                throw new WrongInsertionException("You inserted a string not a number. Please try again!.");
+            } else {
+                int choice = Integer.parseInt(nextIntString);
+
+                switch (choice) {
+                    case 0:
+                        System.out.println("Exiting program...");
+                        System.exit(0);
+                        break;
+                    default:
+                        System.out.println("This is not a valid menu option... Please try again!");
+                        break;
+                    //admin login
+                    case 1:
+                        System.out.println("Please enter your username: ");
+                        Scanner scanLoginAdminUsername = new Scanner(System.in);
+                        String loginAdminName = scanLoginAdminUsername.nextLine();
+                        System.out.println("Please enter your password: ");
+                        Scanner scanLoginAdminPsw = new Scanner(System.in);
+                        String loginAdminPsw = scanLoginAdminPsw.nextLine();
+                        if(crud_graph.checkLoginByUsername(loginAdminName,loginAdminPsw,"1") == true){
+                            System.out.println("Caro Admin sei Entrato");
+                        }
+                        break;
+                    //user login
+                    case 2:
+                        System.out.println("Please enter your username: ");
+                        Scanner scanLoginUserUsername = new Scanner(System.in);
+                        String loginUserName = scanLoginUserUsername.nextLine();
+                        System.out.println("Please enter your password: ");
+                        Scanner scanLoginUserPsw = new Scanner(System.in);
+                        String loginUserPsw = scanLoginUserPsw.nextLine();
+                        if(crud_graph.checkLoginByUsername(loginUserName,loginUserPsw,"0") == true){
+                            System.out.println("Caro User sei Entrato");
+                        }
+                        break;
+                    //user sign-up and add in neo4j database
+                    case 3:
+                        System.out.println("Please enter your username: ");
+                        Scanner scanLoginName = new Scanner(System.in);
+                        String loginName = scanLoginName.nextLine();
+                        System.out.println("Please set your password: ");
+                        Scanner scanLoginPassword = new Scanner(System.in);
+                        String loginPassword = scanLoginPassword.nextLine();
+                        System.out.println("Please set your twitter tag: ");
+                        Scanner scanLoginTwitter = new Scanner(System.in);
+                        String loginTwitter = scanLoginTwitter.nextLine();
+                        System.out.println("Please set your country: ");
+                        Scanner scanLoginCountry = new Scanner(System.in);
+                        String loginCountry = scanLoginCountry.nextLine();
+                        System.out.println("Please set your email: ");
+                        Scanner scanLoginEmail = new Scanner(System.in);
+                        String loginEmail = scanLoginEmail.nextLine();
+                        crud_graph.registerUser(loginName,loginPassword,"0",loginTwitter,loginCountry,loginEmail);
+                        break;
+                }
+
+            }
+
+
+        }
+    }
+    private static boolean onlyDigits(String str){
+        String regex = "[0-9]+";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(str);
+        return m.matches();
+    }
 }
 
 

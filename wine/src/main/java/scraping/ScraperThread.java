@@ -187,8 +187,8 @@ public class ScraperThread implements Runnable{
             // add the new taster to the graph database
             Crud_graph crud = new Crud_graph("bolt://localhost:7687","neo4j","0000");
 
-                crud.addUser(map.get("taster_name"));
-                crud.addPostComplete(map.get("taster_name"),map.get("title"),map.get("description"),map.get("Winery"),map.get("Country"));
+                //crud.addUser(map.get("taster_name"));
+                //crud.addPostComplete(map.get("taster_name"),map.get("title"),map.get("description"),map.get("Winery"),map.get("Country"));
 
         }
 
