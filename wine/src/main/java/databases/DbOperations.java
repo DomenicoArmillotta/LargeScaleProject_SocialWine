@@ -184,6 +184,61 @@ public class DbOperations {
 
     }
 
+    public void showCommentFriendAndPutLike(String myUsername,String friendUsername){
+        ArrayList<Review> reviews = new ArrayList<>(graph.showCommentsFriends(myUsername,friendUsername));
+        int i =0;
+        System.out.println("=================Comment made by "+friendUsername+"=======================" );
+        for (i=0;i<reviews.size();i++){
+            System.out.println("Comment to select "+i+" :");
+            System.out.println( reviews.get(i).getDescription());
+            System.out.println("rating = " + reviews.get(i).getRating());
+            System.out.println("=======================================================" );
+        }
+        System.out.println("Select a comment to put like :");
+        Scanner scanSelect = new Scanner(System.in);
+        String selected = scanSelect.nextLine();
+        int selectedInt = Integer.parseInt(selected);
+        graph.putLikeByDescription(reviews.get(selectedInt).getDescription(),myUsername);
+    }
+
+
+    //puo essere parte della home
+    public void shoALlCommentMadebyFriendsAndPutLike(String myUsername){
+        ArrayList<Review> allReview = new ArrayList<>();
+        int k=0;
+        ArrayList<User> users = new ArrayList<>(graph.showFollowedUsers(myUsername));
+        int i =0;
+        for (i=0;i<users.size();i++){
+            ArrayList<Review> reviews = new ArrayList<>(graph.showCommentsFriends(myUsername,users.get(i).getUsername()));
+            System.out.println("============Comment made by "+users.get(i).getUsername()+"===================" );
+            int j;
+            for (j=0;j<reviews.size();j++){
+                System.out.println("Comment to select "+k+" :");
+                k++;
+                allReview.add(reviews.get(j));
+                System.out.println("comment made to the wine:  "+graph.findWineByDescription(reviews.get(j).getDescription()).get(0).getWineName());
+                System.out.println( reviews.get(j).getDescription());
+                System.out.println("rating = " + reviews.get(j).getRating());
+                System.out.println("like = "+ graph.countLikeByDescription(reviews.get(j).getDescription()));
+                System.out.println("=======================================================" );
+            }
+        }
+
+        System.out.println("Select a comment to put like :");
+        Scanner scanSelect = new Scanner(System.in);
+        String selected = scanSelect.nextLine();
+        int selectedInt = Integer.parseInt(selected);
+        graph.putLikeByDescription(allReview.get(selectedInt).getDescription(),myUsername);
+
+    }
+
+
+
+
+
+
+
+
     //tested DONE
     public void showSuggestedUserAndFollow(String myUsername){
         ArrayList<User> users = new ArrayList<>(adv_graph.showSuggestedUserByFriends(myUsername));

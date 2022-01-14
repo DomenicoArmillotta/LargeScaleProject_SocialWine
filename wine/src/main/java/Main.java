@@ -1,10 +1,12 @@
 import beans.User;
+import beans.Wine;
 import databases.Crud_graph;
 import databases.DbOperations;
 import exception.WrongInsertionException;
 import menu.Menu;
 import scraping.InitTh;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 
 /**
@@ -38,9 +40,14 @@ public class Main {
         //graph_operation.showCommentRelatedWineAndPutLike("bill","wine1");
         //graph_operation.showAllWineAndWriteComment("adam");
         //graph_operation.showSuggestedUserAndFollow("bill");
-        graph_operation.showTrendingCommentWithLikeAndPuttingLike("bob");
-
-
+        //graph_operation.showTrendingCommentWithLikeAndPuttingLike("bob");
+        //graph_operation.showCommentFriendAndPutLike("bob","bill");
+        //graph_operation.showFollowedUserAndUnfollow("bill");
+        //graph_operation.shoALlCommentMadebyFriendsAndPutLike("bill");
+        //graph.countLikeByDescription("vino buono");
+        //graph_operation.shoALlCommentMadebyFriendsAndPutLike("bill");
+        //graph.countLikeByDescription("vino buono");
+        graph_operation.shoALlCommentMadebyFriendsAndPutLike("adam");
 
 
 

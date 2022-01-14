@@ -264,28 +264,23 @@ public class Crud_graph implements AutoCloseable {
         return commenttoshow;
     }
 
-    public HashSet<Review> showCommentsFriends (final String myUsername , final String usernameFriend ) {
-        HashSet<Review> commenttoshow;
+    public ArrayList<Review> showCommentsFriends (final String myUsername , final String usernameFriend ) {
+        ArrayList<Review> commenttoshow;
         try (Session session = driver.session()) {
-            commenttoshow = session.readTransaction((TransactionWork<HashSet<Review>>) tx -> {
+            commenttoshow = session.readTransaction((TransactionWork<ArrayList<Review>>) tx -> {
                 Result result = tx.run("MATCH (u:User{username: $myUsername}),(u1:User{username: $usernameFriend}) , (p:Post),(w:Wine)  \n" +
                                 "WHERE  EXISTS ((u)-[:Follow]-(u1))\n" +
-                                "WHERE  EXISTS ((u1)-[:Created]->(p))\n" +
-                                "WHERE  EXISTS ((p)-[:Related]-(w))\n" +
+                                "AND  EXISTS ((u1)-[:Created]->(p))\n" +
+                                "AND  EXISTS ((p)-[:Related]-(w))\n" +
                                 "RETURN  p.description AS description , p.rating AS rating , w.wineName AS wineName \n",
                         parameters("myUsername", myUsername ,"usernameFriend" , usernameFriend ));
-                HashSet<User> users = new HashSet<>();
+                ArrayList<Review> reviews = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    System.out.print("Vino del commento : ");
-                    System.out.println(r.get("wineName").asString());
-                    System.out.println("Descrizione della Review : ");
-                    System.out.println(r.get("description").asString());
-                    System.out.print("Rating della Review : ");
-                    System.out.println(r.get("rating").asString());
-                    System.out.println("______________________________");
+                    Review review = new Review(r.get("description").asString(),r.get("rating").asString());
+                    reviews.add(review);
                 }
-                return null;
+                return reviews;
             });
         } catch (Exception e){
             commenttoshow = null;
@@ -443,6 +438,49 @@ public class Crud_graph implements AutoCloseable {
                 return null;
             });
         }
+    }
+
+    public Number countLikeByDescription(final String description){
+        Number nLike = null;
+
+        try (Session session = driver.session()) {
+            nLike = session.readTransaction((TransactionWork<Number>) tx -> {
+                Result result = tx.run("MATCH (u:User)-[r:Like]->(p:Post{description: $description})\n" +
+                                "RETURN  COUNT(r) AS numLike",
+                        parameters("description",description));
+                Number likeNumber = 0;
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    likeNumber = r.get("numLike").asNumber();
+                }
+                return likeNumber;
+            });
+        }catch (Exception e){
+            nLike = null;
+        }
+        return nLike;
+    }
+
+    public ArrayList<Wine> findWineByDescription(final String description){
+        ArrayList<Wine> winetoshow;
+        try (Session session = driver.session()) {
+            winetoshow= session.readTransaction((TransactionWork<ArrayList<Wine>>) tx -> {
+                Result result = tx.run("MATCH (p:Post{description: $description})-[r:Related]->(w:Wine)\n" +
+                        "RETURN w.wineName AS wineName ,w.designation AS designation , w.price AS price , w.province AS province , w.variety as variety , w.winery as winery",
+                        parameters("description",description));
+                ArrayList<Wine> wines = new ArrayList<>();
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    Wine wine = new Wine(r.get("wineName").asString(),r.get("designation").asString(),r.get("price").asString(),r.get("province").asString(),r.get("variety").asString(),r.get("winery").asString());
+                    wines.add(wine);
+                    String name = r.get("wineName").asString();
+                }
+                return wines;
+            });
+        }catch (Exception e){
+            winetoshow = null;
+        }
+        return winetoshow;
     }
 
 
