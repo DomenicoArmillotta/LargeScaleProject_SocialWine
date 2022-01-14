@@ -146,7 +146,7 @@ public class DbOperations {
     public void showUserByUsernameAndFollow(String myUsername, String username){
         User user = graph.showUserByUsername(username);
         if(user!=null) {
-            System.out.println("name  = " + user.getUsername() + "  email = " + user.getEmail() + "  country" + user.getCountry());
+            System.out.println("name: " + user.getUsername() + "\nemail: " + user.getEmail() + "\ncountry" + user.getCountry() +"\nFollowers:"+ graph.countFollowersByUsername(user.getUsername()));
             System.out.println("Do you want to follow? y/n");
             System.out.println("Select a user to follow :");
             Scanner scanSelect = new Scanner(System.in);
@@ -269,6 +269,12 @@ public class DbOperations {
                     System.out.println(reviews.get(j).getDescription());
                     System.out.println("rating = " + reviews.get(j).getRating());
                     System.out.println("like = " + graph.countLikeByDescription(reviews.get(j).getDescription()));
+                    if(graph.checkIfLikedByDescription(reviews.get(j).getDescription(),myUsername)==1)
+                    {
+                        System.out.println("Like = V");
+                    }else if(graph.checkIfLikedByDescription(reviews.get(j).getDescription(),myUsername)==0){
+                        System.out.println("Like = X");
+                    }
 
                 }
             }
@@ -300,6 +306,12 @@ public class DbOperations {
                 System.out.println("Like = " + graph.countLikeByDescription(trendingReviews.get(s).getDescription()));
                 System.out.println("made by:  = " + graph.findUserByDescription(trendingReviews.get(s).getDescription()).get(0).getUsername());
                 System.out.println("wine = " + graph.findWineByDescription(trendingReviews.get(s).getDescription()).get(0).getWineName() );
+                if(graph.checkIfLikedByDescription(trendingReviews.get(s).getDescription(),myUsername)==1)
+                {
+                    System.out.println("Like = V");
+                }else if(graph.checkIfLikedByDescription(trendingReviews.get(s).getDescription(),myUsername)==0){
+                    System.out.println("Like = X");
+                }
 
 
                 if(s!=(trendingReviews.size()-1)){
@@ -418,15 +430,26 @@ public class DbOperations {
                 System.out.println("rating = " + myReviews.get(k).getRating());
                 System.out.println("like = " + graph.countLikeByDescription(myReviews.get(k).getDescription()));
                 System.out.println("wine = " + graph.findWineByDescription(myReviews.get(k).getDescription()).get(0).getWineName() );
+                if(graph.checkIfLikedByDescription(myReviews.get(k).getDescription(),myUsername)==1)
+                {
+                    System.out.println("Like = V");
+                }else if(graph.checkIfLikedByDescription(myReviews.get(k).getDescription(),myUsername)==0){
+                    System.out.println("Like = X");
+                }
 
                 if (k != (myReviews.size() - 1)) {
                     System.out.println("------------------------------------------------");
                 }
             }
             System.out.println("=================================================="+"\n");
+        }else{
+            System.out.println("You dont have review");
+        }
+
             System.out.println("What do you want do?");
             System.out.println("1.  Unfollow a friends");
             System.out.println("2.  Delete one review");
+            System.out.println("3.  Delete account");
             Scanner scanSelection = new Scanner(System.in);
             String selection = scanSelection.nextLine();
             if(selection.equals("1")){
@@ -448,18 +471,19 @@ public class DbOperations {
 
                 } else {
                     int selectedReviewInt = Integer.parseInt(selectedReview);
-                    graph.deleteOwnCommentByDescription(myReviews.get(selectedReviewInt).getDescription(), myUsername);
+                    graph.deleteAllRelationLikeByDescription(myReviews.get(selectedReviewInt).getDescription());
+                    graph.deleteAllRelationRelatedByDescription(myReviews.get(selectedReviewInt).getDescription());
+                    graph.deleteAllRelationCreatedByDescription(myReviews.get(selectedReviewInt).getDescription());
+                    graph.deleteCommentByDescription(myReviews.get(selectedReviewInt).getDescription());
                 }
 
+            }else if (selection.equals("3")){
+                graph.deleteAllRelationFollow(myUsername);
+                //graph.deleteAllRelationFollowed(myUsername);
+                graph.deleteAllRelationLike(myUsername);
+                graph.deleteAllRelationCreated(myUsername);
+                graph.deleteUserByUsername(myUsername);
             }
-
-
-
-        }else{
-            System.out.println("You dont have review");
-        }
-
-
 
     }
 
@@ -521,6 +545,13 @@ public class DbOperations {
                     System.out.println("rating = " + reviews.get(j).getRating());
                     System.out.println("like = " + graph.countLikeByDescription(reviews.get(j).getDescription()));
                     System.out.println("made by:  = " + graph.findUserByDescription(reviews.get(j).getDescription()).get(0).getUsername());
+                    if(graph.checkIfLikedByDescription(reviews.get(j).getDescription(),myUsername)==1)
+                    {
+                        System.out.println("Like = V");
+                    }else if(graph.checkIfLikedByDescription(reviews.get(j).getDescription(),myUsername)==0){
+                        System.out.println("Like = X");
+                    }
+
                     if (j != (reviews.size() - 1)) {
                         System.out.println("------------------------------------------------");
                     }

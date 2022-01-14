@@ -253,28 +253,16 @@ public class Crud_graph implements AutoCloseable {
     }
 
 
-    public void deleteCommentByComment(final String description) {
-        boolean result = true;
-        try (Session session = driver.session()) {
-            session.writeTransaction(tx -> {
-                tx.run("MATCH path=(p:Post{description : $description})\n" +
-                                "DELETE p",
-                        parameters("description", description));
-                System.out.println("comment drop successfully (Neo4J)." + "\n");
-                return null;
-            });
-        }
-    }
+
 
     //delete only own review by title and username
-    public void deleteOwnCommentByDescription(final String description , final String username) {
+    public void deleteCommentByDescription(final String description ) {
         boolean result = true;
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
-                tx.run("MATCH (u:User{username : $username}), (p:Post{description: $description}) \n" +
-                                "WHERE  EXISTS ((u)-[:Created]->(p))\n" +
+                tx.run("MATCH (p:Post{description: $description}) \n" +
                                 "DELETE p",
-                        parameters("description", description , "username" , username));
+                        parameters("description", description ));
                 System.out.println("Review drop successfully (Neo4J)." + "\n");
                 return null;
             });
@@ -507,6 +495,113 @@ public class Crud_graph implements AutoCloseable {
         }
     }
 
+    public void deleteAllRelationLikeByDescription(final String description){
+        boolean result = true;
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (u:User)-[f:Like]->(p:Post{description : $description})\n" +
+                                "DELETE f",
+                        parameters("description", description));
+                System.out.println("Relation Related drop successfully made it (Neo4J)." + "\n");
+                return null;
+            });
+        }
+
+    }
+
+    public void deleteAllRelationRelatedByDescription(final String description){
+        boolean result = true;
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (p:Post{description : $description})-[f:Related]->(w:Wine)\n" +
+                                "DELETE f",
+                        parameters("description", description));
+                System.out.println("Relation Related drop successfully made it (Neo4J)." + "\n");
+                return null;
+            });
+        }
+
+    }
+    public void deleteAllRelationCreatedByDescription(final String description){
+        boolean result = true;
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (u:User)-[f:Created]->(p:Post{description : $description})\n" +
+                                "DELETE f",
+                        parameters("description", description));
+                System.out.println("Relation Related drop successfully made it (Neo4J)." + "\n");
+                return null;
+            });
+        }
+
+    }
+
+    public void deleteAllRelationFollow(final String username){
+        boolean result = true;
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (u:User{username: $username})<-[f:Follow]->(u:User)\n" +
+                                "DELETE f",
+                        parameters("username", username));
+                System.out.println("Relation follow -> drop successfully made it (Neo4J)." + "\n");
+                return null;
+            });
+        }
+    }
+    public void deleteAllRelationFollowed(final String username){
+        boolean result = true;
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (u:User{username: $username})<-[f:Follow]-(u:User)\n" +
+                                "DELETE f",
+                        parameters("username", username));
+                System.out.println("Relation follow <- drop successfully made it (Neo4J)." + "\n");
+                return null;
+            });
+        }
+    }
+    public void deleteAllRelationLike(final String username){
+        boolean result = true;
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (u:User{username: $username})-[f:Like]->(p:Post)\n" +
+                                "DELETE f",
+                        parameters("username", username));
+                System.out.println("Relation like  drop successfully made it (Neo4J)." + "\n");
+                return null;
+            });
+        }
+
+    }
+    public void deleteAllRelationCreated(final String username){
+        boolean result = true;
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (u:User{username: $username})-[f:Created]->(p:Post)\n" +
+                                "DELETE f",
+                        parameters("username", username));
+                System.out.println("Relation created  drop successfully made it (Neo4J)." + "\n");
+                return null;
+            });
+        }
+    }
+    public void deleteUserByUsername(final String username){
+        boolean result = true;
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (u:User{username: $username})\n" +
+                                "DELETE u",
+                        parameters("username", username));
+                System.out.println("Node user  drop successfully made it (Neo4J)." + "\n");
+                return null;
+            });
+        }
+    }
+
+
+
+
+
     public Number countLikeByDescription(final String description){
         Number nLike = null;
 
@@ -550,8 +645,28 @@ public class Crud_graph implements AutoCloseable {
     }
 
 
+    public int checkIfLikedByDescription(final String description , final String username){
+        Integer resultLike = 0;
+        try (Session session = driver.session()) {
+            resultLike= session.readTransaction((TransactionWork<Integer>) tx -> {
+                Result result = tx.run("MATCH (u:User{username: $username})-[Like]->(p:Post{description: $description})\n" +
+                                "RETURN u.username as username",
+                        parameters("description",description,"username",username));
+                Integer ifLike = 0;
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    if((r.get("username").asString()).equals(username)){
+                        ifLike=1;
+                    }
 
-
+                }
+                return ifLike;
+            });
+        }catch (Exception e){
+            resultLike = null;
+        }
+        return resultLike;
+    }
 
 
 
