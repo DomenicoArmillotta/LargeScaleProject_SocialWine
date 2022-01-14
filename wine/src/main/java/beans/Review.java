@@ -5,10 +5,10 @@ package beans;
  */
 public class Review {
     String description;
-    String rating;
+    Integer rating;
 
 
-    public Review(String description, String rating) {
+    public Review(String description, Integer rating) {
         this.description = description;
         this.rating = rating;
     }
@@ -21,11 +21,11 @@ public class Review {
         this.description = description;
     }
 
-    public String getRating() {
+    public Integer getRating() {
         return rating;
     }
 
-    public void setRating(String rating) {
+    public void setRating(Integer rating) {
         this.rating = rating;
     }
 }

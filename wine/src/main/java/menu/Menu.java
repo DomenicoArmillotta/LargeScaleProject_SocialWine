@@ -22,6 +22,7 @@ public class Menu {
 
         Crud_graph crud_graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
         Advanced_graph adv_graph = new Advanced_graph("bolt://localhost:7687", "neo4j", "0000");
+        DbOperations dbOperations = new DbOperations();
         System.out.println("\n***SOCIAL WINE APPLICATION***\n");
         while (true) {
             System.out.println("\nWelcome! What do you want to do?");
@@ -54,6 +55,8 @@ public class Menu {
                         break;
                     //user sign-up and add in neo4j database
                     case 3:
+
+
 
                         break;
                 }

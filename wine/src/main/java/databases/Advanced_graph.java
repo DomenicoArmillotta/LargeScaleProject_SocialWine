@@ -45,7 +45,8 @@ public class Advanced_graph implements AutoCloseable {
                 ArrayList<Review>  likeResult = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    Review review = new Review(r.get("description").asString() ,r.get("rating").asString() );
+                    int conversionRating = Integer.parseInt(r.get("rating").asString());
+                    Review review = new Review(r.get("description").asString() ,conversionRating );
                     likeResult.add(review);
                 }
                 System.out.println(likeResult);

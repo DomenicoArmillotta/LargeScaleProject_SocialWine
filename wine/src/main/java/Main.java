@@ -8,6 +8,7 @@ import scraping.InitTh;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Scanner;
 
 /**
  * In the main class is called the scraper that works before all programs.
@@ -35,24 +36,29 @@ public class Main {
         graph.createRelationFollow("bob","adam");
         graph.putLikeByDescription("vino buono","bill");
         graph.putLikeByDescription("vino medio","adam");*/
-        //graph_operation.showAllUserAndFollow("bill");
-        //graph_operation.showFollowedUserAndUnfollow("bill");
-        //graph_operation.showCommentRelatedWineAndPutLike("bill","wine1");
-        //graph_operation.showAllWineAndWriteComment("adam");
-        //graph_operation.showSuggestedUserAndFollow("bill");
-        //graph_operation.showTrendingCommentWithLikeAndPuttingLike("bob");
-        //graph_operation.showCommentFriendAndPutLike("bob","bill");
-        //graph_operation.showFollowedUserAndUnfollow("bill");
-        //graph_operation.shoALlCommentMadebyFriendsAndPutLike("bill");
-        //graph.countLikeByDescription("vino buono");
-        //graph_operation.shoALlCommentMadebyFriendsAndPutLike("bill");
-        //graph.countLikeByDescription("vino buono");
-        graph_operation.shoALlCommentMadebyFriendsAndPutLike("adam");
+        //graph_operation.showFollowedUserAndUnfollow("bob");
+        //graph_operation.showAllUserAndFollow("bob");
+        //graph_operation.showCommentRelatedWineAndPutLike("bob","wine1");
+        //graph_operation.showAllWineMenu("bob");
 
-
-
-
-
+        //graph_operation.shoALlCommentMadebyFriendsAndPutLike("bob");
+        System.out.println("==========BOB===============");
+        System.out.println("1" + " See wine menu");
+        System.out.println("2" + " Homepage");
+        System.out.println("3" + " MY PROFILE");
+        System.out.println("4" + " Suggested user section");
+        Scanner scanSelection = new Scanner(System.in);
+        String selection = scanSelection.nextLine();
+        if(selection.equals("1")){
+            graph_operation.showAllWineMenu("bob");
+        }else if (selection.equals("2")){
+            graph_operation.shoALlCommentMadebyFriendsAndPutLike("bob");
+        }else if(selection.equals("3")){
+            //non funziona quando elimino un post
+            graph_operation.showMyAccount("bob");
+        }else if(selection.equals("4")){
+            graph_operation.showSuggestedUserAndFollow("bob");
+        }
 
     }
 }

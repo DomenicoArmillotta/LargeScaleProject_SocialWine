@@ -176,6 +176,26 @@ public class Crud_graph implements AutoCloseable {
         }
     }
 
+    public ArrayList<Wine> showWineByName(final String wineName ){
+        ArrayList<Wine> winetoshow;
+        try (Session session = driver.session()) {
+            winetoshow= session.readTransaction((TransactionWork<ArrayList<Wine>>) tx -> {
+                Result result = tx.run("MATCH (w:Wine{wineName: $wineName})\n" +
+                        "RETURN w.wineName AS wineName ,w.designation AS designation , w.price AS price , w.province AS province , w.variety as variety , w.winery as winery");
+                ArrayList<Wine> wines = new ArrayList<>();
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    Wine wine = new Wine(r.get("wineName").asString(),r.get("designation").asString(),r.get("price").asString(),r.get("province").asString(),r.get("variety").asString(),r.get("winery").asString());
+                    wines.add(wine);
+                }
+                return wines;
+            });
+        }catch (Exception e){
+            winetoshow = null;
+        }
+        return winetoshow;
+    }
+
 
     public ArrayList<Wine> showAllWine (){
         ArrayList<Wine> winetoshow;
@@ -208,6 +228,28 @@ public class Crud_graph implements AutoCloseable {
                 return null;
             });
         }
+    }
+
+    public ArrayList<User> findUserByDescription(final String description){
+        ArrayList<User> arrayUser = null;
+        try (Session session = driver.session()) {
+            arrayUser= session.readTransaction((TransactionWork<ArrayList<User>>) tx -> {
+                Result result = tx.run("MATCH (u1:User) , (p:Post{description: $description})\n" +
+                                "WHERE  EXISTS ((u1)-[:Created]->(p))\n" +
+                                "RETURN u1.username AS username , u1.country AS country , u1.twitter_taster_handle AS twitter_taster_handle  , u1.email AS email",
+                        parameters("description", description));
+                ArrayList<User> users = new ArrayList<>();
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    User user = new User(r.get("username").asString(),null,r.get("twitter_taster_handle").asString(),r.get("country").asString() ,r.get("email").asString() );
+                    users.add(user);
+                }
+                return users;
+            });
+        } catch (Exception e){
+
+        }
+        return arrayUser;
     }
 
 
@@ -252,7 +294,8 @@ public class Crud_graph implements AutoCloseable {
                 ArrayList<Review> commentOutput = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    Review review = new Review(r.get("description").asString(),r.get("rating").asString());
+                    int convertedRating = Integer.parseInt(r.get("rating").asString());
+                    Review review = new Review(r.get("description").asString(),convertedRating);
                     commentOutput.add(review);
 
                 }
@@ -277,7 +320,8 @@ public class Crud_graph implements AutoCloseable {
                 ArrayList<Review> reviews = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    Review review = new Review(r.get("description").asString(),r.get("rating").asString());
+                    int convertedRating = Integer.parseInt(r.get("rating").asString());
+                    Review review = new Review(r.get("description").asString(),convertedRating);
                     reviews.add(review);
                 }
                 return reviews;
@@ -287,6 +331,29 @@ public class Crud_graph implements AutoCloseable {
         }
         return commenttoshow;
 }
+
+    public ArrayList<Review> showMyComment (final String myUsername ) {
+        ArrayList<Review> commenttoshow;
+        try (Session session = driver.session()) {
+            commenttoshow = session.readTransaction((TransactionWork<ArrayList<Review>>) tx -> {
+                Result result = tx.run("MATCH (u:User{username: $myUsername}), (p:Post),(w:Wine)  \n" +
+                                "WHERE  EXISTS ((u)-[:Created]->(p))\n" +
+                                "RETURN  p.description AS description , p.rating AS rating\n",
+                        parameters("myUsername", myUsername  ));
+                ArrayList<Review> reviews = new ArrayList<>();
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    int convertedRating = Integer.parseInt(r.get("rating").asString());
+                    Review review = new Review(r.get("description").asString(),convertedRating);
+                    reviews.add(review);
+                }
+                return reviews;
+            });
+        } catch (Exception e){
+            commenttoshow = null;
+        }
+        return commenttoshow;
+    }
 
 
 
@@ -460,6 +527,36 @@ public class Crud_graph implements AutoCloseable {
         }
         return nLike;
     }
+
+    public Number countFollowersByUsername(final String username){
+        Number nFollowers = null;
+
+        try (Session session = driver.session()) {
+            nFollowers = session.readTransaction((TransactionWork<Number>) tx -> {
+                Result result = tx.run("MATCH (u:User{username: $username})<-[r:Follow]-(u2:User)\n" +
+                                "RETURN  COUNT(r) AS nfollowers",
+                        parameters("username",username));
+                Number followersNumber = 0;
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    followersNumber = r.get("nfollowers").asNumber();
+                }
+                return followersNumber;
+            });
+        }catch (Exception e){
+            nFollowers = null;
+        }
+        return nFollowers;
+    }
+
+
+
+
+
+
+
+
+
 
     public ArrayList<Wine> findWineByDescription(final String description){
         ArrayList<Wine> winetoshow;
