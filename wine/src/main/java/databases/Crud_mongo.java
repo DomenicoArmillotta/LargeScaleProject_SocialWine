@@ -5,24 +5,29 @@ import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
+import exception.NoCountryToShowException;
 import exception.UserNotPresentException;
 import exception.WineNotExistsException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+
+import java.util.ArrayList;
 
 /**
  * Contains all the crud operation that could be done on MongoDB.
  */
 public class Crud_mongo {
 
-    public void createWine(String title, String variety, String country, String province, int price, String taster_name, String points,
-                           String description, String taster_twitter_handle, String country_user, String e_address, Boolean admin)  {
+    //TO FIX - Wine with same title but different variety or country or provinice or price (or maybe same title but all  different
+    // aforementioned attributes MUST be stored in same document
+    public void createWine(String title, String variety, String country, String province, int price, String taster_name, Integer points,
+                           String description, String taster_twitter_handle, String country_user, String e_address, Boolean admin) {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
 
-        Document wine = new Document("title", "" + title + "" )
-                .append("title",""+ title + "")
+        Document wine = new Document("title", "" + title + "")
+                .append("title", "" + title + "")
                 .append("variety", "" + variety + "")
                 .append("country", "" + country + "")
                 .append("province", "" + province + "")
@@ -36,12 +41,15 @@ public class Crud_mongo {
                 .append("email", "" + e_address + "")
                 .append("admin", "" + admin + "");
 
+        MongoCursor<String> cursormedia = collection.distinct(title, String.class).iterator();
+        MongoCursor<String> cursor = collection.distinct("_id.title", String.class).iterator();
         UpdateOptions options = new UpdateOptions().upsert(true);
 
         Bson filter = Filters.eq(wine);
         Bson setUpdate = Updates.push("wine_reviews", user);
         collection.updateMany(filter, setUpdate, options);
         System.out.println("Successfully inserted review. \n");
+
     }
 
     public void deleteWine (String title) {
@@ -92,6 +100,23 @@ public class Crud_mongo {
         BasicDBObject update = new BasicDBObject("wine_reviews", new BasicDBObject("taster_name", taster_name));
         collection.updateMany(match, new BasicDBObject("$pull", update));
         System.out.println("All comments of " + taster_name + " deleted successfully");
+    }
+
+    public ArrayList<String> showAllWinesCountry () throws NoCountryToShowException {
+        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
+        MongoDatabase database = mongoClient.getDatabase("Wines");
+        MongoCollection<Document> collection = database.getCollection("wines");
+
+        MongoCursor<String> cursormedia = collection.distinct("_id.country", String.class).iterator();
+        if (!cursormedia.hasNext()) {
+            throw new NoCountryToShowException("No countries to show");
+        }
+        ArrayList<String> country = new ArrayList<>();
+        while (cursormedia.hasNext()) {
+            String r = cursormedia.next();
+            country.add(r);
+        }
+        return country;
     }
 }
 
