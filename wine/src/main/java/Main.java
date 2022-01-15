@@ -2,7 +2,6 @@ import beans.User;
 import beans.Wine;
 import databases.Crud_graph;
 import databases.DbOperations;
-import databases.Populating_wine_document;
 import exception.WrongInsertionException;
 import menu.Menu;
 import scraping.InitTh;
@@ -66,31 +65,10 @@ public class Main {
         //graph_operation.showAllWineMenu("bob");
 
         //graph_operation.shoALlCommentMadebyFriendsAndPutLike("bob");
-
-
-
-       /* System.out.println("==========ADAM===============");
-        System.out.println("1" + " See wine menu");
-        System.out.println("2" + " Homepage");
-        System.out.println("3" + " MY PROFILE");
-        System.out.println("4" + " Suggested user section");
-        System.out.println("5" + " Search a friend");
-        Scanner scanSelection = new Scanner(System.in);
-        String selection = scanSelection.nextLine();
-        if(selection.equals("1")){
-            graph_operation.showAllWineMenu("adam");
-        }else if (selection.equals("2")){
-            graph_operation.shoALlCommentMadebyFriendsAndPutLike("adam");
-        }else if(selection.equals("3")){
-            //non funziona quando elimino un post
-            graph_operation.showMyAccount("adam");
-        }else if(selection.equals("4")){
-            graph_operation.showSuggestedUserAndFollow("adam");
-        }else if(selection.equals("5")){
-            System.out.println("Digit the name: ");
-            Scanner scanName = new Scanner(System.in);
-            String nameToSearch = scanName.nextLine();
-            graph_operation.showUserByUsernameAndFollow("adam",nameToSearch);*/
-        }
+        graph.registerUser("bob","00","1","@tagAdmin","ita","email");
+        graph.addWine("wine2","prova","100","ita","abc","winery2");
+        graph.createRelationRelated("wine2","vino cattivo");
+        menu.MainMenu();
 
     }
+}

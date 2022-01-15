@@ -343,6 +343,28 @@ public class Crud_graph implements AutoCloseable {
         return commenttoshow;
     }
 
+    public ArrayList<Review> showAllComments () {
+        ArrayList<Review> commenttoshow;
+        try (Session session = driver.session()) {
+            commenttoshow = session.readTransaction((TransactionWork<ArrayList<Review>>) tx -> {
+                Result result = tx.run("MATCH (p:Post),(w:Wine)  \n" +
+                                "WHERE  EXISTS ((p)-[:Related]->(w))\n" +
+                                "RETURN  p.description AS description , p.rating AS rating\n");
+                ArrayList<Review> reviews = new ArrayList<>();
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    int convertedRating = Integer.parseInt(r.get("rating").asString());
+                    Review review = new Review(r.get("description").asString(),convertedRating);
+                    reviews.add(review);
+                }
+                return reviews;
+            });
+        } catch (Exception e){
+            commenttoshow = null;
+        }
+        return commenttoshow;
+    }
+
 
 
 
@@ -598,7 +620,18 @@ public class Crud_graph implements AutoCloseable {
         }
     }
 
+    public  void deleteAllRelatedBynameWine (final String wineName){
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (p:Post)-[f:Related]->(w:Wine{wineName: $wineName})\n" +
+                                "DELETE f",
+                        parameters("wineName", wineName));
+                System.out.println("Relation related  drop successfully made it (Neo4J)." + "\n");
+                return null;
+            });
+        }
 
+    }
 
 
 
