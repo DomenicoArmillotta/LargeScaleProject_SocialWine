@@ -18,59 +18,92 @@ import java.util.regex.Pattern;
  */
 public class Menu {
     public void MainMenu() throws Exception {
-
-
-        Crud_graph crud_graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
-        Advanced_graph adv_graph = new Advanced_graph("bolt://localhost:7687", "neo4j", "0000");
-        DbOperations dbOperations = new DbOperations();
-        System.out.println("\n***SOCIAL WINE APPLICATION***\n");
-        while (true) {
-            System.out.println("\nWelcome! What do you want to do?");
-            System.out.println("1" + " Login Admin");
-            System.out.println("2" + " Login User");
-            System.out.println("3" + " Sign-up User");
-            System.out.println("0" + " Terminate program");
-            Scanner scanLogin = new Scanner(System.in);
-            String nextIntString = scanLogin.nextLine();
-            if (!onlyDigits(nextIntString)) {
-                throw new WrongInsertionException("You inserted a string not a number. Please try again!.");
-            } else {
-                int choice = Integer.parseInt(nextIntString);
-
-                switch (choice) {
-                    case 0:
-                        System.out.println("Exiting program...");
-                        System.exit(0);
-                        break;
-                    default:
-                        System.out.println("This is not a valid menu option... Please try again!");
-                        break;
-                    //admin login
-                    case 1:
-
-                        break;
-                    //user login
-                    case 2:
-
-                        break;
-                    //user sign-up and add in neo4j database
-                    case 3:
+        Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
+        DbOperations graph_operation = new DbOperations();
 
 
 
-                        break;
+
+        while(true) {
+            int user = 0;
+            while (user == 0) {
+                System.out.println("==========MENU===============");
+                System.out.println("1" + " User Login");
+                System.out.println("2" + " Admin Login");
+                System.out.println("3" + " Register new User");
+                System.out.println(" What do you want do?");
+                Scanner scanSelection = new Scanner(System.in);
+                String selection = scanSelection.nextLine();
+                if (selection.equals("1")) {
+                    user = 1;
+                } else if (selection.equals("2")) {
+                    user = 2;
+                } else if (selection.equals("3")) {
+                    System.out.println("===================Registration phase====================");
+                    graph_operation.registerNewUser();
+                    user = 0;
+                }
+            }
+            while (user == 1) {
+                //ADAM
+                System.out.println("==========USER===============");
+                System.out.println("1" + " See wine menu");
+                System.out.println("2" + " Homepage");
+                System.out.println("3" + " MY PROFILE");
+                System.out.println("4" + " Suggested user section");
+                System.out.println("5" + " Search a friend");
+                System.out.println("6" + " Logout");
+                System.out.println(" Select operation : ");
+                Scanner scanSelection = new Scanner(System.in);
+                String selection = scanSelection.nextLine();
+                if (selection.equals("1")) {
+                    graph_operation.showAllWineMenu("adam");
+                } else if (selection.equals("2")) {
+                    graph_operation.homepageUser("adam");
+                } else if (selection.equals("3")) {
+                    graph_operation.showMyAccount("adam");
+                } else if (selection.equals("4")) {
+                    graph_operation.showSuggestedUserAndFollow("adam");
+                } else if (selection.equals("5")) {
+                    graph_operation.searchUserfromUser("adam");
+
+                } else if (selection.equals("6")) {
+                    user = 0;
                 }
 
             }
+            while (user == 2) {
+                //BOB
+                System.out.println("==========ADMIN===============");
+                System.out.println("1" + " See wine menu and Delete");
+                System.out.println("2" + " Homepage");
+                System.out.println("3" + " MY PROFILE");
+                System.out.println("4" + " Broswe all comments and Delete"); //--> DA FARE (broswe and delete)
+                System.out.println("5" + " Broswe all user and Ban/delete");
+                System.out.println("6" + " Search user and Ban/delete");
+                System.out.println("7" + " Logout");
+                System.out.println(" What do you want do?");
+                Scanner scanSelection = new Scanner(System.in);
+                String selection = scanSelection.nextLine();
+                if (selection.equals("1")) {
+                    //see wine menu put like and delete wine
+                    graph_operation.showAllWineMenuAdmin("bob");
+                } else if (selection.equals("2")) {
+                    graph_operation.homepageAdmin("bob");
+                } else if (selection.equals("3")) {
+                    graph_operation.showMyAccount("bob");
+                }else if (selection.equals("4")) {
+                    graph_operation.showCommentAdminMenu("bob");
+                }else if (selection.equals("5")) {
+                    graph_operation.usersMenuBanAdmin("bob");
+                } else if (selection.equals("6")) {
+                    graph_operation.searchUserfromAdmin("bob");
+                } else if (selection.equals("7")) {
+                    user = 0;
+                }
 
-
+            }
         }
-    }
-    private static boolean onlyDigits(String str){
-        String regex = "[0-9]+";
-        Pattern p = Pattern.compile(regex);
-        Matcher m = p.matcher(str);
-        return m.matches();
     }
 }
 
