@@ -25,6 +25,8 @@ public void poplulateData()
     final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
     MongoDatabase database = mongoClient.getDatabase("wine");
     MongoCollection<Document> collection = database.getCollection("review");
+
+
     MongoCollection<Document> usersCollection = database.getCollection("user");
     AggregateIterable<Document> output = collection.aggregate(Arrays.asList( new Document("$group",new Document("_id",new Document("taster_name", "$taster_name").append("taster_twitter_handle", "$taster_twitter_handle")))));
     for (Document dbObject : output)

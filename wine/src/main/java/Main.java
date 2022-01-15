@@ -2,6 +2,7 @@ import beans.User;
 import beans.Wine;
 import databases.Crud_graph;
 import databases.DbOperations;
+import databases.Populating_wine_document;
 import exception.WrongInsertionException;
 import menu.Menu;
 import scraping.InitTh;
@@ -18,8 +19,10 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args)throws Exception  {
 
-        Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
-        DbOperations graph_operation = new DbOperations();
+       // Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
+      //  DbOperations graph_operation = new DbOperations();
+        Populating_wine_document populate=new Populating_wine_document();
+        populate.poplulateData();
 
         /*graph.registerUser("bob","00","0","@tag","ita","email");
         graph.registerUser("bill","00","0","@tag","ita","email");
@@ -45,7 +48,7 @@ public class Main {
 
 
 
-        System.out.println("==========ADAM===============");
+       /* System.out.println("==========ADAM===============");
         System.out.println("1" + " See wine menu");
         System.out.println("2" + " Homepage");
         System.out.println("3" + " MY PROFILE");
@@ -66,8 +69,7 @@ public class Main {
             System.out.println("Digit the name: ");
             Scanner scanName = new Scanner(System.in);
             String nameToSearch = scanName.nextLine();
-            graph_operation.showUserByUsernameAndFollow("adam",nameToSearch);
+            graph_operation.showUserByUsernameAndFollow("adam",nameToSearch);*/
         }
 
     }
-}
