@@ -598,7 +598,18 @@ public class Crud_graph implements AutoCloseable {
         }
     }
 
+    public  void deleteAllRelatedBynameWine (final String wineName){
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (p:Post)-[f:Related]->(w:Wine{wineName: $wineName})\n" +
+                                "DELETE f",
+                        parameters("wineName", wineName));
+                System.out.println("Relation related  drop successfully made it (Neo4J)." + "\n");
+                return null;
+            });
+        }
 
+    }
 
 
 
