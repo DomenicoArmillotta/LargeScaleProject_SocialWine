@@ -718,6 +718,7 @@ public class DbOperations {
                     ArrayList<Review> friendReviews = new ArrayList<>(graph.showMyComment(users.get(selectedIntProfile).getUsername()));
                     if(friendReviews.size()!=0){
                         int k=0;
+                        friendReviews.size();
                         for(k=0;k<friendReviews.size();k++){
                             System.out.println(k + " : Comment  ");
                             System.out.println(friendReviews.get(k).getDescription());
@@ -741,15 +742,34 @@ public class DbOperations {
                     }
 
 
-                        System.out.println("Select Comment to put like");
-                        Scanner scanSelectlike = new Scanner(System.in);
-                        String selectedReviewLike = scanSelectlike.nextLine();
-                        if (selectedReviewLike.equals("X")) {
+                        System.out.println("Select operation");
+                        System.out.println("1. put like on a post");
+                        System.out.println("2. delete like on a post");
+                        Scanner scanChoise = new Scanner(System.in);
+                        String selectChoise = scanChoise.nextLine();
+                        if(selectChoise.equals("1")){
+                            System.out.println("select a post: ");
+                            Scanner scanSelectlike = new Scanner(System.in);
+                            String selectedReviewLike = scanSelectlike.nextLine();
+                            if (selectedReviewLike.equals("X")) {
 
-                        } else {
-                            int selectedReviewInt = Integer.parseInt(selectedReviewLike);
-                            graph.putLikeByDescription(friendReviews.get(selectedReviewInt).getDescription(),myUsername);
+                            } else {
+                                int selectedReviewInt = Integer.parseInt(selectedReviewLike);
+                                graph.putLikeByDescription(friendReviews.get(selectedReviewInt).getDescription(),myUsername);
+                            }
+                        }else if(selectChoise.equals("2")){
+                            System.out.println("select a post: ");
+                            Scanner scanSelectlike = new Scanner(System.in);
+                            String selectedReviewLike = scanSelectlike.nextLine();
+                            if (selectedReviewLike.equals("X")) {
+
+                            } else {
+                                int selectedReviewInt = Integer.parseInt(selectedReviewLike);
+                                graph.deleteLikeByDescription(friendReviews.get(selectedReviewInt).getDescription(),myUsername);
+                            }
                         }
+
+
 
 
 
