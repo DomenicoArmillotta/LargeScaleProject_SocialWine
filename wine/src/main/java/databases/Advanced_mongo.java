@@ -3,9 +3,10 @@ package databases;
 
 import beans.Review;
 import com.mongodb.BasicDBObject;
+import com.mongodb.BasicDBObjectBuilder;
+import com.mongodb.DBObject;
 import com.mongodb.client.*;
-import com.mongodb.client.model.Accumulators;
-import com.mongodb.client.model.BsonField;
+import com.mongodb.client.model.*;
 import exception.NoCountryToShowException;
 import exception.WrongInsertionException;
 import org.bson.Document;
@@ -43,35 +44,40 @@ public class Advanced_mongo {
     }
 
     //WORK
-    public void topFiveMostExpensiveVarieties() {
+    public void topThreeVarietyAccordingRating() {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
-        Bson limit = limit(5);
-        Bson sort = sort(ascending("Average"));
+
+        Bson limit = limit(3);
+        Bson sort = sort(descending("AverageRating"));
         Bson unwind = unwind("$reviews");
-        Bson group = group("$variety", avg("Average","$reviews.rating"));
+        Bson group = group("$variety", avg("AverageRating","$reviews.rating"));
         List<Document> results = collection.aggregate(Arrays.asList(unwind,group,sort,limit)).into(new ArrayList<>());
         System.out.println("\n" + results + "\n");
     }
 
 
-    //TO DO - TOP FIVE WINES WITH Score LESS UNDER A TRESHOLD INSERTED BY USER
+    //TO DO - TOP FIVE WINES WITH PRICE LESS UNDER A TRESHOLD INSERTED BY USER
     public void topFiveWinesAccordinglyRatingsInsertedByUser() throws WrongInsertionException {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("wines");
-        System.out.println("Insert Score treshold:");
+        System.out.println("Insert price treshold:");
         Scanner sc = new Scanner(System.in);
         try {
             Integer treshold = sc.nextInt();
             if (treshold < 0 ){
                 throw new WrongInsertionException("You inserted a number below 0");
             } else {
-                Bson limit = limit(5);
-                Bson sort = sort(descending("Average"));
+                Bson filter = Filters.gte("price",treshold);
                 Bson unwind = unwind("$reviews");
-                Bson group = group("$nameWine", (List<BsonField>) new Document("$lte",treshold));
+                Bson match = match(filter);
+                Bson wineName = Filters.eq("wineName");
+                Bson tasterName = Filters.eq("reviews.taster_name");
+                Bson project = Projections.fields(wineName,tasterName);
+                List<Document> results = collection.aggregate(Arrays.asList(unwind,match,project)).into(new ArrayList<>());
+                System.out.println("\n" + results + "\n");
             }
         } catch (InputMismatchException ime){
             System.out.println("You inserted a string instead of a number");
