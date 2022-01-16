@@ -3,18 +3,20 @@ package beans;
 public class Wine {
     String wineName;
     String designation;
-    String price;
+    Integer price;
     String province;
     String variety;
     String winery;
+    String country;
 
-    public Wine(String wineName, String designation, String price, String province, String variety, String winery) {
+    public Wine(String wineName, String designation, Integer price, String province, String variety, String winery, String country) {
         this.wineName = wineName;
         this.designation = designation;
         this.price = price;
         this.province = province;
         this.variety = variety;
         this.winery = winery;
+        this.country = country;
     }
 
     public String getWineName() {
@@ -33,11 +35,11 @@ public class Wine {
         this.designation = designation;
     }
 
-    public String getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(Integer price) {
         this.price = price;
     }
 
@@ -63,6 +65,14 @@ public class Wine {
 
     public void setWinery(String winery) {
         this.winery = winery;
+    }
+
+    public String getCountry() {
+        return country;
+    }
+
+    public void setCountry(String winery) {
+        this.country = country;
     }
 
 

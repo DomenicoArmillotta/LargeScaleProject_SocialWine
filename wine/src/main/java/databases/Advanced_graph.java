@@ -73,7 +73,7 @@ public class Advanced_graph implements AutoCloseable {
                 ArrayList<User> users = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    User u = new User(r.get("username").asString() , "",r.get("twitter_taster_handle").asString() ,r.get("country").asString()  ,"");
+                    User u = new User(r.get("username").asString() , "",r.get("twitter_taster_handle").asString() ,r.get("country").asString()  ,"", r.get("admin").asBoolean());
                     users.add(u);
                 }
                 return users;

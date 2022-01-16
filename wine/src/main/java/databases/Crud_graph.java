@@ -74,7 +74,7 @@ public class Crud_graph implements AutoCloseable {
                 User userToShow = null;
                 while (result.hasNext()) {
                     Record r = result.next();
-                    userToShow = new User(r.get("username").asString(),"",r.get("country").asString() , r.get("email").asString() , r.get("twitter_taster_handle").asString());
+                    userToShow = new User(r.get("username").asString(),"",r.get("country").asString() ,r.get("twitter_taster_handle").asString(),r.get("email").asString(),r.get("admin").asBoolean());
                 }
                 return userToShow;
             });
@@ -94,8 +94,8 @@ public class Crud_graph implements AutoCloseable {
                 ArrayList<User> users = new ArrayList<User>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    User u = new User(r.get("username").asString() , "","" ,"" ,"");
-                    users.add(u);
+                    User user = new User(r.get("username").asString() , "","","","",false);
+                    users.add(user);
                 }
                 return users;
             });
@@ -117,7 +117,7 @@ public class Crud_graph implements AutoCloseable {
                 ArrayList<User> usersOutput = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    User u = new User(r.get("username").asString(),null,r.get("twitter_taster_handle").asString(),r.get("country").asString() ,r.get("email").asString() );
+                    User u = new User(r.get("username").asString(),null,r.get("twitter_taster_handle").asString(),r.get("country").asString() ,r.get("email").asString(), r.get("admin").asBoolean());
                     usersOutput.add(u);
                 }
                 return usersOutput;
@@ -185,7 +185,7 @@ public class Crud_graph implements AutoCloseable {
                 ArrayList<Wine> wines = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    Wine wine = new Wine(r.get("wineName").asString(),r.get("designation").asString(),r.get("price").asString(),r.get("province").asString(),r.get("variety").asString(),r.get("winery").asString());
+                    Wine wine = new Wine(r.get("wineName").asString(),r.get("designation").asString(),r.get("price").asInt(),r.get("province").asString(),r.get("variety").asString(),r.get("winery").asString(), r.get("country").asString());
                     wines.add(wine);
                 }
                 return wines;
@@ -206,7 +206,7 @@ public class Crud_graph implements AutoCloseable {
                 ArrayList<Wine> wines = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    Wine wine = new Wine(r.get("wineName").asString(),r.get("designation").asString(),r.get("price").asString(),r.get("province").asString(),r.get("variety").asString(),r.get("winery").asString());
+                    Wine wine = new Wine(r.get("wineName").asString(),r.get("designation").asString(),r.get("price").asInt(),r.get("province").asString(),r.get("variety").asString(),r.get("winery").asString(), r.get("country").asString());
                     wines.add(wine);
                 }
                 return wines;
@@ -241,7 +241,7 @@ public class Crud_graph implements AutoCloseable {
                 ArrayList<User> users = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    User user = new User(r.get("username").asString(),null,r.get("twitter_taster_handle").asString(),r.get("country").asString() ,r.get("email").asString() );
+                    User user = new User(r.get("username").asString() , null,r.get("twitter_taster_handle").asString() ,r.get("country").asString()  ,r.get("email").asString(), r.get("admin").asBoolean());
                     users.add(user);
                 }
                 return users;
@@ -716,7 +716,7 @@ public class Crud_graph implements AutoCloseable {
                 ArrayList<Wine> wines = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    Wine wine = new Wine(r.get("wineName").asString(),r.get("designation").asString(),r.get("price").asString(),r.get("province").asString(),r.get("variety").asString(),r.get("winery").asString());
+                    Wine wine = new Wine(r.get("wineName").asString(),r.get("designation").asString(),r.get("price").asInt(),r.get("province").asString(),r.get("variety").asString(),r.get("winery").asString(), r.get("country").asString());
                     wines.add(wine);
                     String name = r.get("wineName").asString();
                 }
@@ -726,6 +726,12 @@ public class Crud_graph implements AutoCloseable {
             winetoshow = null;
         }
         return winetoshow;
+    }
+
+    public void addPostComplete(final String wineName, final String variety, final String country , final String province, final String price, final String winery, final String designation, final Integer rating, final String description, final String taster_twitter_handle, final String taster_name, final String user_country, final String email) {
+        addWine(wineName,designation,price,province,variety,winery);
+        createRelationRelated(wineName, description);
+        createRelationCreated(wineName , taster_name);
     }
 
 

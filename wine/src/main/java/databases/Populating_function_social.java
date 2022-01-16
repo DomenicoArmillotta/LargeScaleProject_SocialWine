@@ -1,5 +1,7 @@
 package databases;
 import beans.Review;
+import beans.User;
+import beans.Wine;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import exception.AlreadyPopulatedException;
@@ -12,6 +14,31 @@ import java.util.ArrayList;
  */
 public class Populating_function_social {
 
+
+    //TO DO -- FUNCTION THAT TAKES WINES E REVIEWS AND POPULATE SOCIAL
+    public void populateSocial(){
+        MongoClient mongoClient = MongoClients.create();
+        Crud_mongo mongo = new Crud_mongo();
+        Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
+        DbOperations db = new DbOperations();
+        ArrayList<Review> reviews = null;
+        ArrayList<Wine> wines = null;
+        ArrayList<User> users = null;
+
+        reviews = mongo.findAllReview();
+        wines = mongo.findAllWine();
+        users = mongo.findAllUser();
+
+        for (Review review : reviews) {
+                for (Wine wine: wines) {
+                    for (User user: users){
+                        graph.addPostComplete(wine.getWineName(), wine.getVariety(), wine.getCountry(), wine.getProvince(), wine.getProvince(),
+                                wine.getWinery(), wine.getDesignation(), review.getRating(), review.getDescription(), user.getTwitter_taster_handle(),
+                                user.getUsername(), user.getCountry(), user.getEmail());
+                    }
+                }
+        }
+    }
 }
 
 

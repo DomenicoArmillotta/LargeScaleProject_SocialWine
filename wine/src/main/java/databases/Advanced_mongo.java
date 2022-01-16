@@ -5,6 +5,7 @@ import beans.Review;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Accumulators;
+import com.mongodb.client.model.BsonField;
 import exception.NoCountryToShowException;
 import exception.WrongInsertionException;
 import org.bson.Document;
@@ -28,7 +29,7 @@ public class Advanced_mongo {
     Crud_mongo mongo = new Crud_mongo();
 
     //WORK
-    public void topFiveWines() throws NoCountryToShowException, WrongInsertionException {
+    public void topFiveCountryAccordingRating() throws NoCountryToShowException, WrongInsertionException {
         //ArrayList<String> countryList = new ArrayList<>(mongo.showAllWinesCountry());
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("Wines");
@@ -36,48 +37,45 @@ public class Advanced_mongo {
         Bson limit = limit(5);
         Bson sort = sort(descending("Average"));
         Bson unwind = unwind("$reviews");
-        Bson group = group("$country", avg("Average", "$reviews.price"));
+        Bson group = group("$country", avg("Average", "$reviews.rating"));
         List<Document> results = collection.aggregate(Arrays.asList(unwind, group, sort, limit)).into(new ArrayList<>());
         System.out.println("\n" + results + "\n");
     }
 
     //WORK
-    public void moreExpensiveVariety() {
+    public void topFiveMostExpensiveVarieties() {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
-        Bson limit = limit(1);
+        Bson limit = limit(5);
         Bson sort = sort(ascending("Average"));
         Bson unwind = unwind("$reviews");
-        Bson group = group("$variety", avg("avgPrice","$reviews.price"));
+        Bson group = group("$variety", avg("avgPrice","$reviews.rating"));
         List<Document> results = collection.aggregate(Arrays.asList(unwind,group,sort,limit)).into(new ArrayList<>());
         System.out.println("\n" + results + "\n");
     }
 
 
-    //TO TEST
-    public void topFiveUsersHighestAvgScores(){
+    //TO DO - TOP FIVE WINES WITH PRICE LESS UNDER A TRESHOLD INSERTED BY USER
+    public void topFiveWinesAccordinglyRatingsInsertedByUser() throws WrongInsertionException {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("wine");
-        MongoCollection<Document> collection = database.getCollection("review");
-        MongoCursor<Document> cursor = collection.find().cursor();
-        while (cursor.hasNext()){
-            Document cur = cursor.next();
-            String id = cur.get("_id").toString();
-            String pts = cur.get("points").toString();
-            int updatePts = Integer.parseInt(pts);
-            BasicDBObject updateQuery = new BasicDBObject();
-            updateQuery.append("$set", new BasicDBObject().append("points", updatePts));
-            BasicDBObject searchQuery = new BasicDBObject();
-            searchQuery.put("_id", new ObjectId(id));
-            collection.updateMany(searchQuery, updateQuery);
+        MongoCollection<Document> collection = database.getCollection("wines");
+        System.out.println("Insert price treshold:");
+        Scanner sc = new Scanner(System.in);
+        try {
+            Integer treshold = sc.nextInt();
+            if (treshold < 0 ){
+                throw new WrongInsertionException("You inserted a number below 0");
+            } else {
+                Bson limit = limit(5);
+                Bson sort = sort(descending("Average"));
+                Bson unwind = unwind("$reviews");
+                Bson group = group("$nameWine", (List<BsonField>) new Document("$lte",treshold));
+            }
+        } catch (InputMismatchException ime){
+            System.out.println("You inserted a string instead of a number");
         }
-
-        Bson limit = limit(5);
-        Bson sort = sort(descending("avg"));
-        Bson group = group("$reviews.taster_name",avg("avg","$reviews.points"));
-        List<Document> results = collection.aggregate(Arrays.asList(group,sort,limit)).into(new ArrayList<>());
-        System.out.println("\n" + results + "\n");
     }
 }
 

@@ -9,13 +9,15 @@ public class User {
     String  twitter_taster_handle;
     String country;
     String email;
+    Boolean admin;
 
-    public User(String username, String password, String twitter_taster_handle, String country, String email) {
+    public User(String username, String password, String twitter_taster_handle, String country, String email, Boolean admin) {
         this.username = username;
         this.password = password;
         this.twitter_taster_handle = twitter_taster_handle;
         this.country = country;
         this.email = email;
+        this.admin = admin;
     }
 
 
@@ -58,5 +60,13 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public Boolean getAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(Boolean admin) {
+        this.admin = admin;
     }
 }
