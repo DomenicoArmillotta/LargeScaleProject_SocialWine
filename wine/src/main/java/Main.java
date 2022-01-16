@@ -42,13 +42,13 @@ public class Main {
 
 
         Crud_mongo crud = new Crud_mongo();
-        Populating_function_social pop = new Populating_function_social();
-        pop.populateSocial();
+       /* Populating_function_social pop = new Populating_function_social();
+        pop.populateSocial();*/
         //crud.deleteWine("Tavernello");
-        Advanced_mongo adv = new Advanced_mongo();
-        adv.topFiveMostExpensiveVarieties();
-        adv.topFiveCountryAccordingRating();
-        adv.topFiveWinesAccordinglyRatingsInsertedByUser();
+        //Advanced_mongo adv = new Advanced_mongo();
+        //adv.topThreeVarietyAccordingRating();
+        //adv.topFiveCountryAccordingRating();
+        //adv.topFiveWinesAccordinglyRatingsInsertedByUser();
         //crud.createWine("Tavernello","Rosso","Italia","Bari",56,"Giuseppe",77,"Vino delizioso","@Leonardo","Italia","cazzo",false);
         //crud.createWine("Tavernello","Rosso","Italia","Firenze",54,"Giovanni",80,"Vino delizioso","@Leonardo","Italia","cazzo",false);
         //crud.createWine("Tavernello","Rosso","Italia","Pisa",30,"Antonio",75,"Vino delizioso","@Leonardo","Italia","cazzo",false);
