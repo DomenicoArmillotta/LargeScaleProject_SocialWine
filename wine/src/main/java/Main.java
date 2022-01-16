@@ -20,9 +20,11 @@ public class Main {
        // Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
       //  DbOperations graph_operation = new DbOperations();
         //Populating_wine_document populate=new Populating_wine_document();
-       // populate.poplulateData();
-        // Populating_wine_document populate=new Populating_wine_document();
+      // populate.poplulateData();
+        //Populating_wine_document populate=new Populating_wine_document();
        //populate.poplulateData();
+        Populating_function_social social=new Populating_function_social();
+        social.populateSocial();
 
         /*Advanced_mongo adv = new Advanced_mongo();
         adv.topFiveWines();*/
@@ -41,14 +43,14 @@ public class Main {
         //crud.createWine("Taverello","Stt","Ger","Ba",40,"tryr",82,"bad","Enoteca","@le","it","leo@ii",false);
 
 
-        Crud_mongo crud = new Crud_mongo();
-        Populating_function_social pop = new Populating_function_social();
-        pop.populateSocial();
+        //Crud_mongo crud = new Crud_mongo();
+       // Populating_function_social pop = new Populating_function_social();
+       // pop.populateSocial();
         //crud.deleteWine("Tavernello");
-        Advanced_mongo adv = new Advanced_mongo();
-        adv.topFiveMostExpensiveVarieties();
-        adv.topFiveCountryAccordingRating();
-        adv.topFiveWinesAccordinglyRatingsInsertedByUser();
+        //Advanced_mongo adv = new Advanced_mongo();
+       // adv.topFiveMostExpensiveVarieties();
+        //adv.topFiveCountryAccordingRating();
+        //adv.topFiveWinesAccordinglyRatingsInsertedByUser();
         //crud.createWine("Tavernello","Rosso","Italia","Bari",56,"Giuseppe",77,"Vino delizioso","@Leonardo","Italia","cazzo",false);
         //crud.createWine("Tavernello","Rosso","Italia","Firenze",54,"Giovanni",80,"Vino delizioso","@Leonardo","Italia","cazzo",false);
         //crud.createWine("Tavernello","Rosso","Italia","Pisa",30,"Antonio",75,"Vino delizioso","@Leonardo","Italia","cazzo",false);

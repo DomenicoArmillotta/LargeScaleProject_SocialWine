@@ -50,18 +50,18 @@ public class Advanced_mongo {
         Bson limit = limit(5);
         Bson sort = sort(ascending("Average"));
         Bson unwind = unwind("$reviews");
-        Bson group = group("$variety", avg("avgPrice","$reviews.rating"));
+        Bson group = group("$variety", avg("Average","$reviews.rating"));
         List<Document> results = collection.aggregate(Arrays.asList(unwind,group,sort,limit)).into(new ArrayList<>());
         System.out.println("\n" + results + "\n");
     }
 
 
-    //TO DO - TOP FIVE WINES WITH PRICE LESS UNDER A TRESHOLD INSERTED BY USER
+    //TO DO - TOP FIVE WINES WITH Score LESS UNDER A TRESHOLD INSERTED BY USER
     public void topFiveWinesAccordinglyRatingsInsertedByUser() throws WrongInsertionException {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("wine");
         MongoCollection<Document> collection = database.getCollection("wines");
-        System.out.println("Insert price treshold:");
+        System.out.println("Insert Score treshold:");
         Scanner sc = new Scanner(System.in);
         try {
             Integer treshold = sc.nextInt();

@@ -16,9 +16,14 @@ import exception.WineNotExistsException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import javax.print.Doc;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static com.mongodb.client.model.Accumulators.avg;
+import static com.mongodb.client.model.Aggregates.group;
+import static com.mongodb.client.model.Aggregates.unwind;
 
 /**
  * Contains all the crud operation that could be done on MongoDB.
@@ -157,18 +162,24 @@ public class Crud_mongo {
 
     public ArrayList<User> findAllUser(){
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
-        MongoDatabase database = mongoClient.getDatabase("wine");
+        MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
 
         User user = null;
-        ArrayList<User> users = null;
+        ArrayList<User> users = new ArrayList<>();
+        Bson unwind = unwind("$reviews");
+        Document group=new Document("$group", new Document("_id", new Document("taster_name", "$reviews.taster_name").append("taster_twitter_handle", "$reviews.taster_twitter_handle").append("country","$reviews.user_country").append("email","$reviews.email")));
 
-        MongoCursor<Document> cursor = (MongoCursor<Document>) collection.distinct("taster_name", String.class);
-        while (cursor.hasNext()){
+        AggregateIterable<Document>  results = collection.aggregate(Arrays.asList(unwind,group));
 
-            Document temp_user_doc = cursor.next();
+       // List<String> cursor =(List<String>)  collection.distinct("reviews.taster_name", String.class);
+
+        for (Document result:results ){
+
+
+            Document temp_user_doc =(Document) result.get("_id");
             String username = temp_user_doc.getString("taster_name");
-            String twitter_taster_handle = temp_user_doc.getString("twitter_taster_handle");
+            String twitter_taster_handle = temp_user_doc.getString("taster_twitter_handle");
             String country = temp_user_doc.getString("country");
             String email = temp_user_doc.getString("email");
             user = new User(username,"",twitter_taster_handle,country,email,false);
@@ -180,16 +191,22 @@ public class Crud_mongo {
     }
     public ArrayList<Review> findAllReview (){
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
-        MongoDatabase database = mongoClient.getDatabase("wine");
+        MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
 
         Review review = null;
-        ArrayList<Review> reviews = null;
-        MongoCursor<Document> cursor = collection.find().iterator();
-        while (cursor.hasNext()){
-            Document temp_review_doc = cursor.next();
-            Integer rating = temp_review_doc.getInteger("rating");
-            String description = temp_review_doc.getString("description");
+        ArrayList<Review> reviews = new ArrayList<>();
+        Bson unwind = unwind("$reviews");
+
+        AggregateIterable<Document> cursor = collection.aggregate(Arrays.asList(unwind));
+
+        for (Document tempReview:cursor ){
+
+            Document nestedReview=(Document) tempReview.get("reviews");
+
+            Integer rating= nestedReview.getInteger("rating");
+            String description = nestedReview.getString("description");
+
             review = new Review(description,rating);
             reviews.add(review);
         }
@@ -199,11 +216,11 @@ public class Crud_mongo {
 
     public ArrayList<Wine> findAllWine (){
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
-        MongoDatabase database = mongoClient.getDatabase("wine");
+        MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
 
         Wine wine = null;
-        ArrayList<Wine> wines = null;
+        ArrayList<Wine> wines = new ArrayList<>();
         MongoCursor<Document> cursor = collection.find().iterator();
         while (cursor.hasNext()){
             Document temp_wine_doc = cursor.next();

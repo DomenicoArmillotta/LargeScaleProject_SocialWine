@@ -66,7 +66,7 @@ public class Populating_wine_document {
                             .append("winery", lastReview.get("winery"))
                             .append("designation",lastReview.get("designation"))
                             .append("reviews", distinctReviews);
-                    if (mongoWine.get("designation")== null){
+                    if (mongoWine.get("designation")== null || mongoWine.get("price")== null|| mongoWine.get("wineName")== null || mongoWine.get("country")== null|| mongoWine.get("province")== null|| mongoWine.get("winery")== null||  mongoWine.get("variety")== null){
                         continue;
                     }else{
                         wineCollection.insertOne(mongoWine);

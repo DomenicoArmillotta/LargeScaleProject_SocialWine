@@ -28,13 +28,16 @@ public class Populating_function_social {
         reviews = mongo.findAllReview();
         wines = mongo.findAllWine();
         users = mongo.findAllUser();
+        int i=0;
 
         for (Review review : reviews) {
                 for (Wine wine: wines) {
                     for (User user: users){
-                        graph.addPostComplete(wine.getWineName(), wine.getVariety(), wine.getCountry(), wine.getProvince(), wine.getProvince(),
+                        graph.addPostComplete(wine.getWineName(), wine.getVariety(), wine.getCountry(), wine.getProvince(), wine.getPrice().toString(),
                                 wine.getWinery(), wine.getDesignation(), review.getRating(), review.getDescription(), user.getTwitter_taster_handle(),
                                 user.getUsername(), user.getCountry(), user.getEmail());
+                        System.out.println(i);
+                        i++;
                     }
                 }
         }
