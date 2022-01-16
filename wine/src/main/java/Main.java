@@ -1,7 +1,9 @@
 import beans.User;
 import beans.Wine;
 import databases.Crud_graph;
+import databases.Crud_mongo;
 import databases.DbOperations;
+import databases.Populating_wine_document;
 import exception.WrongInsertionException;
 import menu.Menu;
 import scraping.InitTh;
@@ -20,10 +22,10 @@ public class Main {
 
        // Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
       //  DbOperations graph_operation = new DbOperations();
-        Populating_wine_document populate=new Populating_wine_document();
-        populate.poplulateData();
+        //Populating_wine_document populate=new Populating_wine_document();
+       // populate.poplulateData();
        //Populating_wine_document populate=new Populating_wine_document();
-       //populate.poplulateData();
+      // populate.poplulateData();
 
         /*Advanced_mongo adv = new Advanced_mongo();
         adv.topFiveWines();*/
@@ -35,6 +37,7 @@ public class Main {
         //crud.deleteComment("A great cocktail of fruit flavors propel this wine out of the glass. It is ripe and crisp at the same time, the fruits running from peach to grapefruit and back again. There is plenty of acidity, crisp green apple structure, but at the end it is all about richness, a mouthful of delicious Chardonnay.","Roger Voss","Olivier Leflaive 2006 Les Folatières Premier Cru  (Puligny-Montrachet)");
         crud.createWine("Taverello","Brut","Italy","Ba",40,"Leo",80,"buono","Enoteca","@le","it","leo@ii",false);
         crud.createWine("Taverello","Brut","Ger","Ba",40,"Leo",82,"bad","Enoteca","@le","it","leo@ii",false);
+        crud.createWine("Taverello","Brut","Ger","Ba",40,"tryr",82,"bad","Enoteca","@le","it","leo@ii",false);
 
         //crud.createWine("Tavernello","Rosso","Italia","Bari",56,"Giuseppe",77,"Vino delizioso","@Leonardo","Italia","cazzo",false);
         //crud.createWine("Tavernello","Rosso","Italia","Firenze",54,"Giovanni",80,"Vino delizioso","@Leonardo","Italia","cazzo",false);
@@ -65,10 +68,10 @@ public class Main {
         //graph_operation.showAllWineMenu("bob");
 
         //graph_operation.shoALlCommentMadebyFriendsAndPutLike("bob");
-        graph.registerUser("bob","00","1","@tagAdmin","ita","email");
-        graph.addWine("wine2","prova","100","ita","abc","winery2");
-        graph.createRelationRelated("wine2","vino cattivo");
-        menu.MainMenu();
+        //graph.registerUser("bob","00","1","@tagAdmin","ita","email");
+        //graph.addWine("wine2","prova","100","ita","abc","winery2");
+       // graph.createRelationRelated("wine2","vino cattivo");
+        //menu.MainMenu();
 
     }
 }

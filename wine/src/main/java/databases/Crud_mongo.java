@@ -7,6 +7,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.UpdateOptions;
 import com.mongodb.client.model.Updates;
 import exception.NoCountryToShowException;
+import exception.ReviewAlreadyInserted;
 import exception.UserNotPresentException;
 import exception.WineNotExistsException;
 import org.bson.Document;
@@ -24,15 +25,12 @@ public class Crud_mongo {
     //TO FIX - Wine with same title but different variety or country or provinice or price (or maybe same title but all  different
     // aforementioned attributes MUST be stored in same document
     public void createWine(String title, String variety, String country, String province, int price, String taster_name, int points,
-                           String description, String winery, String taster_twitter_handle, String country_user, String mail, Boolean admin) {
+                           String description, String winery, String taster_twitter_handle, String country_user, String mail, Boolean admin) throws ReviewAlreadyInserted {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
 
-        AggregateIterable<Document> wineq = collection.aggregate(Arrays.asList(new Document("$group", new Document("_id", new Document("title", "" + title + "")
-                .append("variety", "" + variety + "")
-                .append("country", "" + country + "")
-                .append("province", "" + province + "")))));
+        AggregateIterable<Document> wineq = collection.aggregate(Arrays.asList(new Document("$group", new Document("_id", new Document("title", "" + title + "")))));
 
 
         for (Document dbObject : wineq) {
@@ -40,23 +38,18 @@ public class Crud_mongo {
             Document wine = (Document) dbObject.get("_id");
 
             if (wine.get("title") != null) {
-                BasicDBObject query = new BasicDBObject();
-                List<BasicDBObject> obj1 = new ArrayList<BasicDBObject>();
-                obj1.add(new BasicDBObject("title", wine.get("title")));
-                obj1.add(new BasicDBObject("variety", wine.get("variety")));
-                obj1.add(new BasicDBObject("country", wine.get("country")));
+                BasicDBObject query = new BasicDBObject("title", wine.get("title"));
 
-                query.put("$and", obj1);
                 MongoCursor<Document> cursor = collection.find(query).iterator();
 
                 System.out.println(query);
-                // document not found , do insertion
+                // wine document not found , do insertion
                 if (!cursor.hasNext()) {
 
                     // find all reviews belong to that title and add them
                     // var cursor1 = reviewCollection.find(query).projection(fields(exclude("title", "country", "variety", "province")));
 
-                    AggregateIterable<Document> review = collection.aggregate(Arrays.asList(Aggregates.match(query),
+                    /*AggregateIterable<Document> review = collection.aggregate(Arrays.asList(Aggregates.match(query),
                             new Document("$group", new Document("_id", new Document("score", "" + points + "")
                                     .append("price", "" + price + "")
                                     .append("description", "" + description + "")
@@ -65,34 +58,82 @@ public class Crud_mongo {
                                     .append("taster_name", "" + taster_name + "")
                                     .append("country", "" + country_user + "")
                                     .append("email", "" + mail + "")
-                                    .append("admin", "" + admin + "")))));
+                                    .append("admin", "" + admin + "")))));*/
 
-                    List<Document> distinctReviews=new ArrayList<>();
+                    List<Document> Reviews=new ArrayList<>();
 
-                    for(Document dbObject2 : review) {
-                        Document reviews = (Document) dbObject2.get("_id");
-                        distinctReviews.add(reviews);
-                    }
+                    Document review= new Document("score",  points )
+                            .append("price", price )
+                            .append("description", "" + description + "")
+                            .append("winery","" + winery + "")
+                            .append("taster_twitter_handle", "" + taster_twitter_handle + "")
+                            .append("taster_name", "" + taster_name + "")
+                            .append("country", "" + country_user + "")
+                            .append("email", "" + mail + "")
+                            .append("admin", admin );
+                    Reviews.add(review);
 
                     // find all provinces for the wine
-                    MongoCursor<String> provinces = collection.distinct("province", query, String.class).iterator();
 
-                    // convert to string list
-                    List<String> provincesStrings = new ArrayList<String>();
 
-                    try{
-                        while(provinces.hasNext()){
-                            provincesStrings.add(provinces.next());
+
+
+
+
+                    Document mongoWine = new org.bson.Document("title", title)
+                            .append("variety", variety).append("country", country).append("province", province).append("reviews", Reviews);
+                    collection.insertOne(mongoWine);
+
+                }
+                // wine document is already inserted
+                else
+                {
+                    Document wineDocument=cursor.next();
+                    wineDocument.put("country",country);
+                    wineDocument.put("province",province);
+                    wineDocument.put("variety",variety);
+
+                    //BasicDBObject checkQuery = new BasicDBObject("reviews.taster_name", taster_name);
+                    //MongoCursor<Document> cursor1 = collection.find(checkQuery).iterator();
+
+                    List<Document> reviews=(List<Document>)   wineDocument.get("reviews");
+                    boolean isReviewInserted=false;
+                    for (Document review:reviews)
+                    {
+                        if(review.get("taster_name").toString().equals(taster_name))
+                        {
+                            isReviewInserted=true;
+                            break;
                         }
-                    }finally{
-                        provinces.close();
+                    }
+                    // the review is not inserted yet, do insertion
+                    if(!isReviewInserted)
+                    {
+                        Document review= new Document("score",  points )
+                                .append("price", price )
+                                .append("description", "" + description + "")
+                                .append("winery","" + winery + "")
+                                .append("taster_twitter_handle", "" + taster_twitter_handle + "")
+                                .append("taster_name", "" + taster_name + "")
+                                .append("country", "" + country_user + "")
+                                .append("email", "" + mail + "")
+                                .append("admin", admin );
+                        reviews.add(review);
+                        wineDocument.put("reviews",reviews);
+                        // update and save
+                        Document update = new Document();
+
+                        update.append("$set", wineDocument);
+                        collection.updateOne(query, update);
+                    }
+                    else
+                    {
+
+                        // throw Already Inserted exception
+                        System.out.println("The review is already inserted for that wine");
+                        throw new ReviewAlreadyInserted("The review is already inserted for that wine");
                     }
 
-
-
-                    Document mongoWine = new org.bson.Document("title", wine.get("title"))
-                            .append("variety", wine.get("variety")).append("country", wine.get("country")).append("province", provincesStrings).append("reviews", distinctReviews);
-                    collection.insertOne(mongoWine);
 
                 }
                /* if (!cursor.hasNext()) {
