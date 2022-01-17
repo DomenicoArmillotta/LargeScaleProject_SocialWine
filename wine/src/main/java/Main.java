@@ -82,8 +82,11 @@ public class Main {
         //graph.addWine("wine2","prova","100","ita","abc","winery2");
        // graph.createRelationRelated("wine2","vino cattivo");
         Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
-        //graph.registerUser("adam","00","0","@tag","ita","email");
+
         //graph.createRelationFollow("bob","adam");
+        //graph.createRelationCreated("vino delicato","adam");
+        //graph.registerUser("bob","00","1","@tagAdmin","ita","email");
+        //graph.addWine("wine1","des1","100","B","A","w1");
         Menu menu = new Menu();
         menu.MainMenu();
 

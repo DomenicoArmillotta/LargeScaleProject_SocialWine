@@ -21,8 +21,8 @@ public class Menu {
         Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
         DbOperations graph_operation = new DbOperations();
 
-        //utente può mettere piu recensioni ad un vino?
-
+        //se ho troppe recensioni devo limitarle le posso ordinare in ordine alfabetico --> risolvere contatore
+        //se elimino dom non trova relation e va eccezzione
 
 
 
