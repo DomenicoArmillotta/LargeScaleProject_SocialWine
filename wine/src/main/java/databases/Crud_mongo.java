@@ -24,21 +24,18 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.mongodb.client.model.Accumulators.avg;
-import static com.mongodb.client.model.Aggregates.group;
-import static com.mongodb.client.model.Aggregates.unwind;
+import static com.mongodb.client.model.Aggregates.*;
 
 /**
  * Contains all the crud operation that could be done on MongoDB.
  */
 public class Crud_mongo {
 
-    //TO FIX - Wine with same title but different variety or country or provinice or price (or maybe same title but all  different
-    // aforementioned attributes MUST be stored in same document
+
     public void createWine(String title, String variety, String country, String province, String designation, int price, String taster_name, int points,
                            String description, String winery, String taster_twitter_handle, String country_user, String mail) throws ReviewAlreadyInserted {
 
-        if (Strings.isNullOrEmpty(title) || Strings.isNullOrEmpty(variety)|| Strings.isNullOrEmpty(country) ||  Strings.isNullOrEmpty(province)||  Strings.isNullOrEmpty(designation)|| Strings.isNullOrEmpty(description)|| price<=0 || Strings.isNullOrEmpty(taster_name)  || Strings.isNullOrEmpty(winery)|| points<=0||Strings.isNullOrEmpty(taster_twitter_handle)|| Strings.isNullOrEmpty(country_user)|| Strings.isNullOrEmpty(mail))
-        {
+        if (Strings.isNullOrEmpty(title) || Strings.isNullOrEmpty(variety)|| Strings.isNullOrEmpty(country) ||  Strings.isNullOrEmpty(province)||  Strings.isNullOrEmpty(designation)|| Strings.isNullOrEmpty(description)|| price<=0 || Strings.isNullOrEmpty(taster_name)  || Strings.isNullOrEmpty(winery)|| points<=0||Strings.isNullOrEmpty(taster_twitter_handle)|| Strings.isNullOrEmpty(country_user)|| Strings.isNullOrEmpty(mail)) {
             System.out.println("Fields for wine must not be null");
             return;
         }
@@ -46,10 +43,7 @@ public class Crud_mongo {
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
 
-       // AggregateIterable<Document> wineq = collection.aggregate(Arrays.asList(new Document("$group", new Document("_id", new Document("wineName", "" + title + "")))));
-        //for (Document dbObject : wineq) {
-            //Document wine = (Document) dbObject.get("_id");
-           // if (wine.get("wineName") != null) {
+
                 BasicDBObject query = new BasicDBObject("wineName", title);
                 MongoCursor<Document> cursor = collection.find(query).iterator();
                 // wine document not found , do insertion
@@ -60,7 +54,7 @@ public class Crud_mongo {
                             .append("description", "" + description + "")
                             .append("taster_twitter_handle", "" + taster_twitter_handle + "")
                             .append("taster_name", "" + taster_name + "")
-                            .append("country", "" + country_user + "")
+                            .append("user_country", "" + country_user + "")
                             .append("email", "" + mail + "");
                     reviews.add(rev);
 
@@ -80,7 +74,6 @@ public class Crud_mongo {
                     wineDocument.put("winery",winery);
                     wineDocument.put("designation",designation);
 
-
                     List<Document> reviews=(List<Document>)   wineDocument.get("reviews");
                     boolean isReviewInserted=false;
                     for (Document review:reviews) {
@@ -95,7 +88,7 @@ public class Crud_mongo {
                                 .append("description", "" + description + "")
                                 .append("taster_twitter_handle", "" + taster_twitter_handle + "")
                                 .append("taster_name", "" + taster_name + "")
-                                .append("country", "" + country_user + "")
+                                .append("user_country", "" + country_user + "")
                                 .append("email", "" + mail + "");
                         reviews.add(review);
                         wineDocument.put("reviews",reviews);
@@ -110,8 +103,6 @@ public class Crud_mongo {
                         throw new ReviewAlreadyInserted("The review is already inserted for that wine");
                     }
                 }
-
-
     }
 
     //WORKS
@@ -119,8 +110,12 @@ public class Crud_mongo {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
-        collection.deleteMany(Filters.eq("wineName", "" + title + ""));
-        System.out.println("Wine deleted successfully");
+        try {
+            collection.deleteMany(Filters.eq("wineName", "" + title + ""));
+            System.out.println("Wine deleted successfully");
+        } catch (MongoException me) {
+            System.err.println("Unable to delete due to an error: " + me);
+        }
     }
 
     //WORKS
@@ -130,25 +125,39 @@ public class Crud_mongo {
         MongoCollection<Document> collection = database.getCollection("wines");
         BasicDBObject match = new BasicDBObject("wineName", title);
         BasicDBObject update = new BasicDBObject("reviews", new BasicDBObject("description", description).append("taster_name", taster_name));
-        collection.updateOne(match, new BasicDBObject("$pull", update));
-        System.out.println("Comment " + description + " deleted successfully");
+        try {
+            collection.updateOne(match, new BasicDBObject("$pull", update));
+            System.out.println("Comment " + description + " deleted successfully");
+        } catch (MongoException me) {
+            System.err.println("Unable to delete due to an error: " + me);
+        }
     }
 
     //WORKS
-    public void addComment (String title, String taster_name, int score, String description, String taster_twitter_handle, String country, String email, Boolean admin) throws WineNotExistsException {
+    //VERIFY CASE IN WHICH SAME USER CALL TWICE OR MORE THIS METHOD ON SAME REVIEW
+    public void addComment (String title, String taster_name, int score, String description, String taster_twitter_handle, String country, String email) throws WineNotExistsException, ReviewAlreadyInserted {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
 
-        Document myDoc = collection.find(Filters.eq("wineName", title)).first();
-        if (myDoc == null)
-            throw new WineNotExistsException(title + " doesn't exists");
+        DBObject queryWine = QueryBuilder.start("_id").in(new String[] {title}).get();
+        DBObject queryUser = QueryBuilder.start("reviews").in(new String[] {taster_name}).get();
+        queryWine.putAll(queryUser);
+        FindIterable<Document> checkName =  collection.find();
+        if (!checkName.cursor().hasNext()) {
+            throw new ReviewAlreadyInserted("You already inserted a review for this wine");
+        } else {
+            Document myDoc = collection.find(Filters.eq("wineName", title)).first();
+            if (myDoc == null)
+                throw new WineNotExistsException(title + " doesn't exists");
 
-        BasicDBObject match = new BasicDBObject("wineName", title);
-        BasicDBObject update = new BasicDBObject("reviews", new BasicDBObject("description", description).append("taster_name", taster_name).append("rating",score)
-                .append("taster_twitter_handle",taster_twitter_handle).append("country",country).append("email",email));
-        collection.updateOne(match, new BasicDBObject("$push", update));
-        System.out.println("Comment " + description + " added successfully");
+            BasicDBObject match = new BasicDBObject("wineName", title);
+            BasicDBObject update = new BasicDBObject("reviews", new BasicDBObject("rating", score).append("description", description)
+                    .append("taster_twitter_handle",taster_twitter_handle).append("taster_name",taster_name).append("user_country",country).append("email",email));
+            collection.updateOne(match, new BasicDBObject("$push", update));
+            System.out.println("Comment " + description + " added successfully");
+        }
+
     }
 
     //WORK
@@ -176,21 +185,18 @@ public class Crud_mongo {
         User user = null;
         ArrayList<User> users = new ArrayList<>();
         Bson unwind = unwind("$reviews");
-        Document group=new Document("$group", new Document("_id", new Document("taster_name", "$reviews.taster_name").append("taster_twitter_handle", "$reviews.taster_twitter_handle").append("country","$reviews.user_country").append("email","$reviews.email")));
-
+        Document group=new Document("$group", new Document("_id", new Document("taster_name", "$reviews.taster_name")
+                .append("taster_twitter_handle", "$reviews.taster_twitter_handle")
+                .append("country","$reviews.user_country")
+                .append("email","$reviews.email")));
         AggregateIterable<Document>  results = collection.aggregate(Arrays.asList(unwind,group));
-
-       // List<String> cursor =(List<String>)  collection.distinct("reviews.taster_name", String.class);
-
         for (Document result:results ){
-
-
             Document temp_user_doc =(Document) result.get("_id");
             String username = temp_user_doc.getString("taster_name");
             String twitter_taster_handle = temp_user_doc.getString("taster_twitter_handle");
             String country = temp_user_doc.getString("country");
             String email = temp_user_doc.getString("email");
-            user = new User(username,"",twitter_taster_handle,country,email,false);
+            user = new User(username,"0000",twitter_taster_handle,country,email,false);
             users.add(user);
         }
         mongoClient.close();
@@ -201,20 +207,14 @@ public class Crud_mongo {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
-
         Review review = null;
         ArrayList<Review> reviews = new ArrayList<>();
         Bson unwind = unwind("$reviews");
-
         AggregateIterable<Document> cursor = collection.aggregate(Arrays.asList(unwind));
-
         for (Document tempReview:cursor ){
-
             Document nestedReview=(Document) tempReview.get("reviews");
-
             Integer rating= nestedReview.getInteger("rating");
             String description = nestedReview.getString("description");
-
             review = new Review(description,rating);
             reviews.add(review);
         }
@@ -226,7 +226,6 @@ public class Crud_mongo {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
-
         Wine wine = null;
         ArrayList<Wine> wines = new ArrayList<>();
         MongoCursor<Document> cursor = collection.find().iterator();
@@ -245,6 +244,37 @@ public class Crud_mongo {
         mongoClient.close();
         return wines;
     }
+
+    public List[] findAllReviewAndUserForSpecificWine (String title) {
+        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
+        MongoDatabase database = mongoClient.getDatabase("Wines");
+        MongoCollection<Document> collection = database.getCollection("wines");
+
+        Bson filter = Filters.eq("wineName", title);
+        ArrayList<Review> reviews = new ArrayList<>();
+        ArrayList<User> users = new ArrayList<>();
+        Bson unwind = unwind("$reviews");
+        Review review = null;
+        User user = null;
+
+       AggregateIterable<Document> cursor = collection.aggregate(Arrays.asList(match(filter),unwind));
+
+        for (Document doc: cursor){
+            Document nestedReview=(Document) doc.get("reviews");
+            Integer rating= nestedReview.getInteger("rating");
+            String description = nestedReview.getString("description");
+            String username =  nestedReview.getString("taster_name");
+            String twitter_taster_handle =nestedReview.getString("taster_twitter_handle");
+            String country = nestedReview.getString("user_country");
+            String email = nestedReview.getString("email");
+            review = new Review(description,rating);
+            user = new User(username, "",twitter_taster_handle, country, email, false);
+            reviews.add(review);
+            users.add(user);
+        }
+        return new List[] {reviews,users};
+    }
+
 }
 
 

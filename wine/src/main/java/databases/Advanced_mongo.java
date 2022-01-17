@@ -1,26 +1,23 @@
 package databases;
 
 
-import beans.Review;
 import com.mongodb.BasicDBObject;
-import com.mongodb.BasicDBObjectBuilder;
-import com.mongodb.DBObject;
 import com.mongodb.client.*;
 import com.mongodb.client.model.*;
 import exception.NoCountryToShowException;
+import exception.ResultsNotFoundException;
 import exception.WrongInsertionException;
 import org.bson.Document;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
 
+import java.text.DecimalFormat;
 import java.util.*;
 
 import static com.mongodb.client.model.Accumulators.*;
 import static com.mongodb.client.model.Aggregates.*;
-import static com.mongodb.client.model.Sorts.ascending;
 import static com.mongodb.client.model.Sorts.descending;
 
 /**
@@ -28,40 +25,58 @@ import static com.mongodb.client.model.Sorts.descending;
  */
 public class Advanced_mongo {
     Crud_mongo mongo = new Crud_mongo();
+    private static final DecimalFormat df = new DecimalFormat("0.00");
 
-    //WORK
-    public void topFiveCountryAccordingRating() throws NoCountryToShowException, WrongInsertionException {
-        //ArrayList<String> countryList = new ArrayList<>(mongo.showAllWinesCountry());
+    //WORKS
+    public void topFiveCountryAccordingRating() throws NoCountryToShowException, WrongInsertionException, ResultsNotFoundException {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
-        Bson limit = limit(5);
+        Bson limit = limit(3);
         Bson sort = sort(descending("Average"));
         Bson unwind = unwind("$reviews");
         Bson group = group("$country", avg("Average", "$reviews.rating"));
         List<Document> results = collection.aggregate(Arrays.asList(unwind, group, sort, limit)).into(new ArrayList<>());
-        System.out.println("\n" + results + "\n");
+        if (!results.iterator().hasNext()){
+            throw new ResultsNotFoundException("The are no items for this query!");
+        }else{
+            for (int i=0; i< results.size(); i++){
+                String countryName = (String) results.get(i).get("_id");
+                Double avg = results.get(i).getDouble("Average");
+                System.out.println("Country: " + countryName + " average: " + df.format(avg) + "\n");
+            }
+        }
     }
 
-    //WORK
-    public void topThreeVarietyAccordingRating() {
+    //WORKS
+    public void topTenUsersMadeHighestumberOfReveiwsPerVarieties() throws ResultsNotFoundException {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
 
-        Bson limit = limit(3);
-        Bson sort = sort(descending("AverageRating"));
+        Bson limit = limit(10);
+        Bson sort = sort(descending("count"));
         Bson unwind = unwind("$reviews");
-        Bson group = group("$variety", avg("AverageRating","$reviews.rating"));
-        List<Document> results = collection.aggregate(Arrays.asList(unwind,group,sort,limit)).into(new ArrayList<>());
-        System.out.println("\n" + results + "\n");
+        Bson group = new Document("$group", new Document("_id", new Document("taster_name", "$reviews.taster_name").append("variety", "$variety")).append(
+                "count", new Document("$sum", 1)));
+        List<Document> results = collection.aggregate(Arrays.asList(unwind, group, sort, limit)).into(new ArrayList<>());
+        if (!results.iterator().hasNext()){
+            throw new ResultsNotFoundException("The are no items for this query!");
+        }else{
+            for (int i=0; i< results.size(); i++){
+                Document doc = (Document) results.get(i).get("_id");
+                Integer count = results.get(i).getInteger("count");
+                System.out.println("Taster_name: " + doc.get("taster_name") + " variety: " + doc.get("variety") + " count: " + count + "\n");
+            }
+        }
+
     }
 
 
-    //TO DO - TOP FIVE WINES WITH PRICE LESS UNDER A TRESHOLD INSERTED BY USER
-    public void topFiveWinesAccordinglyRatingsInsertedByUser() throws WrongInsertionException {
+    //WORKS
+    public void topFiveWinesAccordinglyRatingsInsertedByUser() throws WrongInsertionException, ResultsNotFoundException {
         MongoClient mongoClient = MongoClients.create();
-        MongoDatabase database = mongoClient.getDatabase("wine");
+        MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
         System.out.println("Insert price treshold:");
         Scanner sc = new Scanner(System.in);
@@ -73,11 +88,14 @@ public class Advanced_mongo {
                 Bson filter = Filters.gte("price",treshold);
                 Bson unwind = unwind("$reviews");
                 Bson match = match(filter);
-                Bson wineName = Filters.eq("wineName");
-                Bson tasterName = Filters.eq("reviews.taster_name");
-                Bson project = Projections.fields(wineName,tasterName);
-                List<Document> results = collection.aggregate(Arrays.asList(unwind,match,project)).into(new ArrayList<>());
-                System.out.println("\n" + results + "\n");
+                Bson project = Aggregates.project(Projections.fields(Projections.include("wineName","price", "reviews.taster_name")));
+                AggregateIterable<Document> results = collection.aggregate(Arrays.asList(unwind,match, project));
+                if (!results.iterator().hasNext())
+                    throw new ResultsNotFoundException("The are no items for this query!");
+                for (Document doc : results){
+                   Document review= (Document)doc.get("reviews");
+                    System.out.println("Username: " + review.getString("taster_name")+ "\n"+ "Wine name: " + doc.getString("wineName")+ "\n"+ "Wine's price: " + doc.getInteger("price").toString() + "\n");
+                }
             }
         } catch (InputMismatchException ime){
             System.out.println("You inserted a string instead of a number");
