@@ -31,6 +31,17 @@ public class DbOperations {
         }
         return result;
     }
+    public boolean adminLogin2(String loginAdminName,String loginAdminPsw) {
+        boolean result = false;
+        if (graph.checkLoginByUsername(loginAdminName, loginAdminPsw, "1") == true) {
+            result = true;
+        } else {
+            result = false;
+        }
+        return result;
+    }
+
+
 
     //DONE
     public boolean userLogin() {
@@ -44,6 +55,17 @@ public class DbOperations {
         String loginUserPsw = scanLoginUserPsw.nextLine();
         if (graph.checkLoginByUsername(loginUserName, loginUserPsw, "0") == true) {
             System.out.println("Caro User sei Entrato");
+            result = true;
+        } else {
+            result = false;
+        }
+        return result;
+    }
+
+    public boolean userLogin2(String loginUserName , String loginUserPsw) {
+        boolean result = false;
+
+        if (graph.checkLoginByUsername(loginUserName, loginUserPsw, "0") == true) {
             result = true;
         } else {
             result = false;
