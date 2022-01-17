@@ -22,7 +22,8 @@ public class Menu {
         DbOperations graph_operation = new DbOperations();
 
         //se ho troppe recensioni devo limitarle le posso ordinare in ordine alfabetico --> risolvere contatore
-        //se elimino dom non trova relation e va eccezzione
+        //controllare se elimina user vuoti
+        //bug --> rating limitare a 0/100
 
 
 

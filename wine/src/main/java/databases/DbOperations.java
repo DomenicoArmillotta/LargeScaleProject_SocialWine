@@ -257,10 +257,10 @@ public class DbOperations {
             int i = 0;
             for (i = 0; i < users.size(); i++) {
                 ArrayList<Review> reviews = new ArrayList<>(graph.showCommentsFriends(myUsername, users.get(i).getUsername()));
-                System.out.println("============ " + k + " : Comment made by " + users.get(i).getUsername() + "===================");
-                int j;
+                if (reviews.size()!=0){
+                    int j;
                 for (j = 0; j < reviews.size(); j++) {
-                    //System.out.println("Comment to select "+k+" :");
+                    System.out.println("============ " + k + " : Comment made by " + users.get(i).getUsername() + "===================");
                     k++;
                     allReview.add(reviews.get(j));
                     System.out.println("comment made to the wine:  " + graph.findWineByDescription(reviews.get(j).getDescription()).get(0).getWineName());
@@ -274,6 +274,7 @@ public class DbOperations {
                     }
 
                 }
+            }
             }
             System.out.println("=======================================================");
             System.out.println("what do you want to do?");
@@ -403,6 +404,7 @@ public class DbOperations {
                     System.out.println(reviews.get(j).getDescription());
                     System.out.println("rating = " + reviews.get(j).getRating());
                     System.out.println("like = " + graph.countLikeByDescription(reviews.get(j).getDescription()));
+
                     if (graph.checkIfLikedByDescription(reviews.get(j).getDescription(), myUsername) == 1) {
                         System.out.println("Like = V");
                     } else if (graph.checkIfLikedByDescription(reviews.get(j).getDescription(), myUsername) == 0) {
@@ -535,9 +537,9 @@ public class DbOperations {
         ArrayList<User> users = new ArrayList<>(adv_graph.showSuggestedUserByFriends(myUsername));
         int i = 0;
         if (users.size() != 0) {
-            System.out.println("==============" + i + " :All Suggested User By Me============= ");
+            System.out.println("==============All Suggested User By Me============= ");
             for (i = 0; i < users.size(); i++) {
-                System.out.println("name: " + users.get(i).getUsername() + "   country: " + users.get(i).getCountry() + "  Followers: " + graph.countFollowersByUsername(users.get(i).getUsername()));
+                System.out.println(i+" : name: " + users.get(i).getUsername() + "   country: " + users.get(i).getCountry() + "  Followers: " + graph.countFollowersByUsername(users.get(i).getUsername()));
             }
             System.out.println("===================================================== ");
             System.out.println("Select a user to follow :");
@@ -547,7 +549,11 @@ public class DbOperations {
 
             } else {
                 int selectedInt = Integer.parseInt(selected);
-                graph.createRelationFollow(myUsername, users.get(selectedInt).getUsername());
+                if (selectedInt>=0 && selectedInt<=(users.size()-1)) {
+                    graph.createRelationFollow(myUsername, users.get(selectedInt).getUsername());
+                }else{
+                    System.out.println("Selection wrong");
+                }
             }
         } else {
             System.out.println("No suggested friends");
@@ -687,6 +693,8 @@ public class DbOperations {
 
                 } else {
                     int selectedIntProfile = Integer.parseInt(selectedProfile);
+                    if(selectedIntProfile>=0 && selectedIntProfile<(users.size()-1))
+                    {
                     System.out.println("==============PROFILE OF YOUR FRIEND============= ");
                     System.out.println("Name : " + users.get(selectedIntProfile).getUsername());
                     System.out.println("Country : " + users.get(selectedIntProfile).getCountry());
@@ -750,7 +758,11 @@ public class DbOperations {
 
                         } else {
                             int selectedReviewInt = Integer.parseInt(selectedReviewLike);
-                            graph.putLikeByDescription(friendReviews.get(selectedReviewInt).getDescription(), myUsername);
+                            if(selectedReviewInt>=0 && selectedReviewInt<(friendReviews.size()-1)) {
+                                graph.putLikeByDescription(friendReviews.get(selectedReviewInt).getDescription(), myUsername);
+                            }else{
+                                System.out.println("selection wrong");
+                            }
                         }
                     } else if (selectChoise.equals("2")) {
                         System.out.println("select a post: ");
@@ -760,11 +772,18 @@ public class DbOperations {
 
                         } else {
                             int selectedReviewInt = Integer.parseInt(selectedReviewLike);
-                            graph.deleteLikeByDescription(friendReviews.get(selectedReviewInt).getDescription(), myUsername);
+                            if(selectedReviewInt>=0 && selectedReviewInt<=(friendReviews.size()-1)) {
+                                graph.deleteLikeByDescription(friendReviews.get(selectedReviewInt).getDescription(), myUsername);
+                            }else{
+                                System.out.println("Selection wrong");
+                            }
                         }
                     }
 
 
+                }else {
+                        System.out.println("Selection wrong");
+                    }
                 }
             }else{
                 System.out.println("You dont have friends");
@@ -981,18 +1000,22 @@ public class DbOperations {
 
         } else {
             int selectedInt = Integer.parseInt(selected);
-            if(graph.checkIfCommentedWine(wines.get(selectedInt).getWineName(),myUsername)==0){
-                System.out.println("Insert the comment");
-                Scanner scanComment = new Scanner(System.in);
-                String description = scanComment.nextLine();
-                System.out.println("Insert the rating");
-                Scanner scanRating = new Scanner(System.in);
-                String rating = scanRating.nextLine();
-                graph.addComment(description, rating);
-                graph.createRelationCreated(description, myUsername);
-                graph.createRelationRelated(wines.get(selectedInt).getWineName(), description);
+            if(selectedInt>=0 && selectedInt<=(wines.size()-1)) {
+                if (graph.checkIfCommentedWine(wines.get(selectedInt).getWineName(), myUsername) == 0) {
+                    System.out.println("Insert the comment");
+                    Scanner scanComment = new Scanner(System.in);
+                    String description = scanComment.nextLine();
+                    System.out.println("Insert the rating");
+                    Scanner scanRating = new Scanner(System.in);
+                    String rating = scanRating.nextLine();
+                    graph.addComment(description, rating);
+                    graph.createRelationCreated(description, myUsername);
+                    graph.createRelationRelated(wines.get(selectedInt).getWineName(), description);
+                } else {
+                    System.out.println("You have already commented this wine");
+                }
             }else{
-                System.out.println("You have already commented this wine");
+                System.out.println("Selection wrong");
             }
 
         }
@@ -1042,11 +1065,13 @@ public class DbOperations {
 
                 } else {
                     int selectedInt = Integer.parseInt(selected);
-                    if(selectedInt>(reviews.size()-1) || selectedInt<0){
-                        System.out.println("i cant put like on this");
-                    }else{
+                    if(selectedInt>=0 && selectedInt<=(reviews.size()-1)){
                         graph.putLikeByDescription(reviews.get(selectedInt).getDescription(), myUsername);
+                    }else{
+                        System.out.println("i cant put like on this");
                     }
+
+
                 }
             } else if (selectedLike.equals("2")) {
                 System.out.println("Select a comment to delete like :");
