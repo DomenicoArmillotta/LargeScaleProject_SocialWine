@@ -604,20 +604,20 @@ public class DbOperations {
         System.out.println("==============LIST OF MY COMMENTS============= ");
         ArrayList<Review> myReviews = new ArrayList<>(graph.showMyComment(myUsername));
         if (myReviews.size() != 0) {
-            int k = 0;
-            for (k = 0; k < myReviews.size(); k++) {
-                System.out.println(k + " : Comment  ");
-                System.out.println(myReviews.get(k).getDescription());
-                System.out.println("rating = " + myReviews.get(k).getRating());
-                System.out.println("like = " + graph.countLikeByDescription(myReviews.get(k).getDescription()));
-                System.out.println("wine = " + graph.findWineByDescription(myReviews.get(k).getDescription()).get(0).getWineName());
-                if (graph.checkIfLikedByDescription(myReviews.get(k).getDescription(), myUsername) == 1) {
+            int x = 0;
+            for (x = 0; x < myReviews.size(); x++) {
+                System.out.println(x + " : Comment  ");
+                System.out.println(myReviews.get(x).getDescription());
+                System.out.println("rating = " + myReviews.get(x).getRating());
+                System.out.println("like = " + graph.countLikeByDescription(myReviews.get(x).getDescription()));
+                System.out.println("wine = " + graph.findWineByDescription(myReviews.get(x).getDescription()).get(0).getWineName());
+                if (graph.checkIfLikedByDescription(myReviews.get(x).getDescription(), myUsername) == 1) {
                     System.out.println("Like = V");
-                } else if (graph.checkIfLikedByDescription(myReviews.get(k).getDescription(), myUsername) == 0) {
+                } else if (graph.checkIfLikedByDescription(myReviews.get(x).getDescription(), myUsername) == 0) {
                     System.out.println("Like = X");
                 }
 
-                if (k != (myReviews.size() - 1)) {
+                if (x != (myReviews.size() - 1)) {
                     System.out.println("------------------------------------------------");
                 }
             }
