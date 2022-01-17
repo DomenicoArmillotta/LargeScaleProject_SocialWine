@@ -44,7 +44,6 @@ public class Crud_graph implements AutoCloseable {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MERGE (p:User {username: $username , password: $password , adminFlag: $adminFlag , twitter_taster_handle: $twitter_taster_handle , country: $country , email: $email   })",
                         parameters("username", username , "password" , password , "adminFlag" , adminFlag , "twitter_taster_handle" , twitter_taster_handle , "country" , country , "email" , email ));
-                System.out.println("User added successfully (Neo4J)." + "\n");
                 return null;
             });
         }
@@ -58,7 +57,6 @@ public class Crud_graph implements AutoCloseable {
                 tx.run("MATCH path=(u:User{username : $username})\n" +
                                 "DELETE u",
                         parameters("username", username));
-                System.out.println("User drop successfully (Neo4J)." + "\n");
                 return null;
             });
         }
@@ -157,7 +155,6 @@ public class Crud_graph implements AutoCloseable {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MERGE (p:Wine {wineName: $wineName , designation: $designation , price: $price , province: $province ,  variety: $variety , winery: $winery  })",
                         parameters("wineName",wineName,"designation",designation,"price",price , "province" ,province,"variety",variety , "winery",winery));
-                System.out.println("Wine added successfully (Neo4J)." + "\n");
                 return null;
             });
         }
@@ -170,7 +167,6 @@ public class Crud_graph implements AutoCloseable {
                 tx.run("MATCH (u:Wine{wineName : $wineName})\n" +
                                 "DELETE u",
                         parameters("wineName", wineName));
-                System.out.println("Wine drop successfully (Neo4J)." + "\n");
                 return null;
             });
         }
@@ -225,7 +221,6 @@ public class Crud_graph implements AutoCloseable {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MERGE (p:Post {description: $description , rating: $rating })",
                         parameters( "description", description , "rating" , rating));
-                System.out.println("comment added successfully (Neo4J)." + "\n");
                 return null;
             });
         }
@@ -264,7 +259,6 @@ public class Crud_graph implements AutoCloseable {
                 tx.run("MATCH (p:Post{description: $description}) \n" +
                                 "DELETE p",
                         parameters("description", description ));
-                System.out.println("Review drop successfully (Neo4J)." + "\n");
                 return null;
             });
         }
@@ -327,6 +321,7 @@ public class Crud_graph implements AutoCloseable {
             commenttoshow = session.readTransaction((TransactionWork<ArrayList<Review>>) tx -> {
                 Result result = tx.run("MATCH (u:User{username: $myUsername}), (p:Post),(w:Wine)  \n" +
                                 "WHERE  EXISTS ((u)-[:Created]->(p))\n" +
+                                "AND  EXISTS ((p)-[:Related]->(w))\n" +
                                 "RETURN  p.description AS description , p.rating AS rating\n",
                         parameters("myUsername", myUsername  ));
                 ArrayList<Review> reviews = new ArrayList<>();
@@ -380,7 +375,6 @@ public class Crud_graph implements AutoCloseable {
                                 "WHERE NOT EXISTS ((u)-[:Follow]->(u1))\n" +
                                 "CREATE (u)-[:Follow]->(u1)",
                         parameters("username1", username1, "username2", username2));
-                System.out.println("Follow added successfully (Neo4J)." + "\n");
                 return null;
             });
         }
@@ -394,7 +388,6 @@ public class Crud_graph implements AutoCloseable {
                 tx.run("MATCH path=(u:User{username : $username1})-[f:Follow]-(u1:User{username : $username2})\n" +
                                 "DELETE f",
                         parameters("username1", username1, "username2", username2));
-                System.out.println("Follow drop successfully (Neo4J)." + "\n");
                 return null;
             });
 
@@ -470,7 +463,6 @@ public class Crud_graph implements AutoCloseable {
                                 "WHERE NOT EXISTS ((u)-[:Like]->(p))\n" +
                                 "CREATE (u)-[:Like]->(p)",
                         parameters("description", description, "username", username));
-                System.out.println("Like reaction successfully inserted (Neo4J)." + "\n");
                 return null;
             });
         }
@@ -484,7 +476,6 @@ public class Crud_graph implements AutoCloseable {
                 tx.run("MATCH path=(u:User{username : $username})-[f:Like]-(p:Post{description : $description})\n" +
                                 "DELETE f",
                         parameters("description", description, "username", username));
-                System.out.println("Like drop successfully made it (Neo4J)." + "\n");
                 return null;
             });
         }
@@ -498,7 +489,6 @@ public class Crud_graph implements AutoCloseable {
                                 "WHERE NOT EXISTS ((p)-[:Related]->(w))\n" +
                                 "CREATE (p)-[:Related]->(w)",
                         parameters("wineName", wineName, "description", description));
-                System.out.println("Related added successfully (Neo4J)." + "\n");
                 return null;
             });
         }
@@ -512,7 +502,6 @@ public class Crud_graph implements AutoCloseable {
                 tx.run("MATCH path=(p:Post{description : $description})-[f:Related]-(w:Wine{wineName : $wineName})\n" +
                                 "DELETE f",
                         parameters("description", description, "wineName", wineName));
-                System.out.println("Relation Related drop successfully made it (Neo4J)." + "\n");
                 return null;
             });
         }
@@ -525,7 +514,6 @@ public class Crud_graph implements AutoCloseable {
                 tx.run("MATCH (u:User)-[f:Like]->(p:Post{description : $description})\n" +
                                 "DELETE f",
                         parameters("description", description));
-                System.out.println("Relation Related drop successfully made it (Neo4J)." + "\n");
                 return null;
             });
         }
@@ -539,7 +527,6 @@ public class Crud_graph implements AutoCloseable {
                 tx.run("MATCH (p:Post{description : $description})-[f:Related]->(w:Wine)\n" +
                                 "DELETE f",
                         parameters("description", description));
-                System.out.println("Relation Related drop successfully made it (Neo4J)." + "\n");
                 return null;
             });
         }
@@ -552,7 +539,6 @@ public class Crud_graph implements AutoCloseable {
                 tx.run("MATCH (u:User)-[f:Created]->(p:Post{description : $description})\n" +
                                 "DELETE f",
                         parameters("description", description));
-                System.out.println("Relation Related drop successfully made it (Neo4J)." + "\n");
                 return null;
             });
         }
@@ -566,7 +552,6 @@ public class Crud_graph implements AutoCloseable {
                 tx.run("MATCH (u:User{username: $username})<-[f:Follow]->(u:User)\n" +
                                 "DELETE f",
                         parameters("username", username));
-                System.out.println("Relation follow -> drop successfully made it (Neo4J)." + "\n");
                 return null;
             });
         }
@@ -578,7 +563,6 @@ public class Crud_graph implements AutoCloseable {
                 tx.run("MATCH (u:User{username: $username})<-[f:Follow]-(u:User)\n" +
                                 "DELETE f",
                         parameters("username", username));
-                System.out.println("Relation follow <- drop successfully made it (Neo4J)." + "\n");
                 return null;
             });
         }
@@ -590,7 +574,6 @@ public class Crud_graph implements AutoCloseable {
                 tx.run("MATCH (u:User{username: $username})-[f:Like]->(p:Post)\n" +
                                 "DELETE f",
                         parameters("username", username));
-                System.out.println("Relation like  drop successfully made it (Neo4J)." + "\n");
                 return null;
             });
         }
@@ -603,7 +586,6 @@ public class Crud_graph implements AutoCloseable {
                 tx.run("MATCH (u:User{username: $username})-[f:Created]->(p:Post)\n" +
                                 "DELETE f",
                         parameters("username", username));
-                System.out.println("Relation created  drop successfully made it (Neo4J)." + "\n");
                 return null;
             });
         }
@@ -615,7 +597,6 @@ public class Crud_graph implements AutoCloseable {
                 tx.run("MATCH (u:User{username: $username})\n" +
                                 "DELETE u",
                         parameters("username", username));
-                System.out.println("Node user  drop successfully made it (Neo4J)." + "\n");
                 return null;
             });
         }
@@ -627,7 +608,6 @@ public class Crud_graph implements AutoCloseable {
                 tx.run("MATCH (p:Post)-[f:Related]->(w:Wine{wineName: $wineName})\n" +
                                 "DELETE f",
                         parameters("wineName", wineName));
-                System.out.println("Relation related  drop successfully made it (Neo4J)." + "\n");
                 return null;
             });
         }
