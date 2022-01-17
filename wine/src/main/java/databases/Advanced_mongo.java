@@ -1,6 +1,7 @@
 package databases;
 
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.*;
 import com.mongodb.client.model.*;
 import exception.NoCountryToShowException;
@@ -12,6 +13,7 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.conversions.Bson;
 
+import java.text.DecimalFormat;
 import java.util.*;
 
 import static com.mongodb.client.model.Accumulators.*;
@@ -23,38 +25,55 @@ import static com.mongodb.client.model.Sorts.descending;
  */
 public class Advanced_mongo {
     Crud_mongo mongo = new Crud_mongo();
+    private static final DecimalFormat df = new DecimalFormat("0.00");
 
-    //WORK
-    public void topFiveVarietyAccordingRating() throws NoCountryToShowException, WrongInsertionException {
-        //ArrayList<String> countryList = new ArrayList<>(mongo.showAllWinesCountry());
+    //WORKS
+    public void topFiveCountryAccordingRating() throws NoCountryToShowException, WrongInsertionException, ResultsNotFoundException {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
         Bson limit = limit(3);
         Bson sort = sort(descending("Average"));
         Bson unwind = unwind("$reviews");
-        Bson group = group("$variety", avg("Average", "$reviews.rating"));
+        Bson group = group("$country", avg("Average", "$reviews.rating"));
         List<Document> results = collection.aggregate(Arrays.asList(unwind, group, sort, limit)).into(new ArrayList<>());
-        System.out.println("\n" + results + "\n");
+        if (!results.iterator().hasNext()){
+            throw new ResultsNotFoundException("The are no items for this query!");
+        }else{
+            for (int i=0; i< results.size(); i++){
+                String countryName = (String) results.get(i).get("_id");
+                Double avg = results.get(i).getDouble("Average");
+                System.out.println("Country: " + countryName + " average: " + df.format(avg) + "\n");
+            }
+        }
     }
 
-    //WORK
-    //TO DO -- TOP 5 WINES COUNTRIES WITH AVERAGE NUMBER OF COMMENTS FOR USER HIGHER
-    public void topThreeVarietyAccordingRating() {
+    //WORKS
+    public void topTenUsersMadeHighestumberOfReveiwsPerVarieties() throws ResultsNotFoundException {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
 
-        Bson limit = limit(3);
-        Bson sort = sort(descending("AverageRating"));
+        Bson limit = limit(10);
+        Bson sort = sort(descending("count"));
         Bson unwind = unwind("$reviews");
-        Bson group = group("$variety", avg("AverageRating","$reviews.rating"));
-        List<Document> results = collection.aggregate(Arrays.asList(unwind,group,sort,limit)).into(new ArrayList<>());
-        System.out.println("\n" + results + "\n");
+        Bson group = new Document("$group", new Document("_id", new Document("taster_name", "$reviews.taster_name").append("variety", "$variety")).append(
+                "count", new Document("$sum", 1)));
+        List<Document> results = collection.aggregate(Arrays.asList(unwind, group, sort, limit)).into(new ArrayList<>());
+        if (!results.iterator().hasNext()){
+            throw new ResultsNotFoundException("The are no items for this query!");
+        }else{
+            for (int i=0; i< results.size(); i++){
+                Document doc = (Document) results.get(i).get("_id");
+                Integer count = results.get(i).getInteger("count");
+                System.out.println("Taster_name: " + doc.get("taster_name") + " variety: " + doc.get("variety") + " count: " + count + "\n");
+            }
+        }
+
     }
 
 
-    //WORK
+    //WORKS
     public void topFiveWinesAccordinglyRatingsInsertedByUser() throws WrongInsertionException, ResultsNotFoundException {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("Wines");

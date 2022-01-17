@@ -35,7 +35,10 @@ public class Main {
         adv.topFiveCountryAccordingScore();
         adv.topFiveMostExpensiveVarieties();
         adv.topFiveUsersHighestAvgScores();*/
-        adv.topFiveWinesAccordinglyRatingsInsertedByUser();
+        adv.topFiveCountryAccordingRating();
+        adv.topTenUsersMadeHighestumberOfReveiwsPerVarieties();
+
+
         //crud.addComment("Domaines Vinsmoselle 2014 Bech-Kleinmacher Naumberg Grand Premier Cru Auxerrois (Moselle Luxembourgeoise)","Leonardo",80,"Vino buono","@leo","ita","cazzo",false);
         //crud.deleteAllCommentForGivenUser("Leonardo");
         //crud.addComment("Zanetti NV Case Bianche Extra Dry  (Prosecco di Conegliano e Valdobbiadene)","Leonardo",80,"Vino buono","@leo","ita","cazzo",false);
