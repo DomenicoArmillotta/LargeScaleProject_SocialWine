@@ -41,14 +41,14 @@ public class Main {
         //crud.createWine("Taverello","Stt","Ger","Ba",40,"tryr",82,"bad","Enoteca","@le","it","leo@ii",false);
 
 
-        Crud_mongo crud = new Crud_mongo();
-        Populating_function_social pop = new Populating_function_social();
-        pop.populateSocial();
+        //Crud_mongo crud = new Crud_mongo();
+        //Populating_function_social pop = new Populating_function_social();
+        //pop.populateSocial();
         //crud.deleteWine("Tavernello");
-        Advanced_mongo adv = new Advanced_mongo();
-        adv.topFiveMostExpensiveVarieties();
-        adv.topFiveCountryAccordingRating();
-        adv.topFiveWinesAccordinglyRatingsInsertedByUser();
+        //Advanced_mongo adv = new Advanced_mongo();
+        //adv.topFiveMostExpensiveVarieties();
+        //adv.topFiveCountryAccordingRating();
+        //adv.topFiveWinesAccordinglyRatingsInsertedByUser();
         //crud.createWine("Tavernello","Rosso","Italia","Bari",56,"Giuseppe",77,"Vino delizioso","@Leonardo","Italia","cazzo",false);
         //crud.createWine("Tavernello","Rosso","Italia","Firenze",54,"Giovanni",80,"Vino delizioso","@Leonardo","Italia","cazzo",false);
         //crud.createWine("Tavernello","Rosso","Italia","Pisa",30,"Antonio",75,"Vino delizioso","@Leonardo","Italia","cazzo",false);
@@ -81,7 +81,8 @@ public class Main {
         //graph.registerUser("bob","00","1","@tagAdmin","ita","email");
         //graph.addWine("wine2","prova","100","ita","abc","winery2");
        // graph.createRelationRelated("wine2","vino cattivo");
-        //menu.MainMenu();
+        Menu menu = new Menu();
+        menu.MainMenu();
 
     }
 }

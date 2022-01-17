@@ -21,6 +21,9 @@ public class Menu {
         Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
         DbOperations graph_operation = new DbOperations();
 
+        //bug profile doppiato -->admin/user
+        //utente può mettere piu recensioni ad un vino?
+
 
 
 

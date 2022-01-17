@@ -759,7 +759,7 @@ public class DbOperations {
         System.out.println("Digit the name: ");
         Scanner scanName = new Scanner(System.in);
         String nameToSearch = scanName.nextLine();
-        User user = graph.showUserByUsername(myUsername);
+        User user = graph.showUserByUsername(nameToSearch);
         if (user != null) {
             System.out.println("name: " + user.getUsername() + "\nemail: " + user.getEmail() + "\ncountry" + user.getCountry() + "\nFollowers:" + graph.countFollowersByUsername(user.getUsername()));
             System.out.println("Select operation: ");
@@ -836,7 +836,7 @@ public class DbOperations {
         System.out.println("Digit the name: ");
         Scanner scanName = new Scanner(System.in);
         String nameToSearch = scanName.nextLine();
-        User user = graph.showUserByUsername(myUsername);
+        User user = graph.showUserByUsername(nameToSearch);
         if (user != null) {
             System.out.println("name: " + user.getUsername() + "\nemail: " + user.getEmail() + "\ncountry" + user.getCountry() + "\nFollowers:" + graph.countFollowersByUsername(user.getUsername()));
             System.out.println("Select operation: ");
