@@ -4,7 +4,6 @@ import beans.User;
 import beans.Wine;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-import exception.AlreadyPopulatedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +15,6 @@ import java.util.List;
 public class Populating_function_social {
 
 
-    //TO DO -- FUNCTION THAT TAKES WINES E REVIEWS AND POPULATE SOCIAL
     public void populateSocial(){
         MongoClient mongoClient = MongoClients.create();
         Crud_mongo mongo = new Crud_mongo();
