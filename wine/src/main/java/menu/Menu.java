@@ -22,13 +22,15 @@ public class Menu {
         DbOperations graph_operation = new DbOperations();
 
         //se ho troppe recensioni devo limitarle le posso ordinare in ordine alfabetico --> risolvere contatore
-        //se elimino dom non trova relation e va eccezzione
+        //controllare se elimina user vuoti
+        //bug --> rating limitare a 0/100
 
 
 
 
         while(true) {
             int user = 0;
+            String userLoggedName=null;
             while (user == 0) {
                 System.out.println("==========MENU===============");
                 System.out.println("1" + " User Login");
@@ -38,9 +40,40 @@ public class Menu {
                 Scanner scanSelection = new Scanner(System.in);
                 String selection = scanSelection.nextLine();
                 if (selection.equals("1")) {
+                   /* userLoggedName=null;
+                    System.out.println("==============LOGIN ADMIN ===========");
+                    System.out.println("Please enter your username: ");
+                    Scanner scanLoginUsername = new Scanner(System.in);
+                    String loginName = scanLoginUsername.nextLine();
+                    System.out.println("Please enter your password: ");
+                    Scanner scanLoginPsw = new Scanner(System.in);
+                    String loginPsw = scanLoginPsw.nextLine();
+                    if(graph_operation.userLogin2(loginName,loginPsw)==true){
+                        user = 1;
+                        userLoggedName=loginName;
+                    }else{
+                        System.out.println("Password or username not correct");
+                        user=0;
+                    }*/
                     user = 1;
                 } else if (selection.equals("2")) {
                     user = 2;
+                    /*userLoggedName=null;
+                    System.out.println("==============LOGIN ADMIN ===========");
+                    System.out.println("Please enter your username: ");
+                    Scanner scanLoginAdminUsername = new Scanner(System.in);
+                    String loginAdminName = scanLoginAdminUsername.nextLine();
+                    System.out.println("Please enter your password: ");
+                    Scanner scanLoginAdminPsw = new Scanner(System.in);
+                    String loginAdminPsw = scanLoginAdminPsw.nextLine();
+                    if(graph_operation.adminLogin2(loginAdminName,loginAdminPsw)==true){
+                        user = 2;
+                        userLoggedName=loginAdminName;
+                    }else{
+                        System.out.println("Password or username not correct");
+                        user=0;
+                    }*/
+
                 } else if (selection.equals("3")) {
                     System.out.println("===================Registration phase====================");
                     graph_operation.registerNewUser();
