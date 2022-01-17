@@ -40,12 +40,13 @@ public class Populating_wine_document {
                 }
 
                    // to check if the document is already inserted
-                MongoCursor<Document> cursor = wineCollection.find(query).iterator();
+                BasicDBObject query1 = new BasicDBObject("wineName", wine.get("title"));
+                MongoCursor<Document> cursor = wineCollection.find(query1).iterator();
                 // document not found , do insertion
                 if (!cursor.hasNext()) {
                     // find all reviews belong to that title and add them
                     AggregateIterable<Document> output2 = reviewCollection.aggregate(Arrays.asList(Aggregates.match(query),
-                            new Document("$group", new Document("_id", new Document("rating", "$points").append("description", "$description").append("taster_twitter_handle", "$taster_twitter_handle").append("taster_name","$taster_name").append("taster_twitter_handle","$taster_twitter_handle").append("user_country","None").append("email","None")))));
+                            new Document("$group", new Document("_id", new Document("rating", "$points").append("description", "$description").append("taster_twitter_handle", "$taster_twitter_handle").append("taster_name","$taster_name").append("user_country","None").append("email","None")))));
                     List<Document> distinctReviews=new ArrayList<>();
 
 

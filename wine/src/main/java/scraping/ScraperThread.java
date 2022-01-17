@@ -7,6 +7,8 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import databases.Crud_graph;
+import databases.Crud_mongo;
+import exception.ReviewAlreadyInserted;
 import exception.ServerWinmagOufOfServiceException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -41,10 +43,11 @@ public class ScraperThread implements Runnable{
      // com.mongodb.client.MongoClient mongoClient=  MongoClients.create(mcs);
 
 
-        MongoDatabase database = mongoClient.getDatabase("wine");
-        MongoCollection<org.bson.Document> collection = database.getCollection("review");
-        MongoCollection<org.bson.Document> usersCollection = database.getCollection("user_credentials");
+        MongoDatabase database = mongoClient.getDatabase("Wines");
+        MongoCollection<org.bson.Document> collection = database.getCollection("wines");
 
+        MongoCollection<org.bson.Document> usersCollection = database.getCollection("wines");
+        Crud_mongo crud=new Crud_mongo();
         Document doc = null;
         try {
             //doc = Jsoup.connect("https://www.winemag.com/ratings/#").get();
@@ -82,6 +85,8 @@ public class ScraperThread implements Runnable{
             }
             String taster_twitter=CheckEmpty(tasterDoc.getElementsByClass("twitter").first().text());
             map.put("taster_twitter",taster_twitter);
+            String email=CheckEmpty(tasterDoc.getElementsByClass("email").first().text());
+            map.put("taster_email",email);
 
 
 
@@ -121,71 +126,18 @@ public class ScraperThread implements Runnable{
                     map.put("Country", Address[1]);
                 }
             }
-            BasicDBObject query = new BasicDBObject();
-            List<BasicDBObject> obj1 = new ArrayList<BasicDBObject>();
-            obj1.add(new BasicDBObject("title", map.get("title")));
-            obj1.add(new BasicDBObject("taster_name", map.get("taster_name")));
-            obj1.add(new BasicDBObject("variety",map.get("Variety") ));
-            obj1.add(new BasicDBObject("winery", map.get("Winery")));
-            query.put("$and", obj1);
-            //System.out.println(query.toString());
-            MongoCursor<org.bson.Document> cursor = collection.find(query).iterator();
-            if( (cursor.hasNext()))
-            {
-                System.out.println("Not empty Cursor");
-                org.bson.Document currentObject= cursor.next();
 
-
-                BasicDBObject newDocument = new BasicDBObject();
-                newDocument.put("points", map.get("rating"));
-                newDocument.put("description", map.get("description"));
-                newDocument.put("title", map.get("title"));
-
-                BasicDBObject updateObject = new BasicDBObject();
-                updateObject.put("$set", newDocument);
-
-                collection.updateOne(currentObject, updateObject);
-
-
+            try {
+                crud.createWine(map.get("title"),map.get("Variety"),map.get("Country"),map.get("Province"),map.get("Designation"),parseIntOrNull(map.get("Price")),map.get("taster_name"),parseIntOrNull(map.get("rating")),map.get("description"),map.get("Winery"),map.get("taster_twitter"),"None",map.get("taster_email"));
+            } catch (ReviewAlreadyInserted e) {
+                e.printStackTrace();
             }
-            else
-            {
-                System.out.println("empty Cursor");
-                org.bson.Document  person = new   org.bson.Document ("points", map.get("rating"))
-                        .append("title", map.get("title"))
-                        .append("description", map.get("description"))
-                        .append("taster_name", map.get("taster_name"))
-                        .append("taster_twitter_handle", map.get("taster_twitter"))
-                        .append("price", parseIntOrNull(map.get("Price")))
-                        .append("designation", map.get("Designation"))
-                        .append("variety", map.get("Variety"))
-                        .append("region_1", map.get("region1"))
-                        .append("region_2", map.get("region2"))
-                        .append("province", map.get("Province"))
-                        .append("country", map.get("Country"))
-                        .append("winery", map.get("Winery"));
-                collection.insertOne(person);
-            }
-            // add users to mongoDb database
-            query = new BasicDBObject("Name", map.get("taster_name"));
-            System.out.println(query.toString());
-             cursor = usersCollection.find(query).iterator();
-            if( (cursor.hasNext()))
-            {
-                System.out.println("Not added to MongoDB");
-            }
-            else
-            {
-                org.bson.Document user = new org.bson.Document("Name", map.get("taster_name"))
-                        .append("Password", "abcd");
 
-                usersCollection.insertOne(user);
-            }
 
 
 
             // add the new taster to the graph database
-            Crud_graph crud = new Crud_graph("bolt://localhost:7687","neo4j","0000");
+            //Crud_graph crud_graph = new Crud_graph("bolt://localhost:7687","neo4j","0000");
 
                 //crud.addUser(map.get("taster_name"));
                 //crud.addPostComplete(map.get("taster_name"),map.get("title"),map.get("description"),map.get("Winery"),map.get("Country"));
@@ -215,7 +167,7 @@ public class ScraperThread implements Runnable{
         try {
             return Integer.parseInt(value);
         } catch (NumberFormatException e) {
-            return null;
+            return -100;
         }
     }
 

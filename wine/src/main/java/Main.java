@@ -23,23 +23,24 @@ public class Main {
       // populate.poplulateData();
         //Populating_wine_document populate=new Populating_wine_document();
        //populate.poplulateData();
-        Populating_function_social social=new Populating_function_social();
-        social.populateSocial();
+       // Populating_function_social social=new Populating_function_social();
+       // social.populateSocial();
 
         /*Advanced_mongo adv = new Advanced_mongo();
         adv.topFiveWines();*/
-        /*Crud_mongo crud = new Crud_mongo();
-        Advanced_mongo adv = new Advanced_mongo();
-        adv.topFiveCountryAccordingScore();
-        adv.topFiveMostExpensiveVarieties();
-        adv.topFiveUsersHighestAvgScores();*/
+        Crud_mongo crud = new Crud_mongo();
+        //Advanced_mongo adv = new Advanced_mongo();
+        //adv.topFiveCountryAccordingScore();
+        //adv.topFiveMostExpensiveVarieties();
+        //adv.topFiveUsersHighestAvgScores();*/
 
         //crud.addComment("Domaines Vinsmoselle 2014 Bech-Kleinmacher Naumberg Grand Premier Cru Auxerrois (Moselle Luxembourgeoise)","Leonardo",80,"Vino buono","@leo","ita","cazzo",false);
         //crud.deleteAllCommentForGivenUser("Leonardo");
         //crud.addComment("Zanetti NV Case Bianche Extra Dry  (Prosecco di Conegliano e Valdobbiadene)","Leonardo",80,"Vino buono","@leo","ita","cazzo",false);
         //crud.deleteComment("A great cocktail of fruit flavors propel this wine out of the glass. It is ripe and crisp at the same time, the fruits running from peach to grapefruit and back again. There is plenty of acidity, crisp green apple structure, but at the end it is all about richness, a mouthful of delicious Chardonnay.","Roger Voss","Olivier Leflaive 2006 Les Folatières Premier Cru  (Puligny-Montrachet)");
-        //crud.createWine("Taverello","Brut","Italy","Ba",40,"Leo",80,"buono","Enoteca","@le","it","leo@ii",false);
-        //crud.createWine("Taverello","Brut","Ger","Ba",40,"Leo",82,"bad","Enoteca","@le","it","leo@ii",false);
+        //crud.createWine("Taverello","Brut","Italy","Ba","dfsdsf",50,"fdsdfsdffsd",99,"Enoteca","@le","it","leo@ii","none");
+      //  crud.createWine("Taverello","Brut","gghhg","Ba","dfsdsf",50,"dsfdsfds",88,"Enoteca","@le","it","leo@ii","none");
+       // crud.createWine("Taverello","Brut","Ger","Ba",40,"Leo",82,"bad","Enoteca","@le","it","leo@ii",false);
         //crud.createWine("Taverello","Stt","Ger","Ba",40,"tryr",82,"bad","Enoteca","@le","it","leo@ii",false);
 
 
@@ -84,6 +85,9 @@ public class Main {
         //graph.addWine("wine2","prova","100","ita","abc","winery2");
        // graph.createRelationRelated("wine2","vino cattivo");
         //menu.MainMenu();
+        InitTh scrapper=new InitTh();
+        scrapper.initThread();
+
 
     }
 }

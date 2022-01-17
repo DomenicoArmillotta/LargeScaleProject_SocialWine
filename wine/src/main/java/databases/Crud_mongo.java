@@ -2,6 +2,7 @@ package databases;
 import beans.Review;
 import beans.User;
 import beans.Wine;
+import com.google.common.base.Strings;
 import com.mongodb.*;
 import com.mongodb.MongoClient;
 import com.mongodb.client.*;
@@ -13,6 +14,7 @@ import exception.NoCountryToShowException;
 import exception.ReviewAlreadyInserted;
 import exception.UserNotPresentException;
 import exception.WineNotExistsException;
+import org.apache.commons.codec.binary.StringUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -34,15 +36,21 @@ public class Crud_mongo {
     // aforementioned attributes MUST be stored in same document
     public void createWine(String title, String variety, String country, String province, String designation, int price, String taster_name, int points,
                            String description, String winery, String taster_twitter_handle, String country_user, String mail) throws ReviewAlreadyInserted {
+
+        if (Strings.isNullOrEmpty(title) || Strings.isNullOrEmpty(variety)|| Strings.isNullOrEmpty(country) ||  Strings.isNullOrEmpty(province)||  Strings.isNullOrEmpty(designation)|| Strings.isNullOrEmpty(description)|| price<=0 || Strings.isNullOrEmpty(taster_name)  || Strings.isNullOrEmpty(winery)|| points<=0||Strings.isNullOrEmpty(taster_twitter_handle)|| Strings.isNullOrEmpty(country_user)|| Strings.isNullOrEmpty(mail))
+        {
+            System.out.println("Fields for wine must not be null");
+            return;
+        }
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
 
-        AggregateIterable<Document> wineq = collection.aggregate(Arrays.asList(new Document("$group", new Document("_id", new Document("wineName", "" + title + "")))));
-        for (Document dbObject : wineq) {
-            Document wine = (Document) dbObject.get("_id");
-            if (wine.get("wineName") != null) {
-                BasicDBObject query = new BasicDBObject("wineName", wine.get("wineName"));
+       // AggregateIterable<Document> wineq = collection.aggregate(Arrays.asList(new Document("$group", new Document("_id", new Document("wineName", "" + title + "")))));
+        //for (Document dbObject : wineq) {
+            //Document wine = (Document) dbObject.get("_id");
+           // if (wine.get("wineName") != null) {
+                BasicDBObject query = new BasicDBObject("wineName", title);
                 MongoCursor<Document> cursor = collection.find(query).iterator();
                 // wine document not found , do insertion
                 if (!cursor.hasNext()) {
@@ -102,8 +110,8 @@ public class Crud_mongo {
                         throw new ReviewAlreadyInserted("The review is already inserted for that wine");
                     }
                 }
-            }
-        }
+
+
     }
 
     //WORKS
