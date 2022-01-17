@@ -20,18 +20,22 @@ public class Main {
        // Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
       //  DbOperations graph_operation = new DbOperations();
         //Populating_wine_document populate=new Populating_wine_document();
-       // populate.poplulateData();
-        // Populating_wine_document populate=new Populating_wine_document();
+        //populate.poplulateData();
+
+        //Populating_function_social pop = new Populating_function_social();
+        //pop.populateSocial();
+         //Populating_wine_document populate=new Populating_wine_document();
        //populate.poplulateData();
 
-        /*Advanced_mongo adv = new Advanced_mongo();
-        adv.topFiveWines();*/
+
+        Advanced_mongo adv = new Advanced_mongo();
+        //adv.topFiveWines();
         /*Crud_mongo crud = new Crud_mongo();
         Advanced_mongo adv = new Advanced_mongo();
         adv.topFiveCountryAccordingScore();
         adv.topFiveMostExpensiveVarieties();
         adv.topFiveUsersHighestAvgScores();*/
-
+        adv.topFiveWinesAccordinglyRatingsInsertedByUser();
         //crud.addComment("Domaines Vinsmoselle 2014 Bech-Kleinmacher Naumberg Grand Premier Cru Auxerrois (Moselle Luxembourgeoise)","Leonardo",80,"Vino buono","@leo","ita","cazzo",false);
         //crud.deleteAllCommentForGivenUser("Leonardo");
         //crud.addComment("Zanetti NV Case Bianche Extra Dry  (Prosecco di Conegliano e Valdobbiadene)","Leonardo",80,"Vino buono","@leo","ita","cazzo",false);
@@ -81,8 +85,8 @@ public class Main {
         //graph.registerUser("bob","00","1","@tagAdmin","ita","email");
         //graph.addWine("wine2","prova","100","ita","abc","winery2");
        // graph.createRelationRelated("wine2","vino cattivo");
-        Menu menu = new Menu();
-        menu.MainMenu();
+       // Menu menu = new Menu();
+       // menu.MainMenu();
 
     }
 }

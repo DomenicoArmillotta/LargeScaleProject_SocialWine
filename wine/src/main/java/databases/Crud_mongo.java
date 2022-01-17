@@ -24,8 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.mongodb.client.model.Accumulators.avg;
-import static com.mongodb.client.model.Aggregates.group;
-import static com.mongodb.client.model.Aggregates.unwind;
+import static com.mongodb.client.model.Aggregates.*;
 
 /**
  * Contains all the crud operation that could be done on MongoDB.
@@ -190,7 +189,7 @@ public class Crud_mongo {
             String twitter_taster_handle = temp_user_doc.getString("taster_twitter_handle");
             String country = temp_user_doc.getString("country");
             String email = temp_user_doc.getString("email");
-            user = new User(username,"",twitter_taster_handle,country,email,false);
+            user = new User(username,"0000",twitter_taster_handle,country,email,false);
             users.add(user);
         }
         mongoClient.close();
@@ -245,6 +244,37 @@ public class Crud_mongo {
         mongoClient.close();
         return wines;
     }
+
+    public List[] findAllReviewAndUserForSpecificWine (String title) {
+        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
+        MongoDatabase database = mongoClient.getDatabase("Wines");
+        MongoCollection<Document> collection = database.getCollection("wines");
+
+        Bson filter = Filters.eq("wineName", title);
+        ArrayList<Review> reviews = new ArrayList<>();
+        ArrayList<User> users = new ArrayList<>();
+        Bson unwind = unwind("$reviews");
+        Review review = null;
+        User user = null;
+
+       AggregateIterable<Document> cursor = collection.aggregate(Arrays.asList(match(filter),unwind));
+
+        for (Document doc: cursor){
+            Document nestedReview=(Document) doc.get("reviews");
+            Integer rating= nestedReview.getInteger("rating");
+            String description = nestedReview.getString("description");
+            String username =  nestedReview.getString("taster_name");
+            String twitter_taster_handle =nestedReview.getString("taster_twitter_handle");
+            String country = nestedReview.getString("user_country");
+            String email = nestedReview.getString("email");
+            review = new Review(description,rating);
+            user = new User(username, "",twitter_taster_handle, country, email, false);
+            reviews.add(review);
+            users.add(user);
+        }
+        return new List[] {reviews,users};
+    }
+
 }
 
 

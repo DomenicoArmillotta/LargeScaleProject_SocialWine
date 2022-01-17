@@ -42,7 +42,7 @@ public class Crud_graph implements AutoCloseable {
     public void registerUser(final String username, final String password , final String adminFlag , final String twitter_taster_handle , final String country , final String email ) {
         try (Session session = driver.session()) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
-                tx.run("MERGE (p:User {username: $username , password: $password , adminFlag: $adminFlag , twitter_taster_handle: $twitter_taster_handle , country: $country , email: $email   })",
+                tx.run("MERGE (p:User {username: $username , password: $password , adminFlag: $adminFlag , twitter_taster_handle: $twitter_taster_handle , country: $country , email: $email})",
                         parameters("username", username , "password" , password , "adminFlag" , adminFlag , "twitter_taster_handle" , twitter_taster_handle , "country" , country , "email" , email ));
                 System.out.println("User added successfully (Neo4J)." + "\n");
                 return null;
@@ -406,6 +406,11 @@ public class Crud_graph implements AutoCloseable {
     public boolean createRelationCreated(final String description, final String username) {
         boolean result = true;
         try (Session session = driver.session()) {
+            /*
+            MATCH (w:Wine{wineName: $wineName}),(p:Post{description: $description})\n" +
+                                "WHERE NOT EXISTS ((p)-[:Related]->(w))\n" +
+                                "CREATE (p)-[:Related]->(w)
+             */
             session.writeTransaction(tx -> {
                 tx.run("MATCH (u:User{username: $username}),(u1:Post{description: $description})\n" +
                                 "WHERE NOT EXISTS ((u)-[:Created]->(u1))\n" +
@@ -734,7 +739,7 @@ public class Crud_graph implements AutoCloseable {
         addComment(description,rating.toString());
         registerUser(taster_name,"0000","false",taster_twitter_handle,country,email);
         createRelationRelated(wineName, description);
-        createRelationCreated(wineName , taster_name);
+        createRelationCreated(description , taster_name);
     }
 
 

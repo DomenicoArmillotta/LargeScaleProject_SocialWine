@@ -7,6 +7,7 @@ import com.mongodb.client.MongoClients;
 import exception.AlreadyPopulatedException;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The class contains a method that take all the reviews that are stored in Review collection inside MongoDB and
@@ -25,21 +26,33 @@ public class Populating_function_social {
         ArrayList<Wine> wines = null;
         ArrayList<User> users = null;
 
-        reviews = mongo.findAllReview();
         wines = mongo.findAllWine();
+        reviews = mongo.findAllReview();
         users = mongo.findAllUser();
-        int i=0;
 
-        for (Review review : reviews) {
-                for (Wine wine: wines) {
-                    for (User user: users){
-                        graph.addPostComplete(wine.getWineName(), wine.getVariety(), wine.getCountry(), wine.getProvince(), wine.getPrice().toString(),
-                                wine.getWinery(), wine.getDesignation(), review.getRating(), review.getDescription(), user.getTwitter_taster_handle(),
-                                user.getUsername(), user.getCountry(), user.getEmail());
-                        System.out.println(i);
-                        i++;
-                    }
-                }
+
+        for (Review review: reviews){
+            graph.addComment(review.getDescription(),review.getRating().toString());
+        }
+
+        for (User user: users){
+            graph.registerUser(user.getUsername(), user.getPassword(), user.getAdmin().toString(), user.getTwitter_taster_handle(), user.getCountry(), user.getEmail());
+        }
+
+        for (Wine wine: wines) {
+            List[] userList = mongo.findAllReviewAndUserForSpecificWine(wine.getWineName());
+            reviews= (ArrayList<Review>) userList[0];
+            users = (ArrayList<User>) userList[1];
+            graph.addWine(wine.getWineName(), wine.getDesignation(), wine.getPrice().toString(), wine.getProvince(), wine.getVariety(), wine.getWinery());
+            for (int i = 0; i< reviews.size(); i++){
+                Review rev = reviews.get(i);
+                User us = users.get(i);
+                graph.registerUser(us.getUsername(), "0000","false", us.getTwitter_taster_handle(), us.getCountry(), us.getEmail());
+                graph.addComment(rev.getDescription(), rev.getRating().toString());
+                graph.createRelationCreated(rev.getDescription(), us.getUsername());
+                graph.createRelationRelated(wine.getWineName(), rev.getDescription());
+            }
+
         }
     }
 }
