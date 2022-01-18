@@ -34,11 +34,12 @@ public class Menu {
             int user = 0;
             String userLoggedName=null;
             while (user == 0) {
-                System.out.println("==========MENU===============");
-                System.out.println("1" + " User Login");
-                System.out.println("2" + " Admin Login");
-                System.out.println("3" + " Register new User");
-                System.out.println(" What do you want do?");
+                System.out.println("╔==================MENU====================╗");
+                System.out.println("║ 1" + " User Login                             ║");
+                System.out.println("║ 2" + " Admin Login                            ║");
+                System.out.println("║ 3" + " Register new User                      ║");
+                System.out.println("╚==========================================╝");
+                System.out.println(" What do you want do?                     ");
                 Scanner scanSelection = new Scanner(System.in);
                 String selection = scanSelection.nextLine();
                 if (selection.equals("1")) {
@@ -84,12 +85,14 @@ public class Menu {
             }
             while (user == 1) {
                 //ADAM
-                System.out.println("==========USER===============");
-                System.out.println("1" + " See wine menu");
-                System.out.println("2" + " Homepage");
-                System.out.println("3" + " MY PROFILE");
-                System.out.println("4" + " Search a friend and know new people");
-                System.out.println("6" + " Logout");
+                System.out.println("╔===================USER==================╗");
+                System.out.println("║ "+"1" + " See wine menu                         ║");
+                System.out.println("║ 2" + " Homepage                              ║");
+                System.out.println("║ 3" + " MY PROFILE                            ║");
+                System.out.println("║ 4" + " Search a friend and know new people   ║");
+                System.out.println("║ 6" + " Logout                                ║");
+                System.out.println("╚=========================================╝");
+
                 System.out.println(" Select operation : ");
                 Scanner scanSelection = new Scanner(System.in);
                 String selection = scanSelection.nextLine();
@@ -116,14 +119,16 @@ public class Menu {
             }
             while (user == 2) {
                 //BOB
-                System.out.println("==========ADMIN===============");
-                System.out.println("1" + " See wine menu and Delete");
-                System.out.println("2" + " Homepage");
-                System.out.println("3" + " MY PROFILE");
-                System.out.println("4" + " Broswe all comments and Delete"); //--> DA FARE (broswe and delete)
-                System.out.println("5" + " Broswe all user and Ban/delete");
-                System.out.println("6" + " Search user and Ban/delete");
-                System.out.println("7" + " Logout");
+                System.out.println("╔==============ADMIN=================╗");
+                System.out.println("║ 1" + " See wine menu and Delete         ║");
+                System.out.println("║ 2" + " Homepage                         ║");
+                System.out.println("║ 3" + " My profile                       ║");
+                System.out.println("║ 4" + " Broswe all comments and Delete   ║"); //--> DA FARE (broswe and delete)
+                System.out.println("║ 5" + " Broswe all user and Ban/delete   ║");
+                System.out.println("║ 6" + " Search user and Ban/delete       ║");
+                System.out.println("║ 7" + " Logout                           ║");
+                System.out.println("╚====================================╝");
+
                 System.out.println(" What do you want do?");
                 Scanner scanSelection = new Scanner(System.in);
                 String selection = scanSelection.nextLine();

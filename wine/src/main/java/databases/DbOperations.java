@@ -702,7 +702,7 @@ public class DbOperations {
 
     public void showMyAccount(String myUsername) {
         User myUser = graph.showUserByUsername(myUsername);
-        System.out.println("==============MY PROFILE============= ");
+        System.out.println("====================MY PROFILE==============");
         System.out.println("Name : " + myUser.getUsername());
         System.out.println("Country : " + myUser.getCountry());
         System.out.println("Email : " + myUser.getEmail());
@@ -748,6 +748,7 @@ public class DbOperations {
             System.out.println("==================================================" + "\n");
         } else {
             System.out.println("You dont have review");
+            System.out.println("===============================================" + "\n");
         }
 
         System.out.println("What do you want do?");
@@ -1170,12 +1171,22 @@ public class DbOperations {
         }
         for (i = times * perTimes; (i < wines.size() && i < ((perTimes * times) + perTimes)); i++) {
             System.out.println("Wine to select " + i + " :");
+            //calculateSpaceMenuAndPrint("Wine to select " + i + " :");
             System.out.println("wine name = " + wines.get(i).getWineName());
+            //calculateSpaceMenuAndPrint("wine name = " + wines.get(i).getWineName());
             System.out.println("designation = " + wines.get(i).getDesignation());
+            //calculateSpaceMenuAndPrint("designation = " + wines.get(i).getDesignation());
             System.out.println("price = " + wines.get(i).getPrice());
+            //calculateSpaceMenuAndPrint("price = " + wines.get(i).getPrice());
             System.out.println("province = " + wines.get(i).getProvince());
+            //calculateSpaceMenuAndPrint("province = " + wines.get(i).getProvince());
+
             System.out.println("variety = " + wines.get(i).getVariety());
+            //calculateSpaceMenuAndPrint("variety = " + wines.get(i).getVariety());
+
             System.out.println("winery = " + wines.get(i).getWinery());
+            //calculateSpaceMenuAndPrint("winery = " + wines.get(i).getWinery());
+
             if (i != (wines.size() - 1)) {
                 System.out.println("------------------------------------------------");
             }
@@ -1354,6 +1365,13 @@ public class DbOperations {
         }
     }
 
+    public void calculateSpaceMenuAndPrint (String line ){
+        int i =1;
+        for(i=1;i<(65 - line.length());i++){
+            System.out.print(" ");
+        }
+        System.out.println("║");
+    }
 
     public void showAllWineMenu(String myUsername) {
         ArrayList<Wine> wines = new ArrayList<>(graph.showAllWine());
@@ -1506,7 +1524,7 @@ public class DbOperations {
                     System.out.println("1" + " Write Comment on specific wine");
                     System.out.println("2" + " See comment of specific wine");
                     System.out.println("3" + " Delete specific wine");
-                    System.out.println("4" + " Add specific wine prova");
+                    System.out.println("4" + " Add specific wine");
                     Scanner scanSelection = new Scanner(System.in);
                     String selection = scanSelection.nextLine();
                     if (selection.equals("1")) {
