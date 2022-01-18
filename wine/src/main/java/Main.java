@@ -32,6 +32,14 @@ public class Main {
         adv.topFiveMostExpensiveVarieties();
         adv.topFiveUsersHighestAvgScores();*/
 
+        /*Populating_wine_document pop = new Populating_wine_document();
+        pop.poplulateData();*/
+
+        Advanced_mongo adv = new Advanced_mongo();
+        adv.topFiveCountryAccordingRating();
+        adv.topTenUsersMadeHighestumberOfReveiwsPerVarieties();
+        adv.topFiveWinesAccordinglyRatingsInsertedByUser();
+
         //crud.addComment("Domaines Vinsmoselle 2014 Bech-Kleinmacher Naumberg Grand Premier Cru Auxerrois (Moselle Luxembourgeoise)","Leonardo",80,"Vino buono","@leo","ita","cazzo",false);
         //crud.deleteAllCommentForGivenUser("Leonardo");
         //crud.addComment("Zanetti NV Case Bianche Extra Dry  (Prosecco di Conegliano e Valdobbiadene)","Leonardo",80,"Vino buono","@leo","ita","cazzo",false);
@@ -87,7 +95,8 @@ public class Main {
         //graph.createRelationCreated("vino delicato","adam");
         //graph.registerUser("bob","00","1","@tagAdmin","ita","email");
         //graph.addWine("wine1","des1","100","B","A","w1");
-        graph.registerUser("bob","00","1","@tagAdmin","ita","email");
+
+        /*graph.registerUser("bob","00","1","@tagAdmin","ita","email");
         graph.registerUser("adam","00","0","@tagAdmin","ita","email");
         graph.registerUser("bill","00","0","@tagAdmin","ita","email");
         graph.createRelationFollow("bob","bill");
@@ -95,7 +104,7 @@ public class Main {
         graph.addWine("wine1","1","1","1","1","1");
         graph.addComment("vino","20");
         graph.createRelationCreated("vino","bob");
-        graph.createRelationRelated("wine1","vino");
+        graph.createRelationRelated("wine1","vino");*/
 
         Menu menu = new Menu();
         menu.MainMenu();
