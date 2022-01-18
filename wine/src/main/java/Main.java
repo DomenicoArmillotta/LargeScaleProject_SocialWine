@@ -35,10 +35,10 @@ public class Main {
         /*Populating_wine_document pop = new Populating_wine_document();
         pop.poplulateData();*/
 
-        Advanced_mongo adv = new Advanced_mongo();
+        /*Advanced_mongo adv = new Advanced_mongo();
         adv.topFiveCountryAccordingRating();
         adv.topTenUsersMadeHighestumberOfReveiwsPerVarieties();
-        adv.topFiveWinesAccordinglyRatingsInsertedByUser();
+        adv.topFiveWinesAccordinglyRatingsInsertedByUser();*/
 
         //crud.addComment("Domaines Vinsmoselle 2014 Bech-Kleinmacher Naumberg Grand Premier Cru Auxerrois (Moselle Luxembourgeoise)","Leonardo",80,"Vino buono","@leo","ita","cazzo",false);
         //crud.deleteAllCommentForGivenUser("Leonardo");

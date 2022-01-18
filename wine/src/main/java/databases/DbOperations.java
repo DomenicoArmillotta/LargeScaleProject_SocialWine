@@ -1044,7 +1044,7 @@ public class DbOperations {
             int selectedInt = Integer.parseInt(selected);
             if(selectedInt>=0 && selectedInt<=(wines.size()-1)) {
                 if (graph.checkIfCommentedWine(wines.get(selectedInt).getWineName(), myUsername) == 0) {
-                    int correctDescr=1;
+                    int correctDescr=0;
                     while(correctDescr==0){
                         System.out.println("Insert the comment");
                         Scanner scanComment = new Scanner(System.in);
@@ -1146,7 +1146,7 @@ public class DbOperations {
             Scanner scanSelect = new Scanner(System.in);
             String selectionAdd = scanSelect.nextLine();
             if (selectionAdd.equals("y")) {
-                int correctDescr=1;
+                int correctDescr=0;
                 while(correctDescr==0) {
                     System.out.println("Insert the comment");
                     Scanner scanComment = new Scanner(System.in);
