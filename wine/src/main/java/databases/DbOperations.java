@@ -312,7 +312,11 @@ public class DbOperations {
                 } else {
                     try {
                         int selectedInt = Integer.parseInt(selected);
-                        graph.putLikeByDescription(allReview.get(selectedInt).getDescription(), myUsername);
+                        if(selectedInt>=0 && selectedInt<=(allReview.size()-1)){
+                            graph.putLikeByDescription(allReview.get(selectedInt).getDescription(), myUsername);
+                        }else{
+                            System.out.println("selection wrong");
+                        }
                     } catch (NumberFormatException nex) {
                         System.out.println("You have to insert a number not a string");
                     }
@@ -327,7 +331,11 @@ public class DbOperations {
                 } else {
                     try {
                         int selectedInt = Integer.parseInt(selectedDeleteLike);
-                        graph.deleteLikeByDescription(allReview.get(selectedInt).getDescription(), myUsername);
+                        if(selectedInt>=0 && selectedInt<=(allReview.size()-1)){
+                            graph.deleteLikeByDescription(allReview.get(selectedInt).getDescription(), myUsername);
+                        }else{
+                            System.out.println("selection wrong");
+                        }
                     } catch (NumberFormatException nex) {
                         System.out.println("You have to insert a number not a string");
                     }
@@ -499,7 +507,7 @@ public class DbOperations {
                 } else {
                     try {
                         int selectedInt = Integer.parseInt(selectedDeleteLike);
-                        if (selectedInt >= 0 && selectedInt < (allReview.size() - 1)) {
+                        if (selectedInt >= 0 && selectedInt <= (allReview.size() - 1)) {
                             graph.deleteLikeByDescription(allReview.get(selectedInt).getDescription(), myUsername);
                         } else {
                             System.out.println("Selection wrong");
@@ -517,7 +525,7 @@ public class DbOperations {
                 } else {
                     try {
                         int selectedReviewInt = Integer.parseInt(selectedReview);
-                        if (selectedReviewInt >= 0 && selectedReviewInt < (allReview.size() - 1)) {
+                        if (selectedReviewInt >= 0 && selectedReviewInt <= (allReview.size() - 1)) {
                             graph.deleteAllRelationLikeByDescription(allReview.get(selectedReviewInt).getDescription());
                             graph.deleteAllRelationRelatedByDescription(allReview.get(selectedReviewInt).getDescription());
                             graph.deleteAllRelationCreatedByDescription(allReview.get(selectedReviewInt).getDescription());
@@ -577,7 +585,7 @@ public class DbOperations {
                     } else {
                         try {
                             int selectedInt = Integer.parseInt(selected);
-                            if (selectedInt >= 0 && selectedInt < (trendingReviews.size() - 1)) {
+                            if (selectedInt >= 0 && selectedInt <= (trendingReviews.size() - 1)) {
                                 graph.putLikeByDescription(trendingReviews.get(selectedInt).getDescription(), myUsername);
                             } else {
                                 System.out.println("Selection wrong");
@@ -596,7 +604,7 @@ public class DbOperations {
                     } else {
                         try {
                             int selectedInt = Integer.parseInt(selectedDeleteLike);
-                            if (selectedInt >= 0 && selectedInt < (trendingReviews.size() - 1)) {
+                            if (selectedInt >= 0 && selectedInt <= (trendingReviews.size() - 1)) {
                                 graph.deleteLikeByDescription(trendingReviews.get(selectedInt).getDescription(), myUsername);
                             } else {
                                 System.out.println("Selection wrong");
@@ -870,7 +878,7 @@ public class DbOperations {
                                 } else {
                                     try {
                                         int selectedReviewInt = Integer.parseInt(selectedReviewLike);
-                                        if (selectedReviewInt >= 0 && selectedReviewInt < (friendReviews.size() - 1)) {
+                                        if (selectedReviewInt >= 0 && selectedReviewInt <= (friendReviews.size() - 1)) {
                                             graph.putLikeByDescription(friendReviews.get(selectedReviewInt).getDescription(), myUsername);
                                         } else {
                                             System.out.println("selection wrong");
@@ -1113,10 +1121,15 @@ public class DbOperations {
                     } else {
                         try {
                             int selectedReviewIntOption = Integer.parseInt(selectedReviewOption);
-                            graph.deleteAllRelationLikeByDescription(friendsReviews.get(selectedReviewIntOption).getDescription());
-                            graph.deleteAllRelationRelatedByDescription(friendsReviews.get(selectedReviewIntOption).getDescription());
-                            graph.deleteAllRelationCreatedByDescription(friendsReviews.get(selectedReviewIntOption).getDescription());
-                            graph.deleteCommentByDescription(friendsReviews.get(selectedReviewIntOption).getDescription());
+                            if(selectedReviewIntOption>=0 && selectedReviewIntOption<=(friendsReviews.size()-1)){
+                                graph.deleteAllRelationLikeByDescription(friendsReviews.get(selectedReviewIntOption).getDescription());
+                                graph.deleteAllRelationRelatedByDescription(friendsReviews.get(selectedReviewIntOption).getDescription());
+                                graph.deleteAllRelationCreatedByDescription(friendsReviews.get(selectedReviewIntOption).getDescription());
+                                graph.deleteCommentByDescription(friendsReviews.get(selectedReviewIntOption).getDescription());
+                            }else{
+                                System.out.println("selection wrong");
+                            }
+
                         } catch (NumberFormatException nex) {
                             System.out.println("You have to insert a number not a string");
                         }
