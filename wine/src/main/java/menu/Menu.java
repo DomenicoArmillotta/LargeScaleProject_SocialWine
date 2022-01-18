@@ -99,6 +99,13 @@ public class Menu {
                     graph_operation.homepageUser("adam");
                 } else if (selection.equals("3")) {
                     graph_operation.showMyAccount("adam");
+                    try{
+                    graph.showUserByUsername("adam").getUsername();
+
+                    }catch (NullPointerException e){
+                        System.out.println("Account deleted");
+                        user=0;
+                    }
                 } else if (selection.equals("4")) {
                     graph_operation.searchUserfromUser("adam");
 

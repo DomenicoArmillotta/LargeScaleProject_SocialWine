@@ -453,6 +453,9 @@ public class DbOperations {
             int i = 0;
             for (i = 0; i < users.size(); i++) {
                 ArrayList<Review> reviews = new ArrayList<>(graph.showCommentsFriends(myUsername, users.get(i).getUsername()));
+                if (reviews.size() != 0) {
+
+
                 System.out.println("============ " + k + " : Comment made by " + users.get(i).getUsername() + "===================");
                 int j;
                 for (j = 0; j < reviews.size(); j++) {
@@ -469,6 +472,7 @@ public class DbOperations {
                     } else if (graph.checkIfLikedByDescription(reviews.get(j).getDescription(), myUsername) == 0) {
                         System.out.println("Like = X");
                     }
+                }
 
                 }
             }
