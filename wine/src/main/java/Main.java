@@ -95,7 +95,8 @@ public class Main {
         //graph.createRelationCreated("vino delicato","adam");
         //graph.registerUser("bob","00","1","@tagAdmin","ita","email");
         //graph.addWine("wine1","des1","100","B","A","w1");
-        graph.registerUser("bob","00","1","@tagAdmin","ita","email");
+
+        /*graph.registerUser("bob","00","1","@tagAdmin","ita","email");
         graph.registerUser("adam","00","0","@tagAdmin","ita","email");
         graph.registerUser("bill","00","0","@tagAdmin","ita","email");
         graph.createRelationFollow("bob","bill");
@@ -103,7 +104,7 @@ public class Main {
         graph.addWine("wine1","1","1","1","1","1");
         graph.addComment("vino","20");
         graph.createRelationCreated("vino","bob");
-        graph.createRelationRelated("wine1","vino");
+        graph.createRelationRelated("wine1","vino");*/
 
         Menu menu = new Menu();
         menu.MainMenu();
