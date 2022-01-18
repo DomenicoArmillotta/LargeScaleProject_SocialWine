@@ -21,9 +21,10 @@ public class Menu {
         Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
         DbOperations graph_operation = new DbOperations();
 
-        //se ho troppe recensioni devo limitarle le posso ordinare in ordine alfabetico --> risolvere contatore
         //controllare se elimina user vuoti
         //bug --> rating limitare a 0/100
+        //max description -->SOLVED
+        //scroll page ---> SOLVED
 
 
 

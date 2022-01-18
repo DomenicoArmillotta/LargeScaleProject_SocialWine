@@ -1044,15 +1044,26 @@ public class DbOperations {
             int selectedInt = Integer.parseInt(selected);
             if(selectedInt>=0 && selectedInt<=(wines.size()-1)) {
                 if (graph.checkIfCommentedWine(wines.get(selectedInt).getWineName(), myUsername) == 0) {
-                    System.out.println("Insert the comment");
-                    Scanner scanComment = new Scanner(System.in);
-                    String description = scanComment.nextLine();
-                    System.out.println("Insert the rating");
-                    Scanner scanRating = new Scanner(System.in);
-                    String rating = scanRating.nextLine();
-                    graph.addComment(description, rating);
-                    graph.createRelationCreated(description, myUsername);
-                    graph.createRelationRelated(wines.get(selectedInt).getWineName(), description);
+                    int correctDescr=1;
+                    while(correctDescr==0){
+                        System.out.println("Insert the comment");
+                        Scanner scanComment = new Scanner(System.in);
+                        String description = scanComment.nextLine();
+                        if(description.length()<=140) {
+                            correctDescr=1;
+                            System.out.println("Insert the rating");
+                            Scanner scanRating = new Scanner(System.in);
+                            String rating = scanRating.nextLine();
+                            graph.addComment(description, rating);
+                            graph.createRelationCreated(description, myUsername);
+                            graph.createRelationRelated(wines.get(selectedInt).getWineName(), description);
+                        }else{
+                            correctDescr=0;
+                            System.out.println("Comment too long, please delete "+ (description.length()-140));
+                        }
+
+                    }
+
                 } else {
                     System.out.println("You have already commented this wine");
                 }
@@ -1135,15 +1146,24 @@ public class DbOperations {
             Scanner scanSelect = new Scanner(System.in);
             String selectionAdd = scanSelect.nextLine();
             if (selectionAdd.equals("y")) {
-                System.out.println("Insert the comment");
-                Scanner scanComment = new Scanner(System.in);
-                String description = scanComment.nextLine();
-                System.out.println("Insert the rating");
-                Scanner scanRating = new Scanner(System.in);
-                String rating = scanRating.nextLine();
-                graph.addComment(description, rating);
-                graph.createRelationCreated(description, myUsername);
-                graph.createRelationRelated(wines.get(convertedSelection).getWineName(), description);
+                int correctDescr=1;
+                while(correctDescr==0) {
+                    System.out.println("Insert the comment");
+                    Scanner scanComment = new Scanner(System.in);
+                    String description = scanComment.nextLine();
+                    if (description.length() <= 140) {
+                        correctDescr=1;
+                        System.out.println("Insert the rating");
+                        Scanner scanRating = new Scanner(System.in);
+                        String rating = scanRating.nextLine();
+                        graph.addComment(description, rating);
+                        graph.createRelationCreated(description, myUsername);
+                        graph.createRelationRelated(wines.get(convertedSelection).getWineName(), description);
+                    } else {
+                        correctDescr=0;
+                        System.out.println("Comment too long, please delete " + (description.length() - 140));
+                    }
+                }
 
             } else {
 
