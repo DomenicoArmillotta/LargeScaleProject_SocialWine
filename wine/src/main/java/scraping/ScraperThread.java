@@ -35,14 +35,8 @@ public class ScraperThread implements Runnable{
     @Override
     public void run() {
 
-        //Driver driver = GraphDatabase.driver( "bolt://localhost:7687", AuthTokens.basic( "neo4j", "0000" ) );
         MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
-        //com.mongodb.client.MongoClient mongoClient = MongoClients.create("mongodb://localhost:27018,localhost:27019,localhost:27020/" + "?retryWrites=true&w=majority&wtimeout=10000");
         Crud_graph crud_graph = new Crud_graph("bolt://localhost:7687","neo4j","0000");
-        //ConnectionString uri= new ConnectionString("mongodb://localhost:27018");
-     // MongoClientSettings mcs= MongoClientSettings.builder().applyConnectionString(uri).readPreference(ReadPreference.nearest()).retryWrites(true).writeConcern(WriteConcern.ACKNOWLEDGED).build();
-     // com.mongodb.client.MongoClient mongoClient=  MongoClients.create(mcs);
-
 
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<org.bson.Document> collection = database.getCollection("wines");
@@ -73,7 +67,6 @@ public class ScraperThread implements Runnable{
                 e.printStackTrace();
             }
 
-            //
             Element tasterElement = reviewDoc.getElementsByClass("taster-area").first().getElementsByTag("a").first();
             // check for empty string
             String taster_name = CheckEmpty(tasterElement.text());
@@ -88,10 +81,6 @@ public class ScraperThread implements Runnable{
             map.put("taster_twitter",taster_twitter);
             String email=CheckEmpty(tasterDoc.getElementsByClass("email").first().text());
             map.put("taster_email",email);
-
-
-
-
             map.put("title", reviewDoc.getElementsByClass("header__title").first().getElementsByTag("h1").first().text());
             map.put("description", reviewDoc.getElementsByClass("description").first().ownText());
             Element attribuiteTable = reviewDoc.select("ul.primary-info").first();
@@ -137,22 +126,9 @@ public class ScraperThread implements Runnable{
             Integer rating=parseIntOrNull(map.get("rating"));
             Integer price=parseIntOrNull(map.get("Price"));
             // the rating must be greater than zero otherwise no insertion to graph
-            if(rating>0 && price>0 &&!Strings.isNullOrEmpty(map.get("title")) && !Strings.isNullOrEmpty(map.get("Variety")) && !Strings.isNullOrEmpty(map.get("Country")) && !Strings.isNullOrEmpty(map.get("Province")) && !Strings.isNullOrEmpty(map.get("Designation")) && !Strings.isNullOrEmpty(map.get("description")) &&!Strings.isNullOrEmpty(map.get("taster_name")) && !Strings.isNullOrEmpty(map.get("Winery"))  && !Strings.isNullOrEmpty(map.get("taster_twitter"))  && !Strings.isNullOrEmpty(map.get("taster_email")))
-            {
+            if(rating>0 && price>0 &&!Strings.isNullOrEmpty(map.get("title")) && !Strings.isNullOrEmpty(map.get("Variety")) && !Strings.isNullOrEmpty(map.get("Country")) && !Strings.isNullOrEmpty(map.get("Province")) && !Strings.isNullOrEmpty(map.get("Designation")) && !Strings.isNullOrEmpty(map.get("description")) &&!Strings.isNullOrEmpty(map.get("taster_name")) && !Strings.isNullOrEmpty(map.get("Winery"))  && !Strings.isNullOrEmpty(map.get("taster_twitter"))  && !Strings.isNullOrEmpty(map.get("taster_email"))) {
                 crud_graph.addPostComplete(map.get("title"),map.get("Variety"),map.get("Country"),map.get("Province"),map.get("Price"),map.get("Winery"),map.get("Designation"),rating,map.get("description"),map.get("taster_twitter"),map.get("taster_name"),"None",map.get("taster_email"));
-
-
-
-            }
-
-
-
-            // add the new taster to the graph database
-
-
-                //crud.addUser(map.get("taster_name"));
-                //crud.addPostComplete(map.get("taster_name"),map.get("title"),map.get("description"),map.get("Winery"),map.get("Country"));
-
+}
         }
 
     }
