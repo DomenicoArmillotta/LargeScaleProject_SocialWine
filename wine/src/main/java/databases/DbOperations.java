@@ -694,7 +694,7 @@ public class DbOperations {
 
                 } else {
                     int selectedInt = Integer.parseInt(selected);
-                    if(selectedInt>0 && selectedInt<(users.size())) {
+                    if(selectedInt>=0 && selectedInt<=(users.size()-1)) {
                         graph.deleteRelationFollow(myUsername, users.get(selectedInt).getUsername());
                     }
                 }
@@ -710,7 +710,7 @@ public class DbOperations {
 
                 } else {
                     int selectedReviewInt = Integer.parseInt(selectedReview);
-                    if(selectedReviewInt>0 && selectedReviewInt<myReviews.size()) {
+                    if(selectedReviewInt>=0 && selectedReviewInt<=(myReviews.size()-1)) {
                         graph.deleteAllRelationLikeByDescription(myReviews.get(selectedReviewInt).getDescription());
                         graph.deleteAllRelationRelatedByDescription(myReviews.get(selectedReviewInt).getDescription());
                         graph.deleteAllRelationCreatedByDescription(myReviews.get(selectedReviewInt).getDescription());
@@ -1156,9 +1156,22 @@ public class DbOperations {
                         System.out.println("Insert the rating");
                         Scanner scanRating = new Scanner(System.in);
                         String rating = scanRating.nextLine();
-                        graph.addComment(description, rating);
-                        graph.createRelationCreated(description, myUsername);
-                        graph.createRelationRelated(wines.get(convertedSelection).getWineName(), description);
+                        //String reject = "[0-9]]+";
+                        //boolean ratingCheck = String.matches(reject);
+                        int correctRating=0;
+                        while(correctRating==0){
+                            if(rating.length()>=1 && rating.length()<=2 && Integer.parseInt(rating)<=99 && Integer.parseInt(rating)>=0){
+                                correctRating=1;
+                                graph.addComment(description, rating);
+                                graph.createRelationCreated(description, myUsername);
+                                graph.createRelationRelated(wines.get(convertedSelection).getWineName(), description);
+                            }else{
+                                correctRating=0;
+                                System.out.println("Insert the right rating");
+                            }
+
+                        }
+
                     } else {
                         correctDescr=0;
                         System.out.println("Comment too long, please delete " + (description.length() - 140));
@@ -1176,7 +1189,7 @@ public class DbOperations {
     public void showAllWineMenu(String myUsername) {
         ArrayList<Wine> wines = new ArrayList<>(graph.showAllWine());
         int times = 0;
-        int perTimes=1;
+        int perTimes=10;
         if(wines.size()!=0) {
             System.out.println("==============List of All Wine on Social============= ");
             show10Wine(wines, times, perTimes);
@@ -1278,7 +1291,7 @@ public class DbOperations {
         ArrayList<Wine> wines = new ArrayList<>(graph.showAllWine());
         int i = 0;
         int times = 0;
-        int perTimes = 1;
+        int perTimes = 10;
         if(wines.size()!=0) {
             System.out.println("==============List of All Wine on Social============= ");
             show10Wine(wines, times, perTimes);
@@ -1392,7 +1405,7 @@ public class DbOperations {
     public void usersMenuBanAdmin(String myUsername) {
         ArrayList<User> users = new ArrayList<>(graph.showAllUser());
         int times = 0;
-        int perTimes=1;
+        int perTimes=10;
         if(users.size()!=0) {
             System.out.println("=============BROSWE USER===============");
             show10User(users,times,perTimes);
@@ -1652,7 +1665,7 @@ public class DbOperations {
     public void showCommentAdminMenu(final String myUsername) {
         ArrayList<Review> reviews = new ArrayList<>(graph.showAllComments());
         int times = 0;
-        int perTimes=1;
+        int perTimes=10;
         if (reviews.size() != 0) {
             int j = 0;
             System.out.println("=================All Comments=======================");

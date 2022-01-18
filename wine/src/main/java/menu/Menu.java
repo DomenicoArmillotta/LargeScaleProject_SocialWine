@@ -21,7 +21,7 @@ public class Menu {
         Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
         DbOperations graph_operation = new DbOperations();
 
-        //controllare se elimina user vuoti
+        //controllare se elimina user vuoti --> SOLVED
         //bug --> rating limitare a 0/100
         //max description -->SOLVED
         //scroll page ---> SOLVED
