@@ -5,24 +5,22 @@ Application:
 
 
 Mongo Db:
-
-- [ ] 
+- TO DO -- Make a function that shows 10 user at time for third query
+- All it's working 
 
 Graph Db:
-- [ ] 
+- TO DO --Test menu 
 
 Distruibuited : 
-- [ ] 
+- TO DO -- Build Mongo ReplicaSet 
 
   
   
-## Population function:
+Population functions for social and review collection: WORKING
 
-  
-  
-
-# Questions and answers
-
+TO DO:
+- Report
+- User guide
   
 
 
