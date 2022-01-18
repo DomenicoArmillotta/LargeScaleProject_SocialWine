@@ -25,6 +25,7 @@ public class Menu {
         //bug --> rating limitare a 0/100
         //max description -->SOLVED
         //scroll page ---> SOLVED
+        //
 
 
 
@@ -87,8 +88,7 @@ public class Menu {
                 System.out.println("1" + " See wine menu");
                 System.out.println("2" + " Homepage");
                 System.out.println("3" + " MY PROFILE");
-                System.out.println("4" + " Suggested user section");
-                System.out.println("5" + " Search a friend");
+                System.out.println("4" + " Search a friend and know new people");
                 System.out.println("6" + " Logout");
                 System.out.println(" Select operation : ");
                 Scanner scanSelection = new Scanner(System.in);
@@ -100,8 +100,6 @@ public class Menu {
                 } else if (selection.equals("3")) {
                     graph_operation.showMyAccount("adam");
                 } else if (selection.equals("4")) {
-                    graph_operation.showSuggestedUserAndFollow("adam");
-                } else if (selection.equals("5")) {
                     graph_operation.searchUserfromUser("adam");
 
                 } else if (selection.equals("6")) {

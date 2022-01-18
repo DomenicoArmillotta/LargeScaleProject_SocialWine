@@ -105,7 +105,8 @@ public class Main {
         graph.addComment("vino","20");
         graph.createRelationCreated("vino","bob");
         graph.createRelationRelated("wine1","vino");*/
-
+        //graph.registerUser("adam","00","0","@tagAdmin","ita","email");
+        //graph.addWine("wine2","1","1","1","1","1");
         Menu menu = new Menu();
         menu.MainMenu();
 

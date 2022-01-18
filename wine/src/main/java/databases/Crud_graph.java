@@ -748,6 +748,31 @@ public class Crud_graph implements AutoCloseable {
         createRelationCreated(description , taster_name);
     }
 
+
+
+    public ArrayList<User> show10RandomUsers (final String username) {
+        ArrayList<User> suggestedUsers;
+        try (Session session = driver.session()) {
+            suggestedUsers = session.readTransaction((TransactionWork< ArrayList<User>>) tx -> {
+                Result result = tx.run("MATCH (u1:User{username: $username}),(u2:User)\n" +
+                                "WHERE NOT EXISTS ((u1)-[:Follow]->(u2))\n" +
+                                "RETURN u2.username AS username , u2.country as country , u2.twitter_taster_handle as twitter_taster_handle\n" +
+                                "LIMIT 10",
+                        parameters("username", username));
+                ArrayList<User> users = new ArrayList<>();
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    User u = new User(r.get("username").asString() , "",r.get("twitter_taster_handle").asString() ,r.get("country").asString()  ,"", false);
+                    users.add(u);
+                }
+                return users;
+            });
+        } catch (Exception e){
+            suggestedUsers = null;
+        }
+        return suggestedUsers;
+    }
+
 /*
 
     public void randomFollowByUser(final String selected_taster_name) {
