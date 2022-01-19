@@ -481,6 +481,8 @@ public class DbOperations {
                     }
                 }
 
+                }else{
+                    System.out.println("no comment to show");
                 }
             }
             System.out.println("=======================================================");
@@ -626,18 +628,6 @@ public class DbOperations {
 
                     }
                 }
-
-
-
-            /*System.out.println("Select a comment to put like :");
-            Scanner scanSelect = new Scanner(System.in);
-            String selected = scanSelect.nextLine();
-            if(selected.equals("X")){
-
-            }else {
-                int selectedInt = Integer.parseInt(selected);
-                graph.putLikeByDescription(trendingReviews.get(selectedInt).getDescription(), myUsername);
-            }*/
             } else {
                 System.out.println("There aren't trending comment");
             }
@@ -1432,7 +1422,7 @@ public class DbOperations {
         }
     }
 
-    public void addWineAdmin() {
+    public void addWineAdmin() throws WrongInsertionException {
         System.out.println("Type wine name :");
         Scanner scanName = new Scanner(System.in);
         String name = scanName.nextLine();
@@ -1441,7 +1431,10 @@ public class DbOperations {
         String designation = scanDesignation.nextLine();
         System.out.println("Type wine price :");
         Scanner scanPrice = new Scanner(System.in);
-        String proce = scanPrice.nextLine();
+        String price = scanPrice.nextLine();
+        int len = price.length();
+        if (onlyDigits(price,len)== false)
+                throw new WrongInsertionException("Price can contains only digits not string");
         System.out.println("Type wine province :");
         Scanner scanProvince = new Scanner(System.in);
         String province = scanProvince.nextLine();
@@ -1451,7 +1444,7 @@ public class DbOperations {
         System.out.println("Type wine winery :");
         Scanner scanWinery = new Scanner(System.in);
         String winery = scanWinery.nextLine();
-        graph.addWine(name, designation, proce, province, variety, winery);
+        graph.addWine(name, designation, price, province, variety, winery);
     }
 
     public void wineToDelete(ArrayList<Wine> wines) {
@@ -1521,7 +1514,11 @@ public class DbOperations {
                         } else if (selection.equals("3")) {
                             wineToDelete(wines);
                         } else if (selection.equals("4")) {
-                            addWineAdmin();
+                            try {
+                                addWineAdmin();
+                            } catch (WrongInsertionException e) {
+                                System.out.println(e.getMessage());
+                            }
                         }
                     }
                 } else {
@@ -1541,7 +1538,11 @@ public class DbOperations {
                     } else if (selection.equals("3")) {
                         wineToDelete(wines);
                     } else if (selection.equals("4")) {
-                        addWineAdmin();
+                        try {
+                            addWineAdmin();
+                        } catch (WrongInsertionException e) {
+                            System.out.println(e.getMessage());
+                        }
                     }
                 }
             }

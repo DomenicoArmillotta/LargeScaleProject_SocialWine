@@ -2,7 +2,6 @@ package databases;
 
 import com.mongodb.client.*;
 import com.mongodb.client.model.*;
-import exception.NoCountryToShowException;
 import exception.ResultsNotFoundException;
 import exception.WrongInsertionException;
 import org.bson.Document;
@@ -10,19 +9,17 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.conversions.Bson;
-
 import java.text.DecimalFormat;
 import java.util.*;
-
-import static databases.DbOperations.onlyDigits;
 import static com.mongodb.client.model.Accumulators.*;
 import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Sorts.descending;
+import static databases.DbOperations.onlyDigits;
 
 /**
  * This class contains MongoDB advanced queries made with aggregation pipeline.
  */
-public class Advanced_mongo extends DbOperations {
+public class Advanced_mongo{
     Crud_mongo mongo = new Crud_mongo();
     private static final DecimalFormat df = new DecimalFormat("0.00");
 
@@ -86,11 +83,11 @@ public class Advanced_mongo extends DbOperations {
     }
 
 
-    public void topFiveWinesAccordinglyRatingsInsertedByUser() {
+    public void topTwentyWinesWithPriceLowerThan() {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
-        System.out.println("********TOP TWENTY WINES WITH PRICE LOWER THAN A TRESHOLD FIXED ADMIN**********");
+        System.out.println("********TOP TWENTY WINES WITH PRICE LOWER THAN A TRESHOLD FIXED BY ADMIN**********");
         System.out.println("Insert price treshold:");
         Scanner sc = new Scanner(System.in);
         try {

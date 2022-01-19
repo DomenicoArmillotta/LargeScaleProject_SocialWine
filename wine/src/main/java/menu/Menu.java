@@ -1,17 +1,8 @@
 package menu;
 
-import beans.User;
 import databases.*;
-import exception.AlreadyPopulatedException;
-import exception.InsertedWrongNumberException;
-import exception.WrongInsertionException;
-import login.DistinctUsers;
-import login.LoginAdmin;
-import login.LoginUser;
-
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 /**
  * The class contains the core of user/admin choice. From here the user could choice what hw wants to do
