@@ -1,5 +1,6 @@
 import beans.User;
 import beans.Wine;
+import com.mongodb.client.MongoCursor;
 import databases.*;
 import exception.WrongInsertionException;
 import menu.Menu;
@@ -21,16 +22,13 @@ public class Main {
        // pop.poplulateData();
         //menu 6 admin --> fare una cosa come lo user per eliminare e ceracre gli utenti
         DbOperations graph_operation = new DbOperations();
-
+        Crud_mongo mongo = new Crud_mongo();
         //inizialization TEST
-        /*graph.registerUser("bob","00","1","@tag","ita","email");
-        graph.registerUser("bill","00","0","@tag","ita","email");
-        graph.registerUser("adam","00","0","@tag","ita","email");
-        graph.addWine("wine1","des1","100","B","A","w1");
-        graph.addWine("wine2","des1","100","B","A","w1");
-        graph.createRelationFollow("bob","bill");
-        graph.createRelationFollow("adam","bill");
-        graph.deleteWineByName("wine1");*/
+        Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
+        /*graph.registerUser("Admin","00","1","@tag","ita","email");
+        graph.registerUser("User1","00","0","@user1","it","rr");
+        graph.registerUser("User2","00","0","@user1","it","rr");*/
+        //graph_operation.deleteAccount("user1"); ----> NON FUNZIONA
         //test finished
 
         Menu menu = new Menu();

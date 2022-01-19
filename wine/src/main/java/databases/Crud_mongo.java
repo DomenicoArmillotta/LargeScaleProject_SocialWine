@@ -26,7 +26,7 @@ import static com.mongodb.client.model.Aggregates.*;
  */
 public class Crud_mongo {
 
-
+    //WORKS ON NEO4J
     public void addWine(String title, String variety, String country, String province, String designation, String winery, int price) {
         if (Strings.isNullOrEmpty(title) || Strings.isNullOrEmpty(variety) || Strings.isNullOrEmpty(country) || Strings.isNullOrEmpty(province) || Strings.isNullOrEmpty(designation) || Strings.isNullOrEmpty(winery) || price <= 0) {
             System.out.println("Fields for wine must not be null");
@@ -136,7 +136,7 @@ public class Crud_mongo {
         }
     }
 
-    //WORKS
+    //WORKS ON NEO4J
     public void deleteWine(String title) {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("Wines");
@@ -148,7 +148,7 @@ public class Crud_mongo {
         }
     }
 
-    //WORKS
+    //WORKS ON NEO4J
     public void deleteComment(String description, String taster_name, String title) {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("Wines");
@@ -162,8 +162,7 @@ public class Crud_mongo {
         }
     }
 
-    //WORKS
-    //VERIFY CASE IN WHICH SAME USER CALL TWICE OR MORE THIS METHOD ON SAME REVIEW
+    //WORKS ON NEO4J
     public void addComment(String title, String taster_name, int score, String description, String taster_twitter_handle, String country, String email) throws WineNotExistsException, ReviewAlreadyInserted {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("Wines");

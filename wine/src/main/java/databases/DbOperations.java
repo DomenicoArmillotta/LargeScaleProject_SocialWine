@@ -550,11 +550,11 @@ public class DbOperations {
                         try {
                             int selectedReviewInt = Integer.parseInt(selectedReview);
                             if (selectedReviewInt >= 0 && selectedReviewInt <= (allReview.size() - 1)) {
+                                mongo.deleteComment(allReview.get(selectedReviewInt).getDescription(),graph.findUserByDescription(allReview.get(selectedReviewInt).getDescription()).get(0).getUsername(),graph.findWineByDescription(allReview.get(selectedReviewInt).getDescription()).get(0).getWineName());
                                 graph.deleteAllRelationLikeByDescription(allReview.get(selectedReviewInt).getDescription());
                                 graph.deleteAllRelationRelatedByDescription(allReview.get(selectedReviewInt).getDescription());
                                 graph.deleteAllRelationCreatedByDescription(allReview.get(selectedReviewInt).getDescription());
                                 graph.deleteCommentByDescription(allReview.get(selectedReviewInt).getDescription());
-                                mongo.deleteComment(allReview.get(selectedReviewInt).getDescription(),graph.findUserByDescription(allReview.get(selectedReviewInt).getDescription()).get(0).getUsername(),graph.findWineByDescription(allReview.get(selectedReviewInt).getDescription()).get(0).getWineName());
                             } else {
                                 System.out.println("Selection wrong");
                             }
@@ -804,11 +804,11 @@ public class DbOperations {
                     try {
                         int selectedReviewInt = Integer.parseInt(selectedReview);
                         if (selectedReviewInt >= 0 && selectedReviewInt <= (myReviews.size() - 1)) {
+                            mongo.deleteComment(myReviews.get(selectedReviewInt).getDescription(),myUsername,graph.findWineByDescription(myReviews.get(selectedReviewInt).getDescription()).get(0).getWineName());
                             graph.deleteAllRelationLikeByDescription(myReviews.get(selectedReviewInt).getDescription());
                             graph.deleteAllRelationRelatedByDescription(myReviews.get(selectedReviewInt).getDescription());
                             graph.deleteAllRelationCreatedByDescription(myReviews.get(selectedReviewInt).getDescription());
                             graph.deleteCommentByDescription(myReviews.get(selectedReviewInt).getDescription());
-                            mongo.deleteComment(myReviews.get(selectedReviewInt).getDescription(),myUsername,graph.findWineByDescription(myReviews.get(selectedReviewInt).getDescription()).get(0).getWineName());
                         }
                     } catch (NumberFormatException nex) {
                         System.out.println("You have to insert a number not a string");
@@ -819,16 +819,17 @@ public class DbOperations {
                 System.out.println("You dont have comment");
             }
         } else if (selection.equals("3")) {
-            graph.deleteAllRelationFollow(myUsername);
-            //graph.deleteAllRelationFollowed(myUsername);
-            graph.deleteAllRelationLike(myUsername);
-            graph.deleteAllRelationCreated(myUsername);
-            graph.deleteUserByUsername(myUsername);
             try {
                 mongo.deleteAllCommentForGivenUser(myUsername);
             }catch (UserNotPresentException e){
                 System.out.println(e.getMessage());
             }
+            graph.deleteAllRelationFollow(myUsername);
+            //graph.deleteAllRelationFollowed(myUsername);
+            graph.deleteAllRelationLike(myUsername);
+            graph.deleteAllRelationCreated(myUsername);
+            graph.deleteUserByUsername(myUsername);
+
         } else if (selection.equals("4")) {
             if (users.size() != 0) {
                 System.out.println("Select a user to see profile :");
@@ -1151,8 +1152,9 @@ public class DbOperations {
                                 graph.deleteAllRelationLikeByDescription(friendsReviews.get(selectedReviewIntOption).getDescription());
                                 graph.deleteAllRelationRelatedByDescription(friendsReviews.get(selectedReviewIntOption).getDescription());
                                 graph.deleteAllRelationCreatedByDescription(friendsReviews.get(selectedReviewIntOption).getDescription());
-                                graph.deleteCommentByDescription(friendsReviews.get(selectedReviewIntOption).getDescription());
                                 mongo.deleteComment(friendsReviews.get(selectedReviewIntOption).getDescription(),graph.findUserByDescription(friendsReviews.get(selectedReviewIntOption).getDescription()).get(0).getUsername(),graph.findWineByDescription(friendsReviews.get(selectedReviewIntOption).getDescription()).get(0).getWineName());
+                                graph.deleteCommentByDescription(friendsReviews.get(selectedReviewIntOption).getDescription());
+
                             }else{
                                 System.out.println("selection wrong");
                             }
@@ -1164,28 +1166,30 @@ public class DbOperations {
                     }
 
                 } else if (selectionOption.equals("2")) {
+                    try{
+                        mongo.deleteAllCommentForGivenUser(user.getUsername());
+                    }catch (UserNotPresentException e){
+                        System.out.println(e.getMessage());
+                    }
                     graph.deleteAllRelationFollow(user.getUsername());
                     //graph.deleteAllRelationFollowed(myUsername);
                     graph.deleteAllRelationLike(user.getUsername());
                     graph.deleteAllRelationCreated(user.getUsername());
                     graph.deleteUserByUsername(user.getUsername());
-                    try{mongo.deleteAllCommentForGivenUser(user.getUsername());
-                    }catch (UserNotPresentException e){
-                        System.out.println(e.getMessage());
-                    }
+
                 }
 
             } else if (selection.equals("3")) {
+                try{
+                    mongo.deleteAllCommentForGivenUser(user.getUsername());
+                }catch (UserNotPresentException e){
+                    System.out.println(e.getMessage());
+                }
                 graph.deleteAllRelationFollow(user.getUsername());
                 //graph.deleteAllRelationFollowed(myUsername);
                 graph.deleteAllRelationLike(user.getUsername());
                 graph.deleteAllRelationCreated(user.getUsername());
                 graph.deleteUserByUsername(user.getUsername());
-                try{mongo.deleteAllCommentForGivenUser(user.getUsername());
-                }catch (UserNotPresentException e){
-                    System.out.println(e.getMessage());
-                }
-
             }
         } else {
             System.out.println("User dont found");
@@ -1509,6 +1513,8 @@ public class DbOperations {
                 int convertedSelectionWine = Integer.parseInt(selectioned);
                 if (convertedSelectionWine >= 0 && convertedSelectionWine <= (wines.size() - 1)) {
                     //wines.get(convertedSelection).getWineName()
+
+                    mongo.deleteWine(wines.get(convertedSelectionWine).getWineName());
                     ArrayList<Review> reviewToDelete = new ArrayList<>(graph.showAllCommentRelatedWineName(wines.get(convertedSelectionWine).getWineName()));
                     for (int j = 0; j < reviewToDelete.size(); j++) {
                         //delete comment related to the wine
@@ -1516,13 +1522,12 @@ public class DbOperations {
                         graph.deleteAllRelationRelatedByDescription(reviewToDelete.get(j).getDescription());
                         graph.deleteAllRelationCreatedByDescription(reviewToDelete.get(j).getDescription());
                         graph.deleteCommentByDescription(reviewToDelete.get(j).getDescription());
-                        mongo.deleteComment(reviewToDelete.get(j).getDescription(),graph.findUserByDescription(reviewToDelete.get(j).getDescription()).get(0).getUsername(),wines.get(convertedSelectionWine).getWineName());
+                    //String description, String taster_name, String title
                     }
                     //delete relation of wine selected
                     graph.deleteAllRelatedBynameWine(wines.get(convertedSelectionWine).getWineName());
                     //delete wine selected
                     graph.deleteWineByName(wines.get(convertedSelectionWine).getWineName());
-                    mongo.deleteWine(wines.get(convertedSelectionWine).getWineName());
 
                 } else {
                     System.out.println("selection wrong");
@@ -1601,6 +1606,22 @@ public class DbOperations {
             }
         } else {
             System.out.println("No wine on the social");
+            Scanner scanSelect2 = new Scanner(System.in);
+            System.out.println("Do you want to add a new Wine? (y/n)");
+            try {
+                String addOption = scanSelect2.nextLine();
+                if (addOption.equals("y")){
+                    try {
+                        addWineAdmin();
+                    } catch (WrongInsertionException e) {
+                        System.out.println(e.getMessage());
+                    }
+                } else {
+
+                }
+            }catch (NumberFormatException nex){
+                System.out.println("You have to insert a string not a number");
+            }
         }
 
     }
@@ -1616,11 +1637,11 @@ public class DbOperations {
             try{
                 int selectedReviewInt = Integer.parseInt(selectedReview);
                 if (selectedReviewInt >= 0 && selectedReviewInt <= (reviews.size() - 1)) {
+                    mongo.deleteComment(reviews.get(selectedReviewInt).getDescription(),graph.findUserByDescription(reviews.get(selectedReviewInt).getDescription()).get(0).getUsername(),graph.findWineByDescription(reviews.get(selectedReviewInt).getDescription()).get(0).getWineName());
                     graph.deleteAllRelationLikeByDescription(reviews.get(selectedReviewInt).getDescription());
                     graph.deleteAllRelationRelatedByDescription(reviews.get(selectedReviewInt).getDescription());
                     graph.deleteAllRelationCreatedByDescription(reviews.get(selectedReviewInt).getDescription());
                     graph.deleteCommentByDescription(reviews.get(selectedReviewInt).getDescription());
-                    mongo.deleteComment(reviews.get(selectedReviewInt).getDescription(),graph.findUserByDescription(reviews.get(selectedReviewInt).getDescription()).get(0).getUsername(),graph.findWineByDescription(reviews.get(selectedReviewInt).getDescription()).get(0).getWineName());
                 } else {
                     System.out.println("Selection wrong");
                 }
@@ -1632,6 +1653,11 @@ public class DbOperations {
     }
 
     public void deleteAccount(String username) {
+        try{
+            mongo.deleteAllCommentForGivenUser(username);
+        }catch (UserNotPresentException e){
+            System.out.println(e.getMessage());
+        }
         try {
             graph.deleteAllRelationFollow(username);
         } catch (IndexOutOfBoundsException ecc) {
@@ -1649,11 +1675,7 @@ public class DbOperations {
         }
         //graph.deleteAllRelationFollowed(myUsername);
         graph.deleteUserByUsername(username);
-        try{
-            mongo.deleteAllCommentForGivenUser(username);
-        }catch (UserNotPresentException e){
-            System.out.println(e.getMessage());
-        }
+
     }
 
     public void show10User(ArrayList<User> users, int times, int perTimes) {
@@ -1913,11 +1935,11 @@ public class DbOperations {
             try{
                 int selectedDeleteInt = Integer.parseInt(selectedDelete);
                 if (selectedDeleteInt >= 0 && selectedDeleteInt <= (reviews.size() - 1)) {
+                    mongo.deleteComment(reviews.get(selectedDeleteInt).getDescription(),graph.findUserByDescription(reviews.get(selectedDeleteInt).getDescription()).get(0).getUsername(),graph.findWineByDescription(reviews.get(selectedDeleteInt).getDescription()).get(0).getWineName());
                     graph.deleteAllRelationLikeByDescription(reviews.get(selectedDeleteInt).getDescription());
                     graph.deleteAllRelationRelatedByDescription(reviews.get(selectedDeleteInt).getDescription());
                     graph.deleteAllRelationCreatedByDescription(reviews.get(selectedDeleteInt).getDescription());
                     graph.deleteCommentByDescription(reviews.get(selectedDeleteInt).getDescription());
-                    mongo.deleteComment(reviews.get(selectedDeleteInt).getDescription(),graph.findUserByDescription(reviews.get(selectedDeleteInt).getDescription()).get(0).getUsername(),graph.findWineByDescription(reviews.get(selectedDeleteInt).getDescription()).get(0).getWineName());
                 } else {
                     System.out.println("Selection wrong");
                 }
