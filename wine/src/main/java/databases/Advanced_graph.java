@@ -83,4 +83,29 @@ public class Advanced_graph implements AutoCloseable {
         return suggestedUsers;
     }
 
+    public ArrayList<User> showSuggestedUserByLike (final String username) {
+        ArrayList<User> suggestedUsers;
+        try (Session session = driver.session()) {
+            suggestedUsers = session.readTransaction((TransactionWork< ArrayList<User>>) tx -> {
+                Result result = tx.run("MATCH (n:User{username: $username})-[:Like]->(:Post)<-[:Created]-(u:User)\n" +
+                                "WHERE NOT EXISTS ((n)-[:Follow]->(u))\n" +
+                                "WITH u, rand() AS number\n" +
+                                "RETURN u.username AS username , u.country as country , u.twitter_taster_handle as twitter_taster_handle\n" +
+                                "ORDER BY number\n" +
+                                "LIMIT 5",
+                        parameters("username", username));
+                ArrayList<User> users = new ArrayList<>();
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    User u = new User(r.get("username").asString() , "",r.get("twitter_taster_handle").asString() ,r.get("country").asString()  ,"", false);
+                    users.add(u);
+                }
+                return users;
+            });
+        } catch (Exception e){
+            suggestedUsers = null;
+        }
+        return suggestedUsers;
+    }
+
 }
