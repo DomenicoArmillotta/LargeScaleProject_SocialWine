@@ -17,6 +17,9 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args)throws Exception  {
 
+       // Populating_wine_document pop = new Populating_wine_document();
+       // pop.poplulateData();
+        //menu 6 admin --> fare una cosa come lo user per eliminare e ceracre gli utenti
         Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
         //inizialization TEST
         graph.registerUser("bob","00","1","@tag","ita","email");

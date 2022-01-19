@@ -14,7 +14,6 @@ import java.util.*;
 import static com.mongodb.client.model.Accumulators.*;
 import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Sorts.descending;
-import static databases.DbOperations.onlyDigits;
 
 /**
  * This class contains MongoDB advanced queries made with aggregation pipeline.
@@ -92,7 +91,7 @@ public class Advanced_mongo{
     db.wines.aggregate( [ { $unwind : "$reviews" }, { "$match": { "price": { "$gte": userInput } } },
     { $project : { wineName : 1 , "reviews.taster_name" : 1 } } ] )
      */
-    public void topTwentyWinesWithPriceLowerThan() {
+    public void topThirtyWinesWithPriceLowerThan() {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
@@ -102,8 +101,8 @@ public class Advanced_mongo{
         try {
             Integer treshold = sc.nextInt();
             int len = Integer.toString(treshold).length();
-
-            if (treshold < 0 || (Integer.toString(treshold)).length() > 4 || onlyDigits(Integer.toString(treshold),len)) {
+            String tresh = Integer.toString(treshold);
+            if (treshold < 0 || (Integer.toString(treshold)).length() > 4) {
                 try {
                     throw new WrongInsertionException("You inserted a number below 0 or a price higher than 9.999");
                 } catch (WrongInsertionException ime) {
@@ -111,7 +110,7 @@ public class Advanced_mongo{
                     System.out.println("*******************************************************************************" + "\n");
                 }
             } else {
-                Bson limit = limit(20);
+                Bson limit = limit(30);
                 Bson filter = Filters.lt("price", treshold);
                 Bson unwind = unwind("$reviews");
                 Bson match = match(filter);

@@ -11,6 +11,7 @@ import java.util.*;
 public class DbOperations {
     Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
     Advanced_graph adv_graph = new Advanced_graph("bolt://localhost:7687", "neo4j", "0000");
+    Advanced_mongo adv_mongo = new Advanced_mongo();
 
     //DONE
     public boolean adminLogin() {
@@ -1621,24 +1622,113 @@ public class DbOperations {
 
 
     public void usersMenuBanAdmin(String myUsername) {
-        ArrayList<User> users = new ArrayList<>(graph.showAllUser());
-        int times = 0;
-        int perTimes = 10;
-        if (users.size() != 0) {
-            System.out.println("=============BROSWE USER===============");
-            show10User(users, times, perTimes);
-            times++;
-            String selectionMore = "y";
-            while (selectionMore.equals("y")) {
-                if (perTimes * times < (users.size() - 1)) {
-                    System.out.println("\nDo you want to see 10 more users? y/n");
-                    Scanner scanSelectionMore = new Scanner(System.in);
-                    selectionMore = scanSelectionMore.nextLine();
-                    if (selectionMore.equals("y")) {
-                        times++;
-                        show10User(users, times, perTimes);
-                    } else if (selectionMore.equals("n")) {
+        System.out.println("What do you want do?");
+        System.out.println("1.  Search Specific User and Ban");
+        System.out.println("2.  Broswe all user and Ban");
+        Scanner scanSelectionBanMenu = new Scanner(System.in);
+        String selectionBanMenu = scanSelectionBanMenu.nextLine();
+        if(selectionBanMenu.equals("1")){
+            searchUserfromAdmin(myUsername);
+        }else if(selectionBanMenu.equals("2")){
+            ArrayList<User> users = new ArrayList<>(graph.showAllUser());
+            int times = 0;
+            int perTimes = 10;
+            if (users.size() != 0) {
+                System.out.println("=============BROSWE USER===============");
+                show10User(users, times, perTimes);
+                times++;
+                String selectionMore = "y";
+                while (selectionMore.equals("y")) {
+                    if (perTimes * times < (users.size() - 1)) {
+                        System.out.println("\nDo you want to see 10 more users? y/n");
+                        Scanner scanSelectionMore = new Scanner(System.in);
+                        selectionMore = scanSelectionMore.nextLine();
+                        if (selectionMore.equals("y")) {
+                            times++;
+                            show10User(users, times, perTimes);
+                        } else if (selectionMore.equals("n")) {
+                            //start see profile menu
+                            System.out.println("See profile of user :");
+                            Scanner selectionuser = new Scanner(System.in);
+                            String selectioned = selectionuser.nextLine();
+                            if (selectioned.equals("X")) {
+
+                            } else {
+                                try{
+                                    int convertedSelection = Integer.parseInt(selectioned);
+                                    if (convertedSelection >= 0 && convertedSelection <= (users.size() - 1)) {
+                                        System.out.println("==============PROFILE============= ");
+                                        System.out.println("Name : " + users.get(convertedSelection).getUsername());
+                                        System.out.println("Country : " + users.get(convertedSelection).getCountry());
+                                        System.out.println("Email : " + users.get(convertedSelection).getEmail());
+                                        System.out.println("Twitter Tag : " + users.get(convertedSelection).getTwitter_taster_handle());
+                                        System.out.println("Followed Friends : " + graph.showFollowedUsers(users.get(convertedSelection).getUsername()).size());
+                                        System.out.println("Followers : " + graph.countFollowersByUsername(users.get(convertedSelection).getUsername()));
+                                        System.out.println("==============LIST OF MY FRIENDS============= ");
+                                        ArrayList<User> usersFollowed = new ArrayList<>(graph.showFollowedUsers(users.get(convertedSelection).getUsername()));
+                                        if (usersFollowed.size() != 0) {
+                                            int z = 0;
+                                            for (z = 0; z < usersFollowed.size(); z++) {
+
+
+                                                System.out.println(z + " : name = " + usersFollowed.get(z).getUsername() + "   country = " + usersFollowed.get(z).getCountry());
+                                                if (z != (usersFollowed.size() - 1)) {
+                                                    System.out.println("--------------------------------------------------");
+                                                }
+                                            }
+
+                                        } else {
+                                            System.out.println("You dont have friends");
+                                        }
+                                        System.out.println("==============LIST OF COMMENTS MADE============= ");
+                                        ArrayList<Review> myReviews = new ArrayList<>(graph.showMyComment(users.get(convertedSelection).getUsername()));
+                                        if (myReviews.size() != 0) {
+                                            int k = 0;
+                                            for (k = 0; k < myReviews.size(); k++) {
+                                                System.out.println(k + " : Comment  ");
+                                                System.out.println(myReviews.get(k).getDescription());
+                                                System.out.println("rating = " + myReviews.get(k).getRating());
+                                                System.out.println("like = " + graph.countLikeByDescription(myReviews.get(k).getDescription()));
+                                                System.out.println("wine = " + graph.findWineByDescription(myReviews.get(k).getDescription()).get(0).getWineName());
+                                                if (graph.checkIfLikedByDescription(myReviews.get(k).getDescription(), myUsername) == 1) {
+                                                    System.out.println("Like = V");
+                                                } else if (graph.checkIfLikedByDescription(myReviews.get(k).getDescription(), myUsername) == 0) {
+                                                    System.out.println("Like = X");
+                                                }
+
+                                                if (k != (myReviews.size() - 1)) {
+                                                    System.out.println("------------------------------------------------");
+                                                }
+                                            }
+                                            System.out.println("==================================================" + "\n");
+                                        } else {
+                                            System.out.println("He dont have review");
+                                        }
+
+                                        System.out.println("What do you want do?");
+                                        System.out.println("1.  Delete one review");
+                                        System.out.println("2.  Delete account");
+                                        Scanner scanSelection = new Scanner(System.in);
+                                        String selection = scanSelection.nextLine();
+                                        if (selection.equals("1")) {
+                                            deleteComment(myReviews);
+                                        } else if (selection.equals("2")) {
+                                            deleteAccount(users.get(convertedSelection).getUsername());
+                                        }
+
+                                    } else {
+                                        System.out.println("Selection wrong");
+                                    }
+                                }catch (NumberFormatException nex){
+                                    System.out.println("You have to insert a number not a string");
+                                }
+
+                            }
+                            //end see profile menu
+                        }
+                    } else {
                         //start see profile menu
+                        selectionMore = "n";
                         System.out.println("See profile of user :");
                         Scanner selectionuser = new Scanner(System.in);
                         String selectioned = selectionuser.nextLine();
@@ -1717,90 +1807,10 @@ public class DbOperations {
                         }
                         //end see profile menu
                     }
-                } else {
-                    //start see profile menu
-                    selectionMore = "n";
-                    System.out.println("See profile of user :");
-                    Scanner selectionuser = new Scanner(System.in);
-                    String selectioned = selectionuser.nextLine();
-                    if (selectioned.equals("X")) {
-
-                    } else {
-                        try{
-                            int convertedSelection = Integer.parseInt(selectioned);
-                            if (convertedSelection >= 0 && convertedSelection <= (users.size() - 1)) {
-                                System.out.println("==============PROFILE============= ");
-                                System.out.println("Name : " + users.get(convertedSelection).getUsername());
-                                System.out.println("Country : " + users.get(convertedSelection).getCountry());
-                                System.out.println("Email : " + users.get(convertedSelection).getEmail());
-                                System.out.println("Twitter Tag : " + users.get(convertedSelection).getTwitter_taster_handle());
-                                System.out.println("Followed Friends : " + graph.showFollowedUsers(users.get(convertedSelection).getUsername()).size());
-                                System.out.println("Followers : " + graph.countFollowersByUsername(users.get(convertedSelection).getUsername()));
-                                System.out.println("==============LIST OF MY FRIENDS============= ");
-                                ArrayList<User> usersFollowed = new ArrayList<>(graph.showFollowedUsers(users.get(convertedSelection).getUsername()));
-                                if (usersFollowed.size() != 0) {
-                                    int z = 0;
-                                    for (z = 0; z < usersFollowed.size(); z++) {
-
-
-                                        System.out.println(z + " : name = " + usersFollowed.get(z).getUsername() + "   country = " + usersFollowed.get(z).getCountry());
-                                        if (z != (usersFollowed.size() - 1)) {
-                                            System.out.println("--------------------------------------------------");
-                                        }
-                                    }
-
-                                } else {
-                                    System.out.println("You dont have friends");
-                                }
-                                System.out.println("==============LIST OF COMMENTS MADE============= ");
-                                ArrayList<Review> myReviews = new ArrayList<>(graph.showMyComment(users.get(convertedSelection).getUsername()));
-                                if (myReviews.size() != 0) {
-                                    int k = 0;
-                                    for (k = 0; k < myReviews.size(); k++) {
-                                        System.out.println(k + " : Comment  ");
-                                        System.out.println(myReviews.get(k).getDescription());
-                                        System.out.println("rating = " + myReviews.get(k).getRating());
-                                        System.out.println("like = " + graph.countLikeByDescription(myReviews.get(k).getDescription()));
-                                        System.out.println("wine = " + graph.findWineByDescription(myReviews.get(k).getDescription()).get(0).getWineName());
-                                        if (graph.checkIfLikedByDescription(myReviews.get(k).getDescription(), myUsername) == 1) {
-                                            System.out.println("Like = V");
-                                        } else if (graph.checkIfLikedByDescription(myReviews.get(k).getDescription(), myUsername) == 0) {
-                                            System.out.println("Like = X");
-                                        }
-
-                                        if (k != (myReviews.size() - 1)) {
-                                            System.out.println("------------------------------------------------");
-                                        }
-                                    }
-                                    System.out.println("==================================================" + "\n");
-                                } else {
-                                    System.out.println("He dont have review");
-                                }
-
-                                System.out.println("What do you want do?");
-                                System.out.println("1.  Delete one review");
-                                System.out.println("2.  Delete account");
-                                Scanner scanSelection = new Scanner(System.in);
-                                String selection = scanSelection.nextLine();
-                                if (selection.equals("1")) {
-                                    deleteComment(myReviews);
-                                } else if (selection.equals("2")) {
-                                    deleteAccount(users.get(convertedSelection).getUsername());
-                                }
-
-                            } else {
-                                System.out.println("Selection wrong");
-                            }
-                        }catch (NumberFormatException nex){
-                            System.out.println("You have to insert a number not a string");
-                        }
-
-                    }
-                    //end see profile menu
                 }
+            } else {
+                System.out.println("No users on the social");
             }
-        } else {
-            System.out.println("No users on the social");
         }
 
     }
@@ -1973,6 +1983,24 @@ public class DbOperations {
     private ArrayList<User> show10RandomUser(String myUsername) {
         ArrayList<User> listUser = new ArrayList<User>(graph.show10RandomUsers(myUsername));
         return listUser;
+    }
+
+
+    public void statsMenuAdmin(){
+        System.out.println("what do you want to do?");
+        System.out.println("1 : See top 5 country according to the rating");
+        System.out.println("2 : See top 10 user with highest n° comment per variety ");
+        System.out.println("3 : See top 20 wines with price lower than X");
+        Scanner scanSelect = new Scanner(System.in);
+        String selected = scanSelect.nextLine();
+        if (selected.equals("1")) {
+            adv_mongo.topFiveCountryAccordingRating();
+        }else if(selected.equals("2")){
+            adv_mongo.topTenUsersMadeHighestumberOfReveiwsPerVarieties();
+        }else if(selected.equals("3")){
+            adv_mongo.ThirtyWinesWithPriceLowerThan();
+        }
+
     }
 
 }
