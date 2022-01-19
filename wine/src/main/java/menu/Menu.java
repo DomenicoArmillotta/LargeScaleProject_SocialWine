@@ -12,13 +12,6 @@ public class Menu {
         Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
         DbOperations graph_operation = new DbOperations();
 
-        //ADMIN
-        //al menu 5 --> metto la scelta di vedere tutti/cercare
-        //al menu 6 ---> la parte di amicizia
-
-
-
-
         while(true) {
             int user = 0;
             String userLoggedName=null;
@@ -32,7 +25,7 @@ public class Menu {
                 Scanner scanSelection = new Scanner(System.in);
                 String selection = scanSelection.nextLine();
                 if (selection.equals("1")) {
-                   /* userLoggedName=null;
+                   userLoggedName=null;
                     System.out.println("==============LOGIN ADMIN ===========");
                     System.out.println("Please enter your username: ");
                     Scanner scanLoginUsername = new Scanner(System.in);
@@ -46,11 +39,11 @@ public class Menu {
                     }else{
                         System.out.println("Password or username not correct");
                         user=0;
-                    }*/
+                    }
                     user = 1;
                 } else if (selection.equals("2")) {
                     user = 2;
-                    /*userLoggedName=null;
+                    userLoggedName=null;
                     System.out.println("==============LOGIN ADMIN ===========");
                     System.out.println("Please enter your username: ");
                     Scanner scanLoginAdminUsername = new Scanner(System.in);
@@ -64,7 +57,7 @@ public class Menu {
                     }else{
                         System.out.println("Password or username not correct");
                         user=0;
-                    }*/
+                    }
 
                 } else if (selection.equals("3")) {
                     System.out.println("===================Registration phase====================");
@@ -79,29 +72,30 @@ public class Menu {
                 System.out.println("║ 2" + " Homepage                              ║");
                 System.out.println("║ 3" + " My profile                            ║");
                 System.out.println("║ 4" + " Search a friend and know new people   ║");
-                System.out.println("║ 6" + " Logout                                ║");
+                System.out.println("║ 5" + " Logout                                ║");
                 System.out.println("╚=========================================╝");
 
                 System.out.println(" Select operation : ");
                 Scanner scanSelection = new Scanner(System.in);
                 String selection = scanSelection.nextLine();
-                if (selection.equals("1")) {
-                    graph_operation.showAllWineMenu("adam");
-                } else if (selection.equals("2")) {
-                    graph_operation.homepageUser("adam");
-                } else if (selection.equals("3")) {
-                    graph_operation.showMyAccount("adam");
+                if (selection.equals("1")) { //mongo ok
+                    graph_operation.showAllWineMenu(userLoggedName);
+                } else if (selection.equals("2")) { //mongo ok
+                    graph_operation.homepageUser(userLoggedName);
+                } else if (selection.equals("3")) {//mongo ok
+                    graph_operation.showMyAccount(userLoggedName);
                     try{
-                    graph.showUserByUsername("adam").getUsername();
+                    graph.showUserByUsername(userLoggedName).getUsername();
 
                     }catch (NullPointerException e){
                         System.out.println("Account deleted");
+                        userLoggedName=null;
                         user=0;
                     }
-                } else if (selection.equals("4")) {
-                    graph_operation.searchUserfromUser("adam");
+                } else if (selection.equals("4")) { //mongo ok
+                    graph_operation.searchUserfromUser(userLoggedName);
 
-                } else if (selection.equals("6")) {
+                } else if (selection.equals("5")) {
                     user = 0;
                 }
 
@@ -124,17 +118,17 @@ public class Menu {
                 String selection = scanSelection.nextLine();
                 if (selection.equals("1")) {
                     //see wine menu put like and delete wine
-                    graph_operation.showAllWineMenuAdmin("bob");
+                    graph_operation.showAllWineMenuAdmin(userLoggedName);
                 } else if (selection.equals("2")) {
-                    graph_operation.homepageAdmin("bob");
+                    graph_operation.homepageAdmin(userLoggedName);
                 } else if (selection.equals("3")) {
-                    graph_operation.showMyAccount("bob");
+                    graph_operation.showMyAccount(userLoggedName);
                 }else if (selection.equals("4")) {
-                    graph_operation.searchUserfromUser("bob");
+                    graph_operation.searchUserfromUser(userLoggedName);
                 }else if (selection.equals("5")) {
-                    graph_operation.showCommentAdminMenu("bob");
+                    graph_operation.showCommentAdminMenu(userLoggedName);
                 }else if (selection.equals("6")) {
-                    graph_operation.usersMenuBanAdmin("bob");
+                    graph_operation.usersMenuBanAdmin(userLoggedName);
                 }  else if (selection.equals("7")) {
                     graph_operation.statsMenuAdmin();
                 }  else if (selection.equals("8")) {

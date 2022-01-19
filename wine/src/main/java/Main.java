@@ -20,16 +20,17 @@ public class Main {
        // Populating_wine_document pop = new Populating_wine_document();
        // pop.poplulateData();
         //menu 6 admin --> fare una cosa come lo user per eliminare e ceracre gli utenti
-        Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
+        DbOperations graph_operation = new DbOperations();
+
         //inizialization TEST
-        graph.registerUser("bob","00","1","@tag","ita","email");
+        /*graph.registerUser("bob","00","1","@tag","ita","email");
         graph.registerUser("bill","00","0","@tag","ita","email");
         graph.registerUser("adam","00","0","@tag","ita","email");
         graph.addWine("wine1","des1","100","B","A","w1");
         graph.addWine("wine2","des1","100","B","A","w1");
         graph.createRelationFollow("bob","bill");
         graph.createRelationFollow("adam","bill");
-        graph.deleteWineByName("wine1");
+        graph.deleteWineByName("wine1");*/
         //test finished
 
         Menu menu = new Menu();
