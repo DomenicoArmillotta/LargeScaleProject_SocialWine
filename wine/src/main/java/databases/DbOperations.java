@@ -80,18 +80,25 @@ public class DbOperations {
         Scanner scanLoginName = new Scanner(System.in);
         String loginName = scanLoginName.nextLine();
         System.out.println("Please set your password: ");
-        Scanner scanLoginPassword = new Scanner(System.in);
-        String loginPassword = scanLoginPassword.nextLine();
-        System.out.println("Please set your twitter tag: ");
-        Scanner scanLoginTwitter = new Scanner(System.in);
-        String loginTwitter = scanLoginTwitter.nextLine();
-        System.out.println("Please set your country: ");
-        Scanner scanLoginCountry = new Scanner(System.in);
-        String loginCountry = scanLoginCountry.nextLine();
-        System.out.println("Please set your email: ");
-        Scanner scanLoginEmail = new Scanner(System.in);
-        String loginEmail = scanLoginEmail.nextLine();
-        graph.registerUser(loginName, loginPassword, "0", loginTwitter, loginCountry, loginEmail);
+        try{
+            Scanner scanLoginPassword = new Scanner(System.in);
+            String loginPassword = scanLoginPassword.nextLine().trim();
+            if (loginPassword.length() != 4 || loginPassword.trim().isEmpty() )
+                throw new WrongInsertionException("The password must contains 4 digits or no spaces");
+            System.out.println("Please set your twitter tag: ");
+            Scanner scanLoginTwitter = new Scanner(System.in);
+            String loginTwitter = scanLoginTwitter.nextLine();
+            System.out.println("Please set your country: ");
+            Scanner scanLoginCountry = new Scanner(System.in);
+            String loginCountry = scanLoginCountry.nextLine();
+            System.out.println("Please set your email: ");
+            Scanner scanLoginEmail = new Scanner(System.in);
+            String loginEmail = scanLoginEmail.nextLine();
+            graph.registerUser(loginName, loginPassword, "0", loginTwitter, loginCountry, loginEmail);
+
+        }catch (WrongInsertionException wx){
+            System.out.println(wx.getMessage());
+        }
     }
 
     //work tested DONE
@@ -1939,7 +1946,7 @@ public class DbOperations {
 
     }
 
-    private static boolean onlyDigits(String str, int n) {
+     static boolean onlyDigits(String str, int n) {
         for (int i = 0; i < n; i++) {
             if (str.charAt(i) >= '0' && str.charAt(i) <= '9') {
                 return true;
@@ -1954,7 +1961,6 @@ public class DbOperations {
         ArrayList<User> listUser = new ArrayList<User>(graph.show10RandomUsers(myUsername));
         return listUser;
     }
-
 
 }
 
