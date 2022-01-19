@@ -3,6 +3,9 @@ package databases;
 import beans.Review;
 import beans.User;
 import beans.Wine;
+import exception.ReviewAlreadyInserted;
+import exception.UserNotPresentException;
+import exception.WineNotExistsException;
 import exception.WrongInsertionException;
 
 
@@ -12,6 +15,7 @@ public class DbOperations {
     Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
     Advanced_graph adv_graph = new Advanced_graph("bolt://localhost:7687", "neo4j", "0000");
     Advanced_mongo adv_mongo = new Advanced_mongo();
+    Crud_mongo mongo = new Crud_mongo();
 
     //DONE
     public boolean adminLogin() {
@@ -710,7 +714,7 @@ public class DbOperations {
         }
     }
 
-    public void showMyAccount(String myUsername) {
+    public void showMyAccount(String myUsername){
         User myUser = graph.showUserByUsername(myUsername);
         System.out.println("====================MY PROFILE==============");
         System.out.println("Name : " + myUser.getUsername());
@@ -763,8 +767,8 @@ public class DbOperations {
 
         System.out.println("What do you want do?");
         System.out.println("1.  Unfollow a friends");
-        System.out.println("2.  Delete one review");
-        System.out.println("3.  Delete account");
+        System.out.println("2.  Delete one review"); //-->mongo ok
+        System.out.println("3.  Delete account"); //--->mongo ok
         System.out.println("4.  See profilo of a friends");
         Scanner scanSelection = new Scanner(System.in);
         String selection = scanSelection.nextLine();
@@ -803,6 +807,7 @@ public class DbOperations {
                             graph.deleteAllRelationRelatedByDescription(myReviews.get(selectedReviewInt).getDescription());
                             graph.deleteAllRelationCreatedByDescription(myReviews.get(selectedReviewInt).getDescription());
                             graph.deleteCommentByDescription(myReviews.get(selectedReviewInt).getDescription());
+                            mongo.deleteComment(myReviews.get(selectedReviewInt).getDescription(),myUsername,graph.findWineByDescription(myReviews.get(selectedReviewInt).getDescription()).get(0).getWineName());
                         }
                     } catch (NumberFormatException nex) {
                         System.out.println("You have to insert a number not a string");
@@ -818,6 +823,11 @@ public class DbOperations {
             graph.deleteAllRelationLike(myUsername);
             graph.deleteAllRelationCreated(myUsername);
             graph.deleteUserByUsername(myUsername);
+            try {
+                mongo.deleteAllCommentForGivenUser(myUsername);
+            }catch (UserNotPresentException e){
+                System.out.println(e.getMessage());
+            }
         } else if (selection.equals("4")) {
             if (users.size() != 0) {
                 System.out.println("Select a user to see profile :");
@@ -1235,6 +1245,9 @@ public class DbOperations {
                                     graph.addComment(description, rating);
                                     graph.createRelationCreated(description, myUsername);
                                     graph.createRelationRelated(wines.get(selectedInt).getWineName(), description);
+                                    User myUserBeans = null;
+                                    myUserBeans = graph.showUserByUsername(myUsername);
+                                    mongo.addComment(wines.get(selectedInt).getWineName(),myUsername,Integer.parseInt(rating),description, myUserBeans.getTwitter_taster_handle(),myUserBeans.getCountry(),myUserBeans.getEmail());
                                 }
                             } else {
                                 correctDescr = 0;
@@ -1251,6 +1264,10 @@ public class DbOperations {
                 }
             } catch (NumberFormatException ne) {
                 System.out.println("Insert a number not a string");
+            } catch (WineNotExistsException e) {
+                System.out.println(e.getMessage());
+            } catch (ReviewAlreadyInserted reviewAlreadyInserted) {
+                System.out.println(reviewAlreadyInserted.getMessage());
             }
         }
 
@@ -1332,7 +1349,7 @@ public class DbOperations {
                     }
                 }
             } else {
-                System.out.println("No comment for this review. Do you add a comment? y/n");
+                System.out.println("No comment for this review. Do you add a comment? y/n"); //---> mongo ok
                 Scanner scanSelect = new Scanner(System.in);
                 String selectionAdd = scanSelect.nextLine();
                 if (selectionAdd.equals("y")) {
@@ -1358,6 +1375,9 @@ public class DbOperations {
                                 graph.addComment(description, rating);
                                 graph.createRelationCreated(description, myUsername);
                                 graph.createRelationRelated(wines.get(convertedSelection).getWineName(), description);
+                                User myUserBeans = null;
+                                myUserBeans = graph.showUserByUsername(myUsername);
+                                mongo.addComment(wines.get(convertedSelection).getWineName(),myUsername,Integer.parseInt(rating),description, myUserBeans.getTwitter_taster_handle(),myUserBeans.getCountry(),myUserBeans.getEmail());
                             }
                         } else {
                             correctDescr = 0;
@@ -1372,6 +1392,10 @@ public class DbOperations {
 
         } catch (NumberFormatException nex) {
             System.out.println("You have to insert the number not the string");
+        } catch (WineNotExistsException e) {
+            System.out.println(e.getMessage());
+        } catch (ReviewAlreadyInserted reviewAlreadyInserted) {
+            System.out.println(reviewAlreadyInserted.getMessage());
         }
     }
 
@@ -1408,17 +1432,17 @@ public class DbOperations {
                         Scanner scanSelection = new Scanner(System.in);
                         String selection = scanSelection.nextLine();
                         if (selection.equals("1")) {
-                            writeCommentonWine(wines, myUsername);
+                            writeCommentonWine(wines, myUsername); //-->mongo ok
                         } else if (selection.equals("2")) {
-                            showCommentonWine(wines, myUsername);
+                            showCommentonWine(wines, myUsername); //---> mongo ok
                         }
                     }
                 } else {
                     System.out.println("===================================================== ");
                     selectionMore = "n";
                     System.out.println("\nWhat do you want to do?");
-                    System.out.println("1" + " Write Comment on specific wine");
-                    System.out.println("2" + " See comment of specific wine");
+                    System.out.println("1" + " Write Comment on specific wine"); //---> mongo ok
+                    System.out.println("2" + " See comment of specific wine"); //---> mongo ok
                     Scanner scanSelection = new Scanner(System.in);
                     String selection = scanSelection.nextLine();
                     if (selection.equals("1")) {
@@ -1478,11 +1502,13 @@ public class DbOperations {
                         graph.deleteAllRelationRelatedByDescription(reviewToDelete.get(j).getDescription());
                         graph.deleteAllRelationCreatedByDescription(reviewToDelete.get(j).getDescription());
                         graph.deleteCommentByDescription(reviewToDelete.get(j).getDescription());
+                        mongo.deleteComment(reviewToDelete.get(j).getDescription(),graph.findUserByDescription(reviewToDelete.get(j).getDescription()).get(0).getUsername(),wines.get(convertedSelectionWine).getWineName());
                     }
                     //delete relation of wine selected
                     graph.deleteAllRelatedBynameWine(wines.get(convertedSelectionWine).getWineName());
                     //delete wine selected
                     graph.deleteWineByName(wines.get(convertedSelectionWine).getWineName());
+                    mongo.deleteWine(wines.get(convertedSelectionWine).getWineName());
 
                 } else {
                     System.out.println("selection wrong");
@@ -1514,9 +1540,9 @@ public class DbOperations {
                     } else if (selectionMore.equals("n")) {
                         System.out.println("===================================================== ");
                         System.out.println("\nWhat do you want to do?");
-                        System.out.println("1" + " Write Comment on specific wine");
-                        System.out.println("2" + " See comment of specific wine");
-                        System.out.println("3" + " Delete specific wine");
+                        System.out.println("1" + " Write Comment on specific wine"); //--->mongo ok
+                        System.out.println("2" + " See comment of specific wine"); // --->mongo ok
+                        System.out.println("3" + " Delete specific wine"); //-->mongo ok
                         System.out.println("4" + " Add specific wine");
                         Scanner scanSelection = new Scanner(System.in);
                         String selection = scanSelection.nextLine();
@@ -1538,9 +1564,9 @@ public class DbOperations {
                     System.out.println("===================================================== ");
                     selectionMore = "n";
                     System.out.println("\nWhat do you want to do?");
-                    System.out.println("1" + " Write Comment on specific wine");
-                    System.out.println("2" + " See comment of specific wine");
-                    System.out.println("3" + " Delete specific wine");
+                    System.out.println("1" + " Write Comment on specific wine"); //-->mongo ok
+                    System.out.println("2" + " See comment of specific wine"); //--->mongo ok
+                    System.out.println("3" + " Delete specific wine");//--->mongo ok
                     System.out.println("4" + " Add specific wine");
                     Scanner scanSelection = new Scanner(System.in);
                     String selection = scanSelection.nextLine();

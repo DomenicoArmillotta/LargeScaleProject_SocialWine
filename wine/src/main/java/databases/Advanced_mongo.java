@@ -20,6 +20,8 @@ import static com.mongodb.client.model.Sorts.descending;
  */
 public class Advanced_mongo{
     Crud_mongo mongo = new Crud_mongo();
+
+
     private static final DecimalFormat df = new DecimalFormat("0.00");
 
     /*
@@ -34,21 +36,21 @@ public class Advanced_mongo{
         Bson unwind = unwind("$reviews");
         Bson group = group("$country", avg("Average", "$reviews.rating"));
         List<Document> results = collection.aggregate(Arrays.asList(unwind, group, sort, limit)).into(new ArrayList<>());
-        System.out.println("*******************TOP FIVE COUNTRY ACCORDING AVERAGE RATING*******************");
+        System.out.println("=====TOP FIVE COUNTRY ACCORDING AVERAGE RATING=====");
         if (!results.iterator().hasNext()) {
             try {
                 throw new ResultsNotFoundException("The are no items for this query!");
             } catch (ResultsNotFoundException rex) {
                 System.out.println(rex.getMessage());
-                System.out.println("*******************************************************************************" + "\n");
+                System.out.println("==================================================");
             }
         } else {
             for (int i = 0; i < results.size(); i++) {
                 String countryName = (String) results.get(i).get("_id");
                 Double avg = results.get(i).getDouble("Average");
-                System.out.println("Country: " + countryName + " --- Average: " + df.format(avg) + "\n");
+                System.out.println("Country: " + countryName + " --- Average: " + df.format(avg));
             }
-            System.out.println("*******************************************************************************" + "\n");
+            System.out.println("==================================================");
 
         }
     }
@@ -72,17 +74,17 @@ public class Advanced_mongo{
                 throw new ResultsNotFoundException("The are no items for this query!");
             } catch (ResultsNotFoundException rex) {
                 System.out.println(rex.getMessage());
-                System.out.println("*******************************************************************************" + "\n");
+                System.out.println("================================================================");
 
             }
         } else {
-            System.out.println("********TOP TEN USERS THAT MADE HIGHEST NUMBER OF REVIEWS PER VARIETIES********");
+            System.out.println("=======TOP 10 USERS THAT MADE HIGHEST NUMBER OF REVIEWS PER VARIETIES=======");
             for (int i = 0; i < results.size(); i++) {
                 Document doc = (Document) results.get(i).get("_id");
                 Integer count = results.get(i).getInteger("count");
-                System.out.println("Taster_name: " + doc.get("taster_name") + " --- Variety: " + doc.get("variety") + " --- Count: " + count + "\n");
+                System.out.println("Name: " + doc.get("taster_name") + " --- Variety: " + doc.get("variety") + " .....Count: " + count );
             }
-            System.out.println("*******************************************************************************" + "\n");
+            System.out.println("================================================================");
         }
 
     }
@@ -95,7 +97,7 @@ public class Advanced_mongo{
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
-        System.out.println("********TOP TWENTY WINES WITH PRICE LOWER THAN A TRESHOLD FIXED BY ADMIN**********");
+        System.out.println("=========TOP 10 WINES WITH PRICE LOWER THAN A TRESHOLD FIXED BY ADMIN========");
         System.out.println("Insert price treshold:");
         Scanner sc = new Scanner(System.in);
         try {
@@ -107,10 +109,10 @@ public class Advanced_mongo{
                     throw new WrongInsertionException("You inserted a number below 0 or a price higher than 9.999");
                 } catch (WrongInsertionException ime) {
                     System.out.println(ime.getMessage());
-                    System.out.println("*******************************************************************************" + "\n");
+                    System.out.println("=================================================================");
                 }
             } else {
-                Bson limit = limit(30);
+                Bson limit = limit(10);
                 Bson filter = Filters.lt("price", treshold);
                 Bson unwind = unwind("$reviews");
                 Bson match = match(filter);
@@ -125,13 +127,14 @@ public class Advanced_mongo{
                 }
                 for (Document doc : results) {
                     Document review = (Document) doc.get("reviews");
-                    System.out.println("Username: " + review.getString("taster_name") + "\n" + "Wine name: " + doc.getString("wineName") + "\n" + "Wine's price: " + doc.getInteger("price").toString() + "\n");
+                    //"Username: " + review.getString("taster_name") + "\n" +
+                    System.out.println("Wine name: " + doc.getString("wineName") + "\n" + "Wine's price: " + doc.getInteger("price").toString() + "\n");
                 }
-                System.out.println("*******************************************************************************" + "\n");
+                System.out.println("=================================================================");
             }
         } catch (InputMismatchException ixe) {
             System.out.println("You have to insert a number not a string");
-            System.out.println("*******************************************************************************" + "\n");
+            System.out.println("=================================================================");
         }
     }
 }
