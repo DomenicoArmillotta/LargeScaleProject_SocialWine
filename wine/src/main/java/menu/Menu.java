@@ -12,11 +12,9 @@ public class Menu {
         Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
         DbOperations graph_operation = new DbOperations();
 
-        //controllare se elimina user vuoti --> SOLVED
-        //bug --> rating limitare a 0/100
-        //max description -->SOLVED
-        //scroll page ---> SOLVED
-        //
+        //ADMIN
+        //al menu 5 --> metto la scelta di vedere tutti/cercare
+        //al menu 6 ---> la parte di amicizia
 
 
 
@@ -79,7 +77,7 @@ public class Menu {
                 System.out.println("╔===================USER==================╗");
                 System.out.println("║ "+"1" + " See wine menu                         ║");
                 System.out.println("║ 2" + " Homepage                              ║");
-                System.out.println("║ 3" + " MY PROFILE                            ║");
+                System.out.println("║ 3" + " My profile                            ║");
                 System.out.println("║ 4" + " Search a friend and know new people   ║");
                 System.out.println("║ 6" + " Logout                                ║");
                 System.out.println("╚=========================================╝");
@@ -110,15 +108,16 @@ public class Menu {
             }
             while (user == 2) {
                 //BOB
-                System.out.println("╔==============ADMIN=================╗");
-                System.out.println("║ 1" + " See wine menu and Delete         ║");
-                System.out.println("║ 2" + " Homepage                         ║");
-                System.out.println("║ 3" + " My profile                       ║");
-                System.out.println("║ 4" + " Broswe all comments and Delete   ║"); //--> DA FARE (broswe and delete)
-                System.out.println("║ 5" + " Broswe all user and Ban/delete   ║");
-                System.out.println("║ 6" + " Search user and Ban/delete       ║");
-                System.out.println("║ 7" + " Logout                           ║");
-                System.out.println("╚====================================╝");
+                System.out.println("╔==============ADMIN==================╗");
+                System.out.println("║ 1" + " See wine menu and Delete          ║");
+                System.out.println("║ 2" + " Homepage                          ║");
+                System.out.println("║ 3" + " My profile                        ║");
+                System.out.println("║ 4" + " Find friends or new people        ║");
+                System.out.println("║ 5" + " Browse all comments and Delete    ║");
+                System.out.println("║ 6" + " Browse  user and Ban/delete       ║");
+                System.out.println("║ 7" + " Social Network statistics         ║");
+                System.out.println("║ 8" + " Logout                            ║");
+                System.out.println("╚=====================================╝");
 
                 System.out.println(" What do you want do?");
                 Scanner scanSelection = new Scanner(System.in);
@@ -131,14 +130,16 @@ public class Menu {
                 } else if (selection.equals("3")) {
                     graph_operation.showMyAccount("bob");
                 }else if (selection.equals("4")) {
-                    graph_operation.showCommentAdminMenu("bob");
+                    graph_operation.searchUserfromUser("bob");
                 }else if (selection.equals("5")) {
+                    graph_operation.showCommentAdminMenu("bob");
+                }else if (selection.equals("6")) {
                     graph_operation.usersMenuBanAdmin("bob");
-                } else if (selection.equals("6")) {
-                    graph_operation.searchUserfromAdmin("bob");
-                } else if (selection.equals("7")) {
-                    user = 0;
-                }
+                }  else if (selection.equals("7")) {
+                    graph_operation.statsMenuAdmin();
+                }  else if (selection.equals("8")) {
+                user = 0;
+            }
 
             }
         }
