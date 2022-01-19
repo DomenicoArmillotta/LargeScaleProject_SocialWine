@@ -7,30 +7,60 @@ import com.google.common.base.Strings;
 import com.mongodb.*;
 import com.mongodb.MongoClient;
 import com.mongodb.client.*;
-import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.UpdateOptions;
-import com.mongodb.client.model.Updates;
-import exception.NoCountryToShowException;
+import exception.AlreadyPopulatedException;
 import exception.ReviewAlreadyInserted;
 import exception.UserNotPresentException;
 import exception.WineNotExistsException;
-import org.apache.commons.codec.binary.StringUtils;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import javax.print.Doc;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.mongodb.client.model.Accumulators.avg;
 import static com.mongodb.client.model.Aggregates.*;
 
 /**
  * Contains all the crud operation that could be done on MongoDB.
  */
 public class Crud_mongo {
+
+
+    public void addWine(String title, String variety, String country, String province, String designation, String winery, int price) {
+        if (Strings.isNullOrEmpty(title) || Strings.isNullOrEmpty(variety) || Strings.isNullOrEmpty(country) || Strings.isNullOrEmpty(province) || Strings.isNullOrEmpty(designation) || Strings.isNullOrEmpty(winery) || price <= 0) {
+            System.out.println("Fields for wine must not be null");
+            return;
+        }
+
+        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
+        MongoDatabase database = mongoClient.getDatabase("Wines");
+        MongoCollection<Document> collection = database.getCollection("wines");
+
+        BasicDBObject query = new BasicDBObject("wineName", title);
+        MongoCursor<Document> cursor = collection.find(query).iterator();
+        if (!cursor.hasNext()){
+            List<Document> reviews = new ArrayList<>();
+            Document onlyWine = new Document()
+                    .append("wineName", "" + title +"")
+                    .append("variety", "" + variety + "")
+                    .append("country", "" + country + "")
+                    .append("province", "" +  province + "")
+                    .append("price", price)
+                    .append("winery", "" + winery + "")
+                    .append("designation", "" + designation + "")
+                    .append("reviews",reviews);
+            collection.insertOne(onlyWine);
+        } else {
+            try {
+                throw new AlreadyPopulatedException("A wine with this name already exists");
+            } catch (AlreadyPopulatedException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+
+    }
+
 
 
     public void createWine(String title, String variety, String country, String province, String designation, int price, String taster_name, int points,
@@ -113,7 +143,6 @@ public class Crud_mongo {
         MongoCollection<Document> collection = database.getCollection("wines");
         try {
             collection.deleteMany(Filters.eq("wineName", "" + title + ""));
-            System.out.println("Wine deleted successfully");
         } catch (MongoException me) {
             System.err.println("Unable to delete due to an error: " + me);
         }
@@ -128,7 +157,6 @@ public class Crud_mongo {
         BasicDBObject update = new BasicDBObject("reviews", new BasicDBObject("description", description).append("taster_name", taster_name));
         try {
             collection.updateOne(match, new BasicDBObject("$pull", update));
-            System.out.println("Comment " + description + " deleted successfully");
         } catch (MongoException me) {
             System.err.println("Unable to delete due to an error: " + me);
         }
@@ -199,7 +227,6 @@ public class Crud_mongo {
         BasicDBObject match = new BasicDBObject("reviews.taster_name", taster_name);
         BasicDBObject update = new BasicDBObject("reviews", new BasicDBObject("taster_name", taster_name));
         collection.updateMany(match, new BasicDBObject("$pull", update));
-        System.out.println("All comments of " + taster_name + " deleted successfully");
     }
 
 

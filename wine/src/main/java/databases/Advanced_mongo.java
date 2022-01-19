@@ -23,6 +23,9 @@ public class Advanced_mongo{
     Crud_mongo mongo = new Crud_mongo();
     private static final DecimalFormat df = new DecimalFormat("0.00");
 
+    /*
+       db.wines.aggregate( [ { $unwind:"$reviews"}, { $group:{_id:"$country", Average:{$avg:"$reviews.rating"}}}, {$limit:3}])
+     */
     public void topFiveCountryAccordingRating() {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("Wines");
@@ -51,6 +54,9 @@ public class Advanced_mongo{
         }
     }
 
+    /*
+        db.wines.aggregate( [ { $unwind:"$reviews"}, { $group:{_id: { taster_name : "$reviews.taster_name", variety : "$variety"}, count:{$sum:1}}},{$limit:10}])
+     */
     public void topTenUsersMadeHighestumberOfReveiwsPerVarieties() {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("Wines");
@@ -82,7 +88,10 @@ public class Advanced_mongo{
 
     }
 
-
+    /*
+    db.wines.aggregate( [ { $unwind : "$reviews" }, { "$match": { "price": { "$gte": userInput } } },
+    { $project : { wineName : 1 , "reviews.taster_name" : 1 } } ] )
+     */
     public void topTwentyWinesWithPriceLowerThan() {
         MongoClient mongoClient = MongoClients.create();
         MongoDatabase database = mongoClient.getDatabase("Wines");
