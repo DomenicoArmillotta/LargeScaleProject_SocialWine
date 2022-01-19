@@ -500,7 +500,7 @@ public class DbOperations {
                 System.out.println("what do you want to do?");
                 System.out.println("1 : Put like on a Post");
                 System.out.println("2 : Delete Like on a Post");
-                System.out.println("3 : Delete comment");
+                System.out.println("3 : Delete comment"); //-->mongo ok
                 Scanner scanSelectlike = new Scanner(System.in);
                 String selectedLike = scanSelectlike.nextLine();
                 if (selectedLike.equals("1")) {
@@ -554,6 +554,7 @@ public class DbOperations {
                                 graph.deleteAllRelationRelatedByDescription(allReview.get(selectedReviewInt).getDescription());
                                 graph.deleteAllRelationCreatedByDescription(allReview.get(selectedReviewInt).getDescription());
                                 graph.deleteCommentByDescription(allReview.get(selectedReviewInt).getDescription());
+                                mongo.deleteComment(allReview.get(selectedReviewInt).getDescription(),graph.findUserByDescription(allReview.get(selectedReviewInt).getDescription()).get(0).getUsername(),graph.findWineByDescription(allReview.get(selectedReviewInt).getDescription()).get(0).getWineName());
                             } else {
                                 System.out.println("Selection wrong");
                             }
@@ -1078,8 +1079,8 @@ public class DbOperations {
             System.out.println("name: " + user.getUsername() + "\nemail: " + user.getEmail() + "\ncountry" + user.getCountry() + "\nFollowers:" + graph.countFollowersByUsername(user.getUsername()));
             System.out.println("Select operation: ");
             System.out.println("1. Follow");
-            System.out.println("2. See the profile");
-            System.out.println("3. Ban user");
+            System.out.println("2. See the profile");//--> mongo ok
+            System.out.println("3. Ban user"); //-->mongo ok
             Scanner scanSelect = new Scanner(System.in);
             String selection = scanSelect.nextLine();
             if (selection.equals("1")) {
@@ -1133,8 +1134,8 @@ public class DbOperations {
                     System.out.println("He dont have review");
                 }
                 System.out.println("What do you want do?");
-                System.out.println("1.  Delete one review");
-                System.out.println("2.  Delete account");
+                System.out.println("1.  Delete one review"); //-->mongo ok
+                System.out.println("2.  Delete account"); //--> mongo ok
                 Scanner scanSelectionOption = new Scanner(System.in);
                 String selectionOption = scanSelectionOption.nextLine();
                 if (selectionOption.equals("1")) {
@@ -1151,6 +1152,7 @@ public class DbOperations {
                                 graph.deleteAllRelationRelatedByDescription(friendsReviews.get(selectedReviewIntOption).getDescription());
                                 graph.deleteAllRelationCreatedByDescription(friendsReviews.get(selectedReviewIntOption).getDescription());
                                 graph.deleteCommentByDescription(friendsReviews.get(selectedReviewIntOption).getDescription());
+                                mongo.deleteComment(friendsReviews.get(selectedReviewIntOption).getDescription(),graph.findUserByDescription(friendsReviews.get(selectedReviewIntOption).getDescription()).get(0).getUsername(),graph.findWineByDescription(friendsReviews.get(selectedReviewIntOption).getDescription()).get(0).getWineName());
                             }else{
                                 System.out.println("selection wrong");
                             }
@@ -1167,6 +1169,10 @@ public class DbOperations {
                     graph.deleteAllRelationLike(user.getUsername());
                     graph.deleteAllRelationCreated(user.getUsername());
                     graph.deleteUserByUsername(user.getUsername());
+                    try{mongo.deleteAllCommentForGivenUser(user.getUsername());
+                    }catch (UserNotPresentException e){
+                        System.out.println(e.getMessage());
+                    }
                 }
 
             } else if (selection.equals("3")) {
@@ -1175,6 +1181,10 @@ public class DbOperations {
                 graph.deleteAllRelationLike(user.getUsername());
                 graph.deleteAllRelationCreated(user.getUsername());
                 graph.deleteUserByUsername(user.getUsername());
+                try{mongo.deleteAllCommentForGivenUser(user.getUsername());
+                }catch (UserNotPresentException e){
+                    System.out.println(e.getMessage());
+                }
 
             }
         } else {
@@ -1478,10 +1488,14 @@ public class DbOperations {
         System.out.println("Type wine variety :");
         Scanner scanVariety = new Scanner(System.in);
         String variety = scanVariety.nextLine();
+        System.out.println("Type wine country :");
+        Scanner scanCountry = new Scanner(System.in);
+        String country = scanCountry.nextLine();
         System.out.println("Type wine winery :");
         Scanner scanWinery = new Scanner(System.in);
         String winery = scanWinery.nextLine();
         graph.addWine(name, designation, price, province, variety, winery);
+        mongo.addWine(name,variety,country,province,designation,winery,Integer.parseInt(price));
     }
 
     public void wineToDelete(ArrayList<Wine> wines) {
@@ -1543,7 +1557,7 @@ public class DbOperations {
                         System.out.println("1" + " Write Comment on specific wine"); //--->mongo ok
                         System.out.println("2" + " See comment of specific wine"); // --->mongo ok
                         System.out.println("3" + " Delete specific wine"); //-->mongo ok
-                        System.out.println("4" + " Add specific wine");
+                        System.out.println("4" + " Add specific wine"); //-->mongo ok
                         Scanner scanSelection = new Scanner(System.in);
                         String selection = scanSelection.nextLine();
                         if (selection.equals("1")) {
@@ -1567,7 +1581,7 @@ public class DbOperations {
                     System.out.println("1" + " Write Comment on specific wine"); //-->mongo ok
                     System.out.println("2" + " See comment of specific wine"); //--->mongo ok
                     System.out.println("3" + " Delete specific wine");//--->mongo ok
-                    System.out.println("4" + " Add specific wine");
+                    System.out.println("4" + " Add specific wine"); //-->mongo ok
                     Scanner scanSelection = new Scanner(System.in);
                     String selection = scanSelection.nextLine();
                     if (selection.equals("1")) {
@@ -1606,6 +1620,7 @@ public class DbOperations {
                     graph.deleteAllRelationRelatedByDescription(reviews.get(selectedReviewInt).getDescription());
                     graph.deleteAllRelationCreatedByDescription(reviews.get(selectedReviewInt).getDescription());
                     graph.deleteCommentByDescription(reviews.get(selectedReviewInt).getDescription());
+                    mongo.deleteComment(reviews.get(selectedReviewInt).getDescription(),graph.findUserByDescription(reviews.get(selectedReviewInt).getDescription()).get(0).getUsername(),graph.findWineByDescription(reviews.get(selectedReviewInt).getDescription()).get(0).getWineName());
                 } else {
                     System.out.println("Selection wrong");
                 }
@@ -1634,6 +1649,11 @@ public class DbOperations {
         }
         //graph.deleteAllRelationFollowed(myUsername);
         graph.deleteUserByUsername(username);
+        try{
+            mongo.deleteAllCommentForGivenUser(username);
+        }catch (UserNotPresentException e){
+            System.out.println(e.getMessage());
+        }
     }
 
     public void show10User(ArrayList<User> users, int times, int perTimes) {
@@ -1649,7 +1669,7 @@ public class DbOperations {
 
     public void usersMenuBanAdmin(String myUsername) {
         System.out.println("What do you want do?");
-        System.out.println("1.  Search Specific User and Ban");
+        System.out.println("1.  Search Specific User and Ban"); //--> mongo ok
         System.out.println("2.  Broswe all user and Ban");
         Scanner scanSelectionBanMenu = new Scanner(System.in);
         String selectionBanMenu = scanSelectionBanMenu.nextLine();
@@ -1732,8 +1752,8 @@ public class DbOperations {
                                         }
 
                                         System.out.println("What do you want do?");
-                                        System.out.println("1.  Delete one review");
-                                        System.out.println("2.  Delete account");
+                                        System.out.println("1.  Delete one review"); //-->mongo ok
+                                        System.out.println("2.  Delete account"); //-->mongo ok
                                         Scanner scanSelection = new Scanner(System.in);
                                         String selection = scanSelection.nextLine();
                                         if (selection.equals("1")) {
@@ -1813,8 +1833,8 @@ public class DbOperations {
                                     }
 
                                     System.out.println("What do you want do?");
-                                    System.out.println("1.  Delete one review");
-                                    System.out.println("2.  Delete account");
+                                    System.out.println("1.  Delete one review"); //--->mongo ok
+                                    System.out.println("2.  Delete account"); //--> mongo ok
                                     Scanner scanSelection = new Scanner(System.in);
                                     String selection = scanSelection.nextLine();
                                     if (selection.equals("1")) {
@@ -1897,6 +1917,7 @@ public class DbOperations {
                     graph.deleteAllRelationRelatedByDescription(reviews.get(selectedDeleteInt).getDescription());
                     graph.deleteAllRelationCreatedByDescription(reviews.get(selectedDeleteInt).getDescription());
                     graph.deleteCommentByDescription(reviews.get(selectedDeleteInt).getDescription());
+                    mongo.deleteComment(reviews.get(selectedDeleteInt).getDescription(),graph.findUserByDescription(reviews.get(selectedDeleteInt).getDescription()).get(0).getUsername(),graph.findWineByDescription(reviews.get(selectedDeleteInt).getDescription()).get(0).getWineName());
                 } else {
                     System.out.println("Selection wrong");
                 }
@@ -1954,7 +1975,7 @@ public class DbOperations {
                         System.out.println("what do you want to do?");
                         System.out.println("1 : Put like on a Post");
                         System.out.println("2 : Delete Like on a Post");
-                        System.out.println("3 : Delete  a Post");
+                        System.out.println("3 : Delete  a Post"); //--> mongo ok
                         Scanner scanSelectlike = new Scanner(System.in);
                         String selectedLike = scanSelectlike.nextLine();
                         if (selectedLike.equals("1")) {
@@ -1972,7 +1993,7 @@ public class DbOperations {
                     System.out.println("what do you want to do?");
                     System.out.println("1 : Put like on a Post");
                     System.out.println("2 : Delete Like on a Post");
-                    System.out.println("3 : Delete  a Post");
+                    System.out.println("3 : Delete  a Post"); //-->mongo ok
                     Scanner scanSelectlike = new Scanner(System.in);
                     String selectedLike = scanSelectlike.nextLine();
                     if (selectedLike.equals("1")) {
@@ -2024,7 +2045,7 @@ public class DbOperations {
         }else if(selected.equals("2")){
             adv_mongo.topTenUsersMadeHighestumberOfReveiwsPerVarieties();
         }else if(selected.equals("3")){
-            adv_mongo.ThirtyWinesWithPriceLowerThan();
+            adv_mongo.topThirtyWinesWithPriceLowerThan();
         }
 
     }

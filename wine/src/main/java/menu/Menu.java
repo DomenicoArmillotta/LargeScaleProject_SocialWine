@@ -116,18 +116,18 @@ public class Menu {
                 System.out.println(" What do you want do?");
                 Scanner scanSelection = new Scanner(System.in);
                 String selection = scanSelection.nextLine();
-                if (selection.equals("1")) {
+                if (selection.equals("1")) { //mongo ok
                     //see wine menu put like and delete wine
                     graph_operation.showAllWineMenuAdmin(userLoggedName);
-                } else if (selection.equals("2")) {
+                } else if (selection.equals("2")) { //mongo ok
                     graph_operation.homepageAdmin(userLoggedName);
-                } else if (selection.equals("3")) {
+                } else if (selection.equals("3")) { //mongo ok
                     graph_operation.showMyAccount(userLoggedName);
-                }else if (selection.equals("4")) {
+                }else if (selection.equals("4")) {//mongo ok
                     graph_operation.searchUserfromUser(userLoggedName);
-                }else if (selection.equals("5")) {
+                }else if (selection.equals("5")) { //mongo ok
                     graph_operation.showCommentAdminMenu(userLoggedName);
-                }else if (selection.equals("6")) {
+                }else if (selection.equals("6")) { //mongo ok
                     graph_operation.usersMenuBanAdmin(userLoggedName);
                 }  else if (selection.equals("7")) {
                     graph_operation.statsMenuAdmin();
