@@ -18,18 +18,25 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args)throws Exception  {
 
+        //fare menu searc wine
+
+
+
+
+
        // Populating_wine_document pop = new Populating_wine_document();
        // pop.poplulateData();
-        //menu 6 admin --> fare una cosa come lo user per eliminare e ceracre gli utenti
         DbOperations graph_operation = new DbOperations();
         Crud_mongo mongo = new Crud_mongo();
         //inizialization TEST
         Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
-        /*graph.registerUser("Admin","00","1","@tag","ita","email");
-        graph.registerUser("User1","00","0","@user1","it","rr");
-        graph.registerUser("User2","00","0","@user1","it","rr");*/
-        //graph_operation.deleteAccount("user1"); ----> NON FUNZIONA
-        //test finished
+
+        //TEST
+        graph.registerUser("adam","00","0","@user1","it","rr");
+        graph.registerUser("bob","00","1","@user1","it","rr");
+        graph.createRelationFollow("adam","bob");
+        graph.createRelationFollow("bob","adam");
+        //graph.deleteWineByName("wine1");
 
         Menu menu = new Menu();
         menu.MainMenu();

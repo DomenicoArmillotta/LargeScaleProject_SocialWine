@@ -830,6 +830,7 @@ public class DbOperations {
             graph.deleteAllRelationCreated(myUsername);
             graph.deleteUserByUsername(myUsername);
 
+
         } else if (selection.equals("4")) {
             if (users.size() != 0) {
                 System.out.println("Select a user to see profile :");
@@ -1297,7 +1298,10 @@ public class DbOperations {
                 System.out.println("Selected last wine");
                 convertedSelection = (wines.size() - 1);
             }
-            ArrayList<Review> reviews = new ArrayList<>(graph.showAllCommentRelatedWineName(wines.get(convertedSelection).getWineName()));
+            //ArrayList<Review> reviews = new ArrayList<>(graph.showAllCommentRelatedWineName(wines.get(convertedSelection).getWineName()));
+            ArrayList<Review> reviews = new ArrayList<>(mongo.findAllReviewAndUserForSpecificWine(wines.get(convertedSelection).getWineName())[0]);
+            User user = (User) mongo.findAllReviewAndUserForSpecificWine(wines.get(convertedSelection).getWineName())[1].get(0);
+
             if (reviews.size() != 0) {
                 int j = 0;
                 System.out.println("=================Comment of " + wines.get(convertedSelection).getWineName() + "=======================");
@@ -1306,7 +1310,8 @@ public class DbOperations {
                     System.out.println(reviews.get(j).getDescription());
                     System.out.println("rating = " + reviews.get(j).getRating());
                     System.out.println("like = " + graph.countLikeByDescription(reviews.get(j).getDescription()));
-                    System.out.println("made by:  = " + graph.findUserByDescription(reviews.get(j).getDescription()).get(0).getUsername());
+                    //System.out.println("made by:  = " + graph.findUserByDescription(reviews.get(j).getDescription()).get(0).getUsername());
+                    System.out.println("made by:  = " + user.getUsername());
                     if (graph.checkIfLikedByDescription(reviews.get(j).getDescription(), myUsername) == 1) {
                         System.out.println("Like = V");
                     } else if (graph.checkIfLikedByDescription(reviews.get(j).getDescription(), myUsername) == 0) {
@@ -1422,7 +1427,9 @@ public class DbOperations {
     }
 
     public void showAllWineMenu(String myUsername) {
-        ArrayList<Wine> wines = new ArrayList<>(graph.showAllWine());
+        //ArrayList<Wine> wines = new ArrayList<>(graph.showAllWine());
+        ArrayList<Wine> wines = new ArrayList<>(mongo.findAllWine());
+
         int times = 0;
         int perTimes = 10;
         if (wines.size() != 0) {
@@ -1539,7 +1546,8 @@ public class DbOperations {
     }
 
     public void showAllWineMenuAdmin(String myUsername) {
-        ArrayList<Wine> wines = new ArrayList<>(graph.showAllWine());
+        //ArrayList<Wine> wines = new ArrayList<>(graph.showAllWine());
+        ArrayList<Wine> wines = new ArrayList<>(mongo.findAllWine());
         int i = 0;
         int times = 0;
         int perTimes = 10;
