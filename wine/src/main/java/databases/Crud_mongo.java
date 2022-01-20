@@ -355,11 +355,13 @@ public class Crud_mongo {
         Review review = null;
         ArrayList<Review> reviews = new ArrayList<>();
         Bson unwind = unwind("$reviews");
-        AggregateIterable<Document> cursor = collection.aggregate(Arrays.asList(unwind));
+        Document group = new Document("$group", new Document("_id", new Document("description", "$reviews.description")
+                .append("rating", "$reviews.rating")));
+        AggregateIterable<Document> cursor = collection.aggregate(Arrays.asList(unwind,group));
         for (Document tempReview : cursor) {
-            Document nestedReview = (Document) tempReview.get("reviews");
-            Integer rating = nestedReview.getInteger("rating");
-            String description = nestedReview.getString("description");
+            Document temp_rev_doc = (Document) tempReview.get("_id");
+            Integer rating = temp_rev_doc.getInteger("rating");
+            String description = temp_rev_doc.getString("description");
             review = new Review(description, rating);
             reviews.add(review);
         }
