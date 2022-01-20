@@ -1592,6 +1592,7 @@ public class DbOperations {
         System.out.println("what do you want to do?");
         System.out.println("1 : Show all wine 10 per times");
         System.out.println("2 : Search specific wine");
+        System.out.println("3 : Discover suggested wine");
         Scanner scanSelectMenuWine = new Scanner(System.in);
         String selectedMenuWine = scanSelectMenuWine.nextLine();
         if (selectedMenuWine.equals("1")) {
@@ -1678,6 +1679,33 @@ public class DbOperations {
             }catch(WineNotExistsException e){
                 System.out.println(e.getMessage());
             }
+
+
+        }else if(selectedMenuWine.equals("3")){
+            ArrayList<Wine> suggestedWine1 = new ArrayList<>(adv_graph.showSuggestedWineByLike(myUsername));
+            ArrayList<Wine> suggestedWine2 = new ArrayList<>(adv_graph.showSuggestedWineByComment(myUsername));
+            ArrayList<Wine> suggestedWine = new ArrayList<>();
+            suggestedWine.addAll(suggestedWine1);
+            suggestedWine.addAll(suggestedWine2);
+            if(suggestedWine.size()!=0){
+                System.out.println("==============List of Suggested Wine on Social============= ");
+                show10Wine(suggestedWine, 0, 10);
+                System.out.println("===================================================== ");
+                System.out.println("\nWhat do you want to do?");
+                System.out.println("1" + " Write Comment on specific wine");
+                System.out.println("2" + " See comment of specific wine");
+                Scanner scanSelection = new Scanner(System.in);
+                String selection = scanSelection.nextLine();
+                if (selection.equals("1")) {
+                    writeCommentonWine(suggestedWine, myUsername); //-->mongo ok
+                } else if (selection.equals("2")) {
+                    showCommentonWine(suggestedWine, myUsername); //---> mongo ok
+                }
+            }else{
+                System.out.println("No suggested wine");
+            }
+
+
 
 
         }
@@ -1779,6 +1807,7 @@ public class DbOperations {
         System.out.println("what do you want to do?");
         System.out.println("1 : Show all wine 10 per times");
         System.out.println("2 : Search specific wine");
+        System.out.println("3 : See suggested wine");
         Scanner scanSelectMenuWine = new Scanner(System.in);
         String selectedMenuWine = scanSelectMenuWine.nextLine();
         if (selectedMenuWine.equals("1")) {
@@ -1911,6 +1940,37 @@ public class DbOperations {
             }catch(WineNotExistsException e){
                 System.out.println(e.getMessage());
             }
+        }else if(selectedMenuWine.equals("3")){
+            ArrayList<Wine> suggestedWine1 = new ArrayList<>(adv_graph.showSuggestedWineByLike(myUsername));
+            ArrayList<Wine> suggestedWine2 = new ArrayList<>(adv_graph.showSuggestedWineByComment(myUsername));
+            ArrayList<Wine> suggestedWine = new ArrayList<>();
+            suggestedWine.addAll(suggestedWine1);
+            suggestedWine.addAll(suggestedWine2);
+            if(suggestedWine.size()!=0){
+                System.out.println("==============List of Suggested Wine on Social============= ");
+                show10Wine(suggestedWine, 0, 10);
+                System.out.println("===================================================== ");
+                System.out.println("\nWhat do you want to do?");
+                System.out.println("1" + " Write Comment on specific wine");
+                System.out.println("2" + " See comment of specific wine");
+                System.out.println("3" + " Delete specific wine"); //-->mongo ok
+                System.out.println("4" + " Add specific wine"); //-->mongo ok
+                Scanner scanSelection = new Scanner(System.in);
+                String selection = scanSelection.nextLine();
+                if (selection.equals("1")) {
+                    writeCommentonWine(suggestedWine, myUsername); //-->mongo ok
+                } else if (selection.equals("2")) {
+                    showCommentonWine(suggestedWine, myUsername); //---> mongo ok
+                }else if (selection.equals("3")) {
+                    wineToDelete(suggestedWine);
+                }
+            }else{
+                System.out.println("No suggested wine");
+            }
+
+
+
+
         }
 
 
