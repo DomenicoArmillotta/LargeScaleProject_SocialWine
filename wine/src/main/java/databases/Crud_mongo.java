@@ -329,13 +329,12 @@ public class Crud_mongo {
         MongoCollection<Document> collection = database.getCollection("wines");
         Wine wine = null;
         ArrayList<Wine> wines = new ArrayList<>();
-        Bson Filter = Filters.text("/" + prefix + "/i");
+        Bson Filter = Filters.text("/" + prefix +" /i");
         MongoCursor<Document> cursor = collection.find(Filter).iterator();
         if (!cursor.hasNext()) {
             throw new WineNotExistsException("No wine found with " + prefix);
         } else {
             while (cursor.hasNext()) {
-                if (!wines.contains(prefix)) {
                     Document temp_wine_doc = cursor.next();
                     String wineName = temp_wine_doc.getString("wineName");
                     String variety = temp_wine_doc.getString("variety");
@@ -346,9 +345,6 @@ public class Crud_mongo {
                     String designation = temp_wine_doc.getString("designation");
                     wine = new Wine(wineName, designation, price, province, variety, winery, country);
                     wines.add(wine);
-                } else {
-                    continue;
-                }
             }
             mongoClient.close();
             return wines;
