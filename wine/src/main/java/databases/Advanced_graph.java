@@ -1,6 +1,7 @@
 package databases;
 import beans.Review;
 import beans.User;
+import beans.Wine;
 import org.neo4j.driver.*;
 
 import java.util.*;
@@ -107,5 +108,64 @@ public class Advanced_graph implements AutoCloseable {
         }
         return suggestedUsers;
     }
+
+
+
+    public ArrayList<Wine> showSuggestedWineByLike (final String username) {
+        ArrayList<Wine> suggestedWines;
+        try (Session session = driver.session()) {
+            suggestedWines = session.readTransaction((TransactionWork< ArrayList<Wine>>) tx -> {
+                Result result = tx.run("MATCH (n:User{username: $username})-[:Like]->(:Post)-[:Related]->(u:Wine)\n" +
+                                "WITH u, rand() AS number\n" +
+                                "RETURN u.wineName AS wineName , u.price as price , u.designation as designation , u.winery as winery , u.variety as variety , u.province as province\n" +
+                                "ORDER BY number\n" +
+                                "LIMIT 3",
+                        parameters("username", username));
+                ArrayList<Wine> wines = new ArrayList<>();
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    //User u = new User(r.get("username").asString() , "",r.get("twitter_taster_handle").asString() ,r.get("country").asString()  ,"", false);
+
+                    Wine u = new Wine(r.get("wineName").asString(),r.get("designation").asString(),Integer.parseInt(r.get("price").asString()),r.get("province").asString(),r.get("variety").asString(),r.get("winery").asString(),null);
+                    wines.add(u);
+                }
+                return wines;
+            });
+        } catch (Exception e){
+            suggestedWines = null;
+        }
+        return suggestedWines;
+    }
+
+    public ArrayList<Wine> showSuggestedWineByComment (final String username) {
+        ArrayList<Wine> suggestedWines;
+        try (Session session = driver.session()) {
+            suggestedWines = session.readTransaction((TransactionWork< ArrayList<Wine>>) tx -> {
+                Result result = tx.run("MATCH (n:User{username: $username})-[:Created]->(:Post)-[:Related]->(u:Wine)\n" +
+                                "WITH u, rand() AS number\n" +
+                                "RETURN u.wineName AS wineName , u.price as price , u.designation as designation , u.winery as winery , u.variety as variety , u.province as province\n" +
+                                "ORDER BY number\n" +
+                                "LIMIT 3",
+                        parameters("username", username));
+                ArrayList<Wine> wines = new ArrayList<>();
+                while (result.hasNext()) {
+                    Record r = result.next();
+                    //User u = new User(r.get("username").asString() , "",r.get("twitter_taster_handle").asString() ,r.get("country").asString()  ,"", false);
+
+                    Wine u = new Wine(r.get("wineName").asString(),r.get("designation").asString(),Integer.parseInt(r.get("price").asString()),r.get("province").asString(),r.get("variety").asString(),r.get("winery").asString(),null);
+                    wines.add(u);
+                }
+                return wines;
+            });
+        } catch (Exception e){
+            suggestedWines = null;
+        }
+        return suggestedWines;
+    }
+
+
+
+
+
 
 }
