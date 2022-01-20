@@ -888,7 +888,7 @@ public class DbOperations {
                                 }
                                 System.out.println("==================================================" + "\n");
                             } else {
-                                System.out.println("He dont have review");
+                                System.out.println("He dont have comment");
                             }
 
 
@@ -1408,7 +1408,7 @@ public class DbOperations {
                     }
                 }
             } else {
-                System.out.println("No comment for this review. Do you add a comment? y/n"); //---> mongo ok
+                System.out.println("No comment for this Wine. Do you add a comment? y/n"); //---> mongo ok
                 Scanner scanSelect = new Scanner(System.in);
                 String selectionAdd = scanSelect.nextLine().toLowerCase(Locale.ROOT);
                 if (selectionAdd.equals("y")) {
@@ -1952,6 +1952,7 @@ public class DbOperations {
                                 System.out.println("\nWhat do you want to do?");
                                 System.out.println("1" + " Write Comment on specific wine");
                                 System.out.println("2" + " See comment of specific wine");
+                                System.out.println("2" + " Delete specific wine");
                                 Scanner scanSelection = new Scanner(System.in);
                                 String selection = scanSelection.nextLine();
                                 if (selection.equals("1")) {
@@ -2050,7 +2051,6 @@ public class DbOperations {
                 System.out.println("1" + " Write Comment on specific wine");
                 System.out.println("2" + " See comment of specific wine");
                 System.out.println("3" + " Delete specific wine"); //-->mongo ok
-                System.out.println("4" + " Add specific wine"); //-->mongo ok
                 Scanner scanSelection = new Scanner(System.in);
                 String selection = scanSelection.nextLine();
                 if (selection.equals("1")) {
