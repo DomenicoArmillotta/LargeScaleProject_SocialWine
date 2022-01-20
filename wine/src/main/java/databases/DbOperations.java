@@ -182,14 +182,14 @@ public class DbOperations {
             System.out.println("name: " + user.getUsername() + "\nemail: " + user.getEmail() + "\ncountry" + user.getCountry() + "\nFollowers:" + graph.countFollowersByUsername(user.getUsername()));
             System.out.println("Do you want to follow? y/n");
             Scanner scanSelect = new Scanner(System.in);
-            String selection = scanSelect.nextLine();
+            String selection = scanSelect.nextLine().toLowerCase(Locale.ROOT);
             if (selection.equals("y")) {
                 graph.createRelationFollow(myUsername, username);
             } else {
 
             }
         } else {
-            System.out.println("User dont found");
+            System.out.println("User don't found");
         }
 
     }
@@ -367,7 +367,7 @@ public class DbOperations {
 
         System.out.println("Do you want see the trending post? y/n");
         Scanner scanSelectShow = new Scanner(System.in);
-        String selectionShow = scanSelectShow.nextLine();
+        String selectionShow = scanSelectShow.nextLine().toLowerCase(Locale.ROOT);
         if (selectionShow.equals("y")) {
             ArrayList<Review> trendingReviews = new ArrayList<>(adv_graph.showTrendingComment());
             if (trendingReviews.size() != 0) {
@@ -572,7 +572,7 @@ public class DbOperations {
         //TRENDING
         System.out.println("Do you want see the trending post? y/n");
         Scanner scanSelectShow = new Scanner(System.in);
-        String selectionShow = scanSelectShow.nextLine();
+        String selectionShow = scanSelectShow.nextLine().toLowerCase(Locale.ROOT);
         if (selectionShow.equals("y")) {
             ArrayList<Review> trendingReviews = new ArrayList<>(adv_graph.showTrendingComment());
             if (trendingReviews.size() != 0) {
@@ -1024,7 +1024,7 @@ public class DbOperations {
                     }
                     System.out.println("Do you want to Follow? y/n");
                     Scanner scanSelectFollow = new Scanner(System.in);
-                    String selectionFollow = scanSelectFollow.nextLine();
+                    String selectionFollow = scanSelectFollow.nextLine().toLowerCase(Locale.ROOT);
                     if (selectionFollow.equals("y")) {
                         graph.createRelationFollow(myUsername, user.getUsername());
                     }
@@ -1365,7 +1365,7 @@ public class DbOperations {
             } else {
                 System.out.println("No comment for this review. Do you add a comment? y/n"); //---> mongo ok
                 Scanner scanSelect = new Scanner(System.in);
-                String selectionAdd = scanSelect.nextLine();
+                String selectionAdd = scanSelect.nextLine().toLowerCase(Locale.ROOT);
                 if (selectionAdd.equals("y")) {
                     int correctDescr = 0;
                     while (correctDescr == 0) {
@@ -1434,7 +1434,7 @@ public class DbOperations {
                 if (perTimes * times < (wines.size() - 1)) {
                     System.out.println("\nDo you want to see 10 more wine? y/n");
                     Scanner scanSelectionMore = new Scanner(System.in);
-                    selectionMore = scanSelectionMore.nextLine();
+                    selectionMore = scanSelectionMore.nextLine().toLowerCase(Locale.ROOT);
                     if (selectionMore.equals("y")) {
                         times++;
                         show10Wine(wines, times, perTimes);
@@ -1552,7 +1552,7 @@ public class DbOperations {
                 if (perTimes * times < (wines.size() - 1)) {
                     System.out.println("\nDo you want to see 10 more wine? y/n");
                     Scanner scanSelectionMore = new Scanner(System.in);
-                    selectionMore = scanSelectionMore.nextLine();
+                    selectionMore = scanSelectionMore.nextLine().toLowerCase(Locale.ROOT);
                     if (selectionMore.equals("y")) {
                         times++;
                         show10Wine(wines, times, perTimes);
@@ -1609,7 +1609,7 @@ public class DbOperations {
             Scanner scanSelect2 = new Scanner(System.in);
             System.out.println("Do you want to add a new Wine? (y/n)");
             try {
-                String addOption = scanSelect2.nextLine();
+                String addOption = scanSelect2.nextLine().toLowerCase(Locale.ROOT);
                 if (addOption.equals("y")){
                     try {
                         addWineAdmin();
@@ -1710,7 +1710,7 @@ public class DbOperations {
                     if (perTimes * times < (users.size() - 1)) {
                         System.out.println("\nDo you want to see 10 more users? y/n");
                         Scanner scanSelectionMore = new Scanner(System.in);
-                        selectionMore = scanSelectionMore.nextLine();
+                        selectionMore = scanSelectionMore.nextLine().toLowerCase(Locale.ROOT);
                         if (selectionMore.equals("y")) {
                             times++;
                             show10User(users, times, perTimes);
@@ -1988,7 +1988,7 @@ public class DbOperations {
                 if (perTimes * times < (reviews.size() - 1)) {
                     System.out.println("\nDo you want to see 10 more comment? y/n");
                     Scanner scanSelectionMore = new Scanner(System.in);
-                    selectionMore = scanSelectionMore.nextLine();
+                    selectionMore = scanSelectionMore.nextLine().toLowerCase(Locale.ROOT);
                     if (selectionMore.equals("y")) {
                         times++;
                         show10Comment(reviews, times, perTimes, myUsername);
