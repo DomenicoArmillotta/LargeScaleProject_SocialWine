@@ -39,17 +39,17 @@ public class Crud_mongo {
 
         BasicDBObject query = new BasicDBObject("wineName", title);
         MongoCursor<Document> cursor = collection.find(query).iterator();
-        if (!cursor.hasNext()){
+        if (!cursor.hasNext()) {
             List<Document> reviews = new ArrayList<>();
             Document onlyWine = new Document()
-                    .append("wineName", "" + title +"")
+                    .append("wineName", "" + title + "")
                     .append("variety", "" + variety + "")
                     .append("country", "" + country + "")
-                    .append("province", "" +  province + "")
+                    .append("province", "" + province + "")
                     .append("price", price)
                     .append("winery", "" + winery + "")
                     .append("designation", "" + designation + "")
-                    .append("reviews",reviews);
+                    .append("reviews", reviews);
             collection.insertOne(onlyWine);
         } else {
             try {
@@ -60,7 +60,6 @@ public class Crud_mongo {
         }
 
     }
-
 
 
     public void createWine(String title, String variety, String country, String province, String designation, int price, String taster_name, int points,
@@ -148,7 +147,7 @@ public class Crud_mongo {
         }
     }
 
-    public Wine findSpecificWine (String title) throws WineNotExistsException {
+    public Wine findSpecificWine(String title) throws WineNotExistsException {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
@@ -156,23 +155,23 @@ public class Crud_mongo {
         MongoCursor<Document> cursor = collection.find(query).iterator();
 
         Wine wine;
-        if (!cursor.hasNext()){
+        if (!cursor.hasNext()) {
             throw new WineNotExistsException(title + "doesn't exists");
         } else {
-                Document temp_wine_doc = cursor.next();
-                String wineName = temp_wine_doc.getString("wineName");
-                String variety = temp_wine_doc.getString("variety");
-                String country = temp_wine_doc.getString("country");
-                String province = temp_wine_doc.getString("province");
-                Integer price = temp_wine_doc.getInteger("price");
-                String winery = temp_wine_doc.getString("winery");
-                String designation = temp_wine_doc.getString("designation");
-                wine = new Wine(wineName, designation, price, province, variety, winery, country);
+            Document temp_wine_doc = cursor.next();
+            String wineName = temp_wine_doc.getString("wineName");
+            String variety = temp_wine_doc.getString("variety");
+            String country = temp_wine_doc.getString("country");
+            String province = temp_wine_doc.getString("province");
+            Integer price = temp_wine_doc.getInteger("price");
+            String winery = temp_wine_doc.getString("winery");
+            String designation = temp_wine_doc.getString("designation");
+            wine = new Wine(wineName, designation, price, province, variety, winery, country);
 
-            }
-            mongoClient.close();
-            return wine;
         }
+        mongoClient.close();
+        return wine;
+    }
 
     //WORKS ON NEO4J
     public void deleteComment(String description, String taster_name, String title) {
@@ -324,27 +323,32 @@ public class Crud_mongo {
         return wines;
     }
 
-    public ArrayList<Wine> findWineByPrefix (String prefix) throws WineNotExistsException {
+    public ArrayList<Wine> findWineByPrefix(String prefix) throws WineNotExistsException {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<Document> collection = database.getCollection("wines");
         Wine wine = null;
         ArrayList<Wine> wines = new ArrayList<>();
-        MongoCursor<Document> cursor = collection.find(Filters.eq("wineName", "/" + prefix + "/i")).iterator();
-        if (!cursor.hasNext()){
-            throw new WineNotExistsException("No wine found with "+ prefix);
+        Bson Filter = Filters.text("/" + prefix + "/i");
+        MongoCursor<Document> cursor = collection.find(Filter).iterator();
+        if (!cursor.hasNext()) {
+            throw new WineNotExistsException("No wine found with " + prefix);
         } else {
             while (cursor.hasNext()) {
-                Document temp_wine_doc = cursor.next();
-                String wineName = temp_wine_doc.getString("wineName");
-                String variety = temp_wine_doc.getString("variety");
-                String country = temp_wine_doc.getString("country");
-                String province = temp_wine_doc.getString("province");
-                Integer price = temp_wine_doc.getInteger("price");
-                String winery = temp_wine_doc.getString("winery");
-                String designation = temp_wine_doc.getString("designation");
-                wine = new Wine(wineName, designation, price, province, variety, winery, country);
-                wines.add(wine);
+                if (!wines.contains(prefix)) {
+                    Document temp_wine_doc = cursor.next();
+                    String wineName = temp_wine_doc.getString("wineName");
+                    String variety = temp_wine_doc.getString("variety");
+                    String country = temp_wine_doc.getString("country");
+                    String province = temp_wine_doc.getString("province");
+                    Integer price = temp_wine_doc.getInteger("price");
+                    String winery = temp_wine_doc.getString("winery");
+                    String designation = temp_wine_doc.getString("designation");
+                    wine = new Wine(wineName, designation, price, province, variety, winery, country);
+                    wines.add(wine);
+                } else {
+                    continue;
+                }
             }
             mongoClient.close();
             return wines;
