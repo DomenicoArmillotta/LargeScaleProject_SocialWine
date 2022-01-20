@@ -450,8 +450,20 @@ public class Crud_mongo {
         Review review = null;
         User user = null;
         AggregateIterable<Document> cursor = collection.aggregate(Arrays.asList(match(filter), unwind));
-
-        return new List[]{reviews, users};
+        for (Document doc : cursor) {
+            Document nestedReview = (Document) doc.get("reviews");
+            Integer rating = nestedReview.getInteger("rating");
+            String description = nestedReview.getString("description");
+            String username =  nestedReview.getString("taster_name");
+            String twitter_taster_handle =nestedReview.getString("taster_twitter_handle");
+            String country = nestedReview.getString("user_country");
+            String email = nestedReview.getString("email");
+            review = new Review(description, rating);
+            user = new User(username, "", twitter_taster_handle, country, email, false);
+            reviews.add(review);
+            users.add(user);
+        }
+        return new List[] {reviews,users};
     }
 }
 
