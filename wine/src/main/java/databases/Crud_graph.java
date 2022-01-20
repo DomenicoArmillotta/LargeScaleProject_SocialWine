@@ -5,51 +5,61 @@ import beans.User;
 import beans.Wine;
 import org.neo4j.driver.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.neo4j.driver.Values.parameters;
 
-
+/**
+ * Contains basic CRUD operation that are executed on Social Wine
+ */
 public class Crud_graph implements AutoCloseable {
-
-    //operation must be closed at the end of each operation?
-    //quando visualizzo lo faccio interamente da neo4j
-
-
-
-    //IDEA=
-    //graphdb = abbiamo user , post (? = si per mettere i like) , vini per creare le relazioni (? --> potrebbero non servire dato che non abbiamo queri che usano i vini in graph, ma le usano in mongo dato che abbiamo un nested li)
-    //quindi potrebbe essere corretto avere in graph solo user + post
-
     private final Driver driver;
 
-
+    /**
+     * Constructor that allows to start the connection with Neo4J.
+     *
+     * @param uri:      address of Neo4J where the DB is on;
+     * @param user:     user's name;
+     * @param password: DB's password;
+     */
     public Crud_graph(String uri, String user, String password) {
         driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
     }
 
-
+    /**
+     * Close Neo4J connection
+     *
+     * @throws Exception if something goes wrong during the closing
+     */
     @Override
     public void close() throws Exception {
         driver.close();
     }
 
-    //all operation
-
-    //registered user
-    public void registerUser(final String username, final String password , final String adminFlag , final String twitter_taster_handle , final String country , final String email ) {
+    /**
+     * Add a new User on the Social Wine
+     *
+     * @param username:              user's name
+     * @param password:              user's password
+     * @param adminFlag:             flag to identify if user is an admin or not
+     * @param twitter_taster_handle: user's twitter nickname
+     * @param country:               user's country
+     * @param email:                 user's email
+     */
+    public void registerUser(final String username, final String password, final String adminFlag, final String twitter_taster_handle, final String country, final String email) {
         try (Session session = driver.session()) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MERGE (p:User {username: $username , password: $password , adminFlag: $adminFlag , twitter_taster_handle: $twitter_taster_handle , country: $country , email: $email})",
-                        parameters("username", username , "password" , password , "adminFlag" , adminFlag , "twitter_taster_handle" , twitter_taster_handle , "country" , country , "email" , email ));
+                        parameters("username", username, "password", password, "adminFlag", adminFlag, "twitter_taster_handle", twitter_taster_handle, "country", country, "email", email));
                 return null;
             });
         }
     }
 
-    //ban user by username, this function can be done by admin only
+
     public void banUserByUsername(final String username) {
         boolean result = true;
         try (Session session = driver.session()) {
@@ -61,8 +71,15 @@ public class Crud_graph implements AutoCloseable {
             });
         }
     }
-    //work
-    public User showUserByUsername(final String username){
+
+
+    /**
+     * Given an username will return user's attributes
+     *
+     * @param username: username
+     * @return userToShow: User
+     */
+    public User showUserByUsername(final String username) {
         User user;
         try (Session session = driver.session()) {
             user = session.readTransaction((TransactionWork<User>) tx -> {
@@ -72,56 +89,67 @@ public class Crud_graph implements AutoCloseable {
                 User userToShow = null;
                 while (result.hasNext()) {
                     Record r = result.next();
-                    userToShow = new User(r.get("username").asString(),"",r.get("twitter_taster_handle").asString(),r.get("country").asString() ,r.get("email").asString(),false);
+                    userToShow = new User(r.get("username").asString(), "", r.get("twitter_taster_handle").asString(), r.get("country").asString(), r.get("email").asString(), false);
                 }
                 return userToShow;
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             user = null;
         }
         return user;
     }
 
-    //work
+
+    /**
+     * Shows all users of Social Wine with Name and Country of membership
+     *
+     * @return users: List of users with username, country pair
+     */
     public ArrayList<User> showAllUser() {
         ArrayList<User> usertoshow;
         try (Session session = driver.session()) {
             usertoshow = session.readTransaction((TransactionWork<ArrayList<User>>) tx -> {
                 Result result = tx.run("MATCH (u:User)\n" +
-                                "RETURN u.username AS username , u.country AS country ORDER BY u.username");
+                        "RETURN u.username AS username , u.country AS country ORDER BY u.username");
                 ArrayList<User> users = new ArrayList<User>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    User user = new User(r.get("username").asString() , "","","","",false);
+                    User user = new User(r.get("username").asString(), "", "", "", "", false);
                     users.add(user);
                 }
                 return users;
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             usertoshow = null;
         }
         return usertoshow;
     }
 
-    //show a list of followed user ---->  work
+
+    /**
+     * Show all user's features that are followed by a given user
+     *
+     * @param username: Username
+     * @return usersOutput: List of all followed users
+     */
     public ArrayList<User> showFollowedUsers(final String username) {
         ArrayList<User> arrayUser = null;
         try (Session session = driver.session()) {
-            arrayUser= session.readTransaction((TransactionWork<ArrayList<User>>) tx -> {
+            arrayUser = session.readTransaction((TransactionWork<ArrayList<User>>) tx -> {
                 Result result = tx.run("MATCH (u1:User{username: $username}) , (u2:User)\n" +
                                 "WHERE  EXISTS ((u1)-[:Follow]->(u2))\n" +
                                 "RETURN u2.username AS username , u2.country AS country , u2.twitter_taster_handle AS twitter_taster_handle  , u2.email AS email",
-                                parameters("username", username));
+                        parameters("username", username));
                 ArrayList<User> usersOutput = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    User u = new User(r.get("username").asString(),null,r.get("twitter_taster_handle").asString(),r.get("country").asString() ,r.get("email").asString(), false);
+                    User u = new User(r.get("username").asString(), null, r.get("twitter_taster_handle").asString(), r.get("country").asString(), r.get("email").asString(), false);
                     usersOutput.add(u);
                 }
                 return usersOutput;
             });
-        } catch (Exception e){
-            
+        } catch (Exception e) {
+
         }
         return arrayUser;
     }
@@ -134,7 +162,7 @@ public class Crud_graph implements AutoCloseable {
                 Result result = tx.run("MATCH (u:User)\n" +
                                 "WHERE  u.username STARTS WITH '$prefixUsername'\n" +
                                 "RETURN u.username AS username , u.country AS country \n",
-                        parameters("prefixUsername", prefixUsername ));
+                        parameters("prefixUsername", prefixUsername));
                 HashSet<User> users = new HashSet<>();
                 while (result.hasNext()) {
                     Record r = result.next();
@@ -145,21 +173,34 @@ public class Crud_graph implements AutoCloseable {
                 }
                 return null;
             });
-
         }
-
     }
 
-    public void addWine(final String wineName, final String designation , final String price, final String province , final String variety , final String winery ){
+    /**
+     * Add a new wine on Social Wine
+     *
+     * @param wineName:    wine name
+     * @param designation: the name of the wine given to the wine by the producer
+     * @param price:       wine price
+     * @param province:    production province
+     * @param variety:     types of grapes used
+     * @param winery:      producer
+     */
+    public void addWine(final String wineName, final String designation, final String price, final String province, final String variety, final String winery) {
         try (Session session = driver.session()) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MERGE (p:Wine {wineName: $wineName , designation: $designation , price: $price , province: $province ,  variety: $variety , winery: $winery  })",
-                        parameters("wineName",wineName,"designation",designation,"price",price , "province" ,province,"variety",variety , "winery",winery));
+                        parameters("wineName", wineName, "designation", designation, "price", price, "province", province, "variety", variety, "winery", winery));
                 return null;
             });
         }
     }
 
+    /**
+     * Delete a wine from the social
+     *
+     * @param wineName: wine's name to delete
+     */
     public void deleteWineByName(final String wineName) {
         boolean result = true;
         try (Session session = driver.session()) {
@@ -172,64 +213,81 @@ public class Crud_graph implements AutoCloseable {
         }
     }
 
-    public ArrayList<Wine> showWineByName(final String wineName ){
+
+    public ArrayList<Wine> showWineByName(final String wineName) {
         ArrayList<Wine> winetoshow;
         try (Session session = driver.session()) {
-            winetoshow= session.readTransaction((TransactionWork<ArrayList<Wine>>) tx -> {
+            winetoshow = session.readTransaction((TransactionWork<ArrayList<Wine>>) tx -> {
                 Result result = tx.run("MATCH (w:Wine{wineName: $wineName})\n" +
                         "RETURN w.wineName AS wineName ,w.designation AS designation , w.price AS price , w.province AS province , w.variety as variety , w.winery as winery");
                 ArrayList<Wine> wines = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    Wine wine = new Wine(r.get("wineName").asString(),r.get("designation").asString(),r.get("price").asInt(),r.get("province").asString(),r.get("variety").asString(),r.get("winery").asString(), r.get("country").asString());
+                    Wine wine = new Wine(r.get("wineName").asString(), r.get("designation").asString(), r.get("price").asInt(), r.get("province").asString(), r.get("variety").asString(), r.get("winery").asString(), r.get("country").asString());
                     wines.add(wine);
                 }
                 return wines;
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             winetoshow = null;
         }
         return winetoshow;
     }
 
 
-    public ArrayList<Wine> showAllWine (){
+    /**
+     * List of all wines that are in Social Wine
+     *
+     * @return wines: List of wines
+     */
+    public ArrayList<Wine> showAllWine() {
         ArrayList<Wine> winetoshow;
         try (Session session = driver.session()) {
-            winetoshow= session.readTransaction((TransactionWork<ArrayList<Wine>>) tx -> {
+            winetoshow = session.readTransaction((TransactionWork<ArrayList<Wine>>) tx -> {
                 Result result = tx.run("MATCH (w:Wine)\n" +
                         "RETURN w.wineName AS wineName ,w.designation AS designation , w.price AS price , w.province AS province , w.variety as variety , w.winery as winery ORDER BY w.wineName");
                 ArrayList<Wine> wines = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
                     int converted = Integer.parseInt(r.get("price").asString());
-                      Wine wine = new Wine(r.get("wineName").asString(),r.get("designation").asString(),converted,r.get("province").asString(),r.get("variety").asString(),r.get("winery").asString(),"country");
+                    Wine wine = new Wine(r.get("wineName").asString(), r.get("designation").asString(), converted, r.get("province").asString(), r.get("variety").asString(), r.get("winery").asString(), "country");
                     wines.add(wine);
                 }
                 return wines;
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             winetoshow = null;
         }
         return winetoshow;
     }
 
 
-
-    public void addComment(final String description , final String rating) {
+    /**
+     * Add a comment on Social wine
+     *
+     * @param description: comment text
+     * @param rating:      rating to assign
+     */
+    public void addComment(final String description, final String rating) {
         try (Session session = driver.session()) {
             session.writeTransaction((TransactionWork<Void>) tx -> {
                 tx.run("MERGE (p:Post {description: $description , rating: $rating })",
-                        parameters( "description", description , "rating" , rating));
+                        parameters("description", description, "rating", rating));
                 return null;
             });
         }
     }
 
-    public ArrayList<User> findUserByDescription(final String description){
+    /**
+     * List of user that made a given comment's description
+     *
+     * @param description: comment description
+     * @return users: User's list
+     */
+    public ArrayList<User> findUserByDescription(final String description) {
         ArrayList<User> arrayUser = null;
         try (Session session = driver.session()) {
-            arrayUser= session.readTransaction((TransactionWork<ArrayList<User>>) tx -> {
+            arrayUser = session.readTransaction((TransactionWork<ArrayList<User>>) tx -> {
                 Result result = tx.run("MATCH (u1:User) , (p:Post{description: $description})\n" +
                                 "WHERE  EXISTS ((u1)-[:Created]->(p))\n" +
                                 "RETURN u1.username AS username , u1.country AS country , u1.twitter_taster_handle AS twitter_taster_handle  , u1.email AS email",
@@ -237,60 +295,76 @@ public class Crud_graph implements AutoCloseable {
                 ArrayList<User> users = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    User user = new User(r.get("username").asString() , null,r.get("twitter_taster_handle").asString() ,r.get("country").asString()  ,r.get("email").asString(), null);
+                    User user = new User(r.get("username").asString(), null, r.get("twitter_taster_handle").asString(), r.get("country").asString(), r.get("email").asString(), null);
                     users.add(user);
                 }
                 return users;
             });
-        } catch (Exception e){
+        } catch (Exception e) {
 
         }
         return arrayUser;
     }
 
 
-
-
     //delete only own review by title and username
-    public void deleteCommentByDescription(final String description ) {
+
+    /**
+     * Delete only one comment by his description
+     *
+     * @param description: comment descripition
+     */
+    public void deleteCommentByDescription(final String description) {
         boolean result = true;
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
                 tx.run("MATCH (p:Post{description: $description}) \n" +
                                 "DELETE p",
-                        parameters("description", description ));
+                        parameters("description", description));
                 return null;
             });
         }
     }
 
 
-    //broswe all review of social network --> work
+    /**
+     * List of all comment related to given wine
+     *
+     * @param wineName: wine's name
+     * @return commentOutput: List of wine's comments
+     */
     public ArrayList<Review> showAllCommentRelatedWineName(final String wineName) {
         ArrayList<Review> commenttoshow;
         try (Session session = driver.session()) {
-            commenttoshow=session.readTransaction((TransactionWork<ArrayList<Review>>) tx -> {
+            commenttoshow = session.readTransaction((TransactionWork<ArrayList<Review>>) tx -> {
                 Result result = tx.run("MATCH (p:Post) , (w:Wine{wineName: $wineName}) \n" +
                                 "WHERE  EXISTS ((p)-[:Related]->(w))\n" +
                                 "RETURN p.description as description , p.rating as rating",
-                                 parameters("wineName",wineName));
+                        parameters("wineName", wineName));
                 ArrayList<Review> commentOutput = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
                     int convertedRating = Integer.parseInt(r.get("rating").asString());
-                    Review review = new Review(r.get("description").asString(),convertedRating);
+                    Review review = new Review(r.get("description").asString(), convertedRating);
                     commentOutput.add(review);
 
                 }
                 return commentOutput;
             });
-        } catch (Exception e){
+        } catch (Exception e) {
             commenttoshow = null;
         }
         return commenttoshow;
     }
 
-    public ArrayList<Review> showCommentsFriends (final String myUsername , final String usernameFriend ) {
+    /**
+     * List of all comments made by a given user's friend on Social Wine
+     *
+     * @param myUsername:     Username
+     * @param usernameFriend: Friend username
+     * @return reviews: List of comments
+     */
+    public ArrayList<Review> showCommentsFriends(final String myUsername, final String usernameFriend) {
         ArrayList<Review> commenttoshow;
         try (Session session = driver.session()) {
             commenttoshow = session.readTransaction((TransactionWork<ArrayList<Review>>) tx -> {
@@ -299,23 +373,29 @@ public class Crud_graph implements AutoCloseable {
                                 "AND  EXISTS ((u1)-[:Created]->(p))\n" +
                                 "AND  EXISTS ((p)-[:Related]-(w))\n" +
                                 "RETURN  p.description AS description , p.rating AS rating , w.wineName AS wineName \n",
-                        parameters("myUsername", myUsername ,"usernameFriend" , usernameFriend ));
+                        parameters("myUsername", myUsername, "usernameFriend", usernameFriend));
                 ArrayList<Review> reviews = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
                     int convertedRating = Integer.parseInt(r.get("rating").asString());
-                    Review review = new Review(r.get("description").asString(),convertedRating);
+                    Review review = new Review(r.get("description").asString(), convertedRating);
                     reviews.add(review);
                 }
                 return reviews;
             });
-        } catch (Exception e){
+        } catch (Exception e) {
             commenttoshow = null;
         }
         return commenttoshow;
-}
+    }
 
-    public ArrayList<Review> showMyComment (final String myUsername ) {
+    /**
+     * List of all comment made by a given username
+     *
+     * @param myUsername: username
+     * @return reviews: List of review
+     */
+    public ArrayList<Review> showMyComment(final String myUsername) {
         ArrayList<Review> commenttoshow;
         try (Session session = driver.session()) {
             commenttoshow = session.readTransaction((TransactionWork<ArrayList<Review>>) tx -> {
@@ -323,52 +403,59 @@ public class Crud_graph implements AutoCloseable {
                                 "WHERE  EXISTS ((u)-[:Created]->(p))\n" +
                                 "AND  EXISTS ((p)-[:Related]->(w))\n" +
                                 "RETURN  p.description AS description , p.rating AS rating\n",
-                        parameters("myUsername", myUsername  ));
+                        parameters("myUsername", myUsername));
                 ArrayList<Review> reviews = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
                     int convertedRating = Integer.parseInt(r.get("rating").asString());
-                    Review review = new Review(r.get("description").asString(),convertedRating);
+                    Review review = new Review(r.get("description").asString(), convertedRating);
                     reviews.add(review);
                 }
                 return reviews;
             });
-        } catch (Exception e){
+        } catch (Exception e) {
             commenttoshow = null;
         }
         return commenttoshow;
     }
 
-    public ArrayList<Review> showAllComments () {
+    /**
+     * List of all comments that are in Social Wine
+     *
+     * @return reviews: List of reviews
+     */
+    public ArrayList<Review> showAllComments() {
         ArrayList<Review> commenttoshow;
         try (Session session = driver.session()) {
             commenttoshow = session.readTransaction((TransactionWork<ArrayList<Review>>) tx -> {
                 Result result = tx.run("MATCH (p:Post),(w:Wine)  \n" +
-                                "WHERE  EXISTS ((p)-[:Related]->(w))\n" +
-                                "RETURN  p.description AS description , p.rating AS rating ORDER BY p.rating\n");
+                        "WHERE  EXISTS ((p)-[:Related]->(w))\n" +
+                        "RETURN  p.description AS description , p.rating AS rating ORDER BY p.rating\n");
                 ArrayList<Review> reviews = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
                     int convertedRating = Integer.parseInt(r.get("rating").asString());
-                    Review review = new Review(r.get("description").asString(),convertedRating);
+                    Review review = new Review(r.get("description").asString(), convertedRating);
                     reviews.add(review);
                 }
                 return reviews;
             });
-        } catch (Exception e){
+        } catch (Exception e) {
             commenttoshow = null;
         }
         return commenttoshow;
     }
 
-
-
-
-
-
     //create relation follow for the use, and check if not exist
+
+    /**
+     * Create "follow" relaltion between two users of Social Wine, checking if
+     * not exists
+     *
+     * @param username1: First username
+     * @param username2: Second username
+     */
     public void createRelationFollow(final String username1, final String username2) {
-        boolean result = true;
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
                 tx.run("MATCH (u:User{username: $username1}),(u1:User{username: $username2})\n" +
@@ -380,9 +467,13 @@ public class Crud_graph implements AutoCloseable {
         }
     }
 
-    //delete relation followed
+    /**
+     * Delete "follow" relation between two users of Social Wine
+     *
+     * @param username1
+     * @param username2
+     */
     public void deleteRelationFollow(final String username1, final String username2) {
-        boolean result = true;
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
                 tx.run("MATCH path=(u:User{username : $username1})-[f:Follow]-(u1:User{username : $username2})\n" +
@@ -396,14 +487,17 @@ public class Crud_graph implements AutoCloseable {
 
 
     //relation between user that create a new review and the review
+
+    /**
+     * Check if there is "created" relation between an user and a comment by its description
+     *
+     * @param description: comment's description
+     * @param username:    username
+     * @return result: true if the relation exists, false otherwise
+     */
     public boolean createRelationCreated(final String description, final String username) {
         boolean result = true;
         try (Session session = driver.session()) {
-            /*
-            MATCH (w:Wine{wineName: $wineName}),(p:Post{description: $description})\n" +
-                                "WHERE NOT EXISTS ((p)-[:Related]->(w))\n" +
-                                "CREATE (p)-[:Related]->(w)
-             */
             session.writeTransaction(tx -> {
                 tx.run("MATCH (u:User{username: $username}),(u1:Post{description: $description})\n" +
                                 "WHERE NOT EXISTS ((u)-[:Created]->(u1))\n" +
@@ -418,7 +512,12 @@ public class Crud_graph implements AutoCloseable {
         return result;
     }
 
-
+    /**
+     * Delete "related" relation between a comment and an user
+     *
+     * @param description: comment description
+     * @param username:    username
+     */
     public void deleteRelationCreated(final String description, final String username) {
         boolean result = true;
         try (Session session = driver.session()) {
@@ -429,11 +528,18 @@ public class Crud_graph implements AutoCloseable {
                 return null;
             });
         }
-
     }
 
-    //return true if access granted, false if is not allow to enter , check also if you are admin or user
-    public boolean checkLoginByUsername (final String username , final String passwordLogin , final String adminFlag) {
+
+    /**
+     * Check if user is allow to enter or not and check if user that want to log-in is an user or an admin
+     *
+     * @param username:      username
+     * @param passwordLogin: user's password
+     * @param adminFlag:     user's flag that identifies him normal user or admin
+     * @return check: true is the user could have access to Social Wine, false otherwise
+     */
+    public boolean checkLoginByUsername(final String username, final String passwordLogin, final String adminFlag) {
         AtomicBoolean check = new AtomicBoolean(false);
         String password = null;
         AtomicReference<String> prova = null;
@@ -445,9 +551,8 @@ public class Crud_graph implements AutoCloseable {
                         parameters("username", username));
                 while (result.hasNext()) {
                     Record r = result.next();
-                    if(( r.get("password").asString()).equals(passwordLogin) ){
-                        if((r.get("adminFlag").asString()).equals(adminFlag))
-                        {
+                    if ((r.get("password").asString()).equals(passwordLogin)) {
+                        if ((r.get("adminFlag").asString()).equals(adminFlag)) {
                             check.set(true);
                         }
                     }
@@ -460,8 +565,13 @@ public class Crud_graph implements AutoCloseable {
         return check.get();
     }
 
+    /**
+     * Create "like" relation between an user and a comment, if its doesn't exists
+     *
+     * @param description: comment's description
+     * @param username:    username
+     */
     public void putLikeByDescription(final String description, final String username) {
-        boolean result = true;
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
                 tx.run("MATCH (u:User{username: $username}),(p:Post{description: $description})\n" +
@@ -473,9 +583,13 @@ public class Crud_graph implements AutoCloseable {
         }
     }
 
-
+    /**
+     * Delete relation "like" between a comment and an user
+     *
+     * @param description: comment's description
+     * @param username:    username
+     */
     public void deleteLikeByDescription(final String description, final String username) {
-        boolean result = true;
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
                 tx.run("MATCH path=(u:User{username : $username})-[f:Like]-(p:Post{description : $description})\n" +
@@ -486,7 +600,12 @@ public class Crud_graph implements AutoCloseable {
         }
     }
 
-    //relation with wine and comment
+    /**
+     * Create relation "related" between a wine and a comment, if its doesn't exists
+     *
+     * @param wineName:    wine's name
+     * @param description: comment description
+     */
     public void createRelationRelated(final String wineName, final String description) {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
@@ -512,8 +631,12 @@ public class Crud_graph implements AutoCloseable {
         }
     }
 
-    public void deleteAllRelationLikeByDescription(final String description){
-        boolean result = true;
+    /**
+     * Delete all relation "like" of a given comment
+     *
+     * @param description: comment description
+     */
+    public void deleteAllRelationLikeByDescription(final String description) {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
                 tx.run("MATCH (u:User)-[f:Like]->(p:Post{description : $description})\n" +
@@ -525,8 +648,12 @@ public class Crud_graph implements AutoCloseable {
 
     }
 
-    public void deleteAllRelationRelatedByDescription(final String description){
-        boolean result = true;
+    /**
+     * Delete all relation "related" for a given comment
+     *
+     * @param description: comment description
+     */
+    public void deleteAllRelationRelatedByDescription(final String description) {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
                 tx.run("MATCH (p:Post{description : $description})-[f:Related]->(w:Wine)\n" +
@@ -537,8 +664,13 @@ public class Crud_graph implements AutoCloseable {
         }
 
     }
-    public void deleteAllRelationCreatedByDescription(final String description){
-        boolean result = true;
+
+    /**
+     * Delete all "created by" relations for a given comment
+     *
+     * @param description: comment description
+     */
+    public void deleteAllRelationCreatedByDescription(final String description) {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
                 tx.run("MATCH (u:User)-[f:Created]->(p:Post{description : $description})\n" +
@@ -547,11 +679,14 @@ public class Crud_graph implements AutoCloseable {
                 return null;
             });
         }
-
     }
 
-    public void deleteAllRelationFollow(final String username){
-        boolean result = true;
+    /**
+     * Delete all relation "follow" for a given username
+     *
+     * @param username: username
+     */
+    public void deleteAllRelationFollow(final String username) {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
                 tx.run("MATCH (u:User{username: $username})<-[f:Follow]->(u:User)\n" +
@@ -561,7 +696,9 @@ public class Crud_graph implements AutoCloseable {
             });
         }
     }
-    public void deleteAllRelationFollowed(final String username){
+
+
+    public void deleteAllRelationFollowed(final String username) {
         boolean result = true;
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
@@ -572,8 +709,13 @@ public class Crud_graph implements AutoCloseable {
             });
         }
     }
-    public void deleteAllRelationLike(final String username){
-        boolean result = true;
+
+    /**
+     * Delete all relations "like" for a given username
+     *
+     * @param username: username
+     */
+    public void deleteAllRelationLike(final String username) {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
                 tx.run("MATCH (u:User{username: $username})-[f:Like]->(p:Post)\n" +
@@ -582,10 +724,14 @@ public class Crud_graph implements AutoCloseable {
                 return null;
             });
         }
-
     }
-    public void deleteAllRelationCreated(final String username){
-        boolean result = true;
+
+    /**
+     * Delete all relations "created" for a given username
+     *
+     * @param username: username
+     */
+    public void deleteAllRelationCreated(final String username) {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
                 tx.run("MATCH (u:User{username: $username})-[f:Created]->(p:Post)\n" +
@@ -595,7 +741,13 @@ public class Crud_graph implements AutoCloseable {
             });
         }
     }
-    public void deleteUserByUsername(final String username){
+
+    /**
+     * Delete an user from Social Wine
+     *
+     * @param username: username
+     */
+    public void deleteUserByUsername(final String username) {
         boolean result = true;
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
@@ -607,7 +759,12 @@ public class Crud_graph implements AutoCloseable {
         }
     }
 
-    public  void deleteAllRelatedBynameWine (final String wineName){
+    /**
+     * Delete all relation "related by" for a given wine
+     *
+     * @param wineName: wine's name
+     */
+    public void deleteAllRelatedBynameWine(final String wineName) {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
                 tx.run("MATCH (p:Post)-[f:Related]->(w:Wine{wineName: $wineName})\n" +
@@ -616,19 +773,22 @@ public class Crud_graph implements AutoCloseable {
                 return null;
             });
         }
-
     }
 
-
-
-    public Number countLikeByDescription(final String description){
+    /**
+     * Count all likes that a comment received
+     *
+     * @param description: comment description
+     * @return nLike: like's number
+     */
+    public Number countLikeByDescription(final String description) {
         Number nLike = null;
 
         try (Session session = driver.session()) {
             nLike = session.readTransaction((TransactionWork<Number>) tx -> {
                 Result result = tx.run("MATCH (u:User)-[r:Like]->(p:Post{description: $description})\n" +
                                 "RETURN  COUNT(r) AS numLike",
-                        parameters("description",description));
+                        parameters("description", description));
                 Number likeNumber = 0;
                 while (result.hasNext()) {
                     Record r = result.next();
@@ -636,20 +796,26 @@ public class Crud_graph implements AutoCloseable {
                 }
                 return likeNumber;
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             nLike = null;
         }
         return nLike;
     }
 
-    public Number countFollowersByUsername(final String username){
+    /**
+     * Count all follows that a user has
+     *
+     * @param username: username
+     * @return nFollowers: follow's number
+     */
+    public Number countFollowersByUsername(final String username) {
         Number nFollowers = null;
 
         try (Session session = driver.session()) {
             nFollowers = session.readTransaction((TransactionWork<Number>) tx -> {
                 Result result = tx.run("MATCH (u:User{username: $username})<-[r:Follow]-(u2:User)\n" +
                                 "RETURN  COUNT(r) AS nfollowers",
-                        parameters("username",username));
+                        parameters("username", username));
                 Number followersNumber = 0;
                 while (result.hasNext()) {
                     Record r = result.next();
@@ -657,103 +823,137 @@ public class Crud_graph implements AutoCloseable {
                 }
                 return followersNumber;
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             nFollowers = null;
         }
         return nFollowers;
     }
 
-
-    public int checkIfLikedByDescription(final String description , final String username){
+    /**
+     * Check if a comment was liked by an user
+     *
+     * @param description: comment description
+     * @param username:    username
+     * @return resultLike: 0 if user didn't put like, 1 otherwise
+     */
+    public int checkIfLikedByDescription(final String description, final String username) {
         Integer resultLike = 0;
         try (Session session = driver.session()) {
-            resultLike= session.readTransaction((TransactionWork<Integer>) tx -> {
+            resultLike = session.readTransaction((TransactionWork<Integer>) tx -> {
                 Result result = tx.run("MATCH (u:User{username: $username})-[:Like]->(p:Post{description: $description})\n" +
                                 "RETURN u.username as username",
-                        parameters("description",description,"username",username));
+                        parameters("description", description, "username", username));
                 Integer ifLike = 0;
                 while (result.hasNext()) {
                     Record r = result.next();
-                    if((r.get("username").asString()).equals(username)){
-                        ifLike=1;
+                    if ((r.get("username").asString()).equals(username)) {
+                        ifLike = 1;
                     }
 
                 }
                 return ifLike;
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             resultLike = 0;
         }
         return resultLike;
     }
 
-
-    public int checkIfCommentedWine(final String wineName , final String username){
+    /**
+     * Check if an user have commented a wine
+     *
+     * @param wineName: wine's name
+     * @param username: username
+     * @return resultCheck: 0 if the given user didn't comment the given wine, 1 otherwise
+     */
+    public int checkIfCommentedWine(final String wineName, final String username) {
         Integer resultcheck = 0;
         try (Session session = driver.session()) {
-            resultcheck= session.readTransaction((TransactionWork<Integer>) tx -> {
+            resultcheck = session.readTransaction((TransactionWork<Integer>) tx -> {
                 Result result = tx.run("MATCH (u:User{username: $username}),(p:Post),(w:Wine{wineName:$wineName})\n" +
-                                "WHERE  EXISTS ((p)-[:Related]->(w))\n"+
-                                "AND  EXISTS ((u)-[:Created]->(p))\n"+
+                                "WHERE  EXISTS ((p)-[:Related]->(w))\n" +
+                                "AND  EXISTS ((u)-[:Created]->(p))\n" +
                                 "RETURN u.username as username",
-                        parameters("wineName",wineName,"username",username));
+                        parameters("wineName", wineName, "username", username));
                 Integer ifresult = 0;
                 while (result.hasNext()) {
                     Record r = result.next();
-                    if((r.get("username").asString()).equals(username)){
-                        ifresult=1;
+                    if ((r.get("username").asString()).equals(username)) {
+                        ifresult = 1;
                     }
 
                 }
                 return ifresult;
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             resultcheck = null;
         }
         return resultcheck;
     }
 
 
-
-
-
-
-    public ArrayList<Wine> findWineByDescription(final String description){
+    /**
+     * Return a wine taking in consideration a comment description
+     *
+     * @param description: comment description
+     * @return winetoshow: list of wine
+     */
+    public ArrayList<Wine> findWineByDescription(final String description) {
         ArrayList<Wine> winetoshow;
         try (Session session = driver.session()) {
-            winetoshow= session.readTransaction((TransactionWork<ArrayList<Wine>>) tx -> {
+            winetoshow = session.readTransaction((TransactionWork<ArrayList<Wine>>) tx -> {
                 Result result = tx.run("MATCH (p:Post{description: $description})-[r:Related]->(w:Wine)\n" +
-                        "RETURN w.wineName AS wineName ,w.designation AS designation , w.price AS price , w.province AS province , w.variety as variety , w.winery as winery",
-                        parameters("description",description));
+                                "RETURN w.wineName AS wineName ,w.designation AS designation , w.price AS price , w.province AS province , w.variety as variety , w.winery as winery",
+                        parameters("description", description));
                 ArrayList<Wine> wines = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
                     int converted = Integer.parseInt(r.get("price").asString());
-                    Wine wine = new Wine(r.get("wineName").asString(),r.get("designation").asString(),converted,r.get("province").asString(),r.get("variety").asString(),r.get("winery").asString(), "null");
+                    Wine wine = new Wine(r.get("wineName").asString(), r.get("designation").asString(), converted, r.get("province").asString(), r.get("variety").asString(), r.get("winery").asString(), "null");
                     wines.add(wine);
                 }
                 return wines;
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             winetoshow = null;
         }
         return winetoshow;
     }
 
-    public void addPostComplete(final String wineName, final String variety, final String country , final String province, final String price, final String winery, final String designation, final Integer rating, final String description, final String taster_twitter_handle, final String taster_name, final String user_country, final String email) {
-        addWine(wineName,designation,price,province,variety,winery);
-        addComment(description,rating.toString());
-        registerUser(taster_name,"0000","false",taster_twitter_handle,country,email);
+    /**
+     * Used by the scraper to populate Social Wine with new informations
+     *
+     * @param wineName:    wine name
+     * @param designation: the name of the wine given to the wine by the producer
+     * @param price:       wine price
+     * @param province:    production province
+     * @param variety:     types of grapes used
+     * @param winery:      producer
+     * @param country:     production country
+     * @param country:     user's country
+     * @param email:       user's email
+     * @param description: comment body
+     * @param rating:      wine's rating
+     */
+    public void addPostComplete(final String wineName, final String variety, final String country, final String province, final String price, final String winery, final String designation, final Integer rating, final String description, final String taster_twitter_handle, final String taster_name, final String user_country, final String email) {
+        addWine(wineName, designation, price, province, variety, winery);
+        addComment(description, rating.toString());
+        registerUser(taster_name, "0000", "false", taster_twitter_handle, country, email);
         createRelationRelated(wineName, description);
-        createRelationCreated(description , taster_name);
+        createRelationCreated(description, taster_name);
     }
 
 
-
-    public ArrayList<User> show10RandomUsers (final String username) {
+    /**
+     * List of 10 randomic users that follow a given user
+     *
+     * @param username: username
+     * @return suggestedUsers: randomic user's list
+     */
+    public ArrayList<User> show10RandomUsers(final String username) {
         ArrayList<User> suggestedUsers;
         try (Session session = driver.session()) {
-            suggestedUsers = session.readTransaction((TransactionWork< ArrayList<User>>) tx -> {
+            suggestedUsers = session.readTransaction((TransactionWork<ArrayList<User>>) tx -> {
                 Result result = tx.run("MATCH (u1:User{username: $username}),(u2:User)\n" +
                                 "WHERE NOT EXISTS ((u1)-[:Follow]->(u2))\n" +
                                 "RETURN u2.username AS username , u2.country as country , u2.twitter_taster_handle as twitter_taster_handle\n" +
@@ -762,77 +962,15 @@ public class Crud_graph implements AutoCloseable {
                 ArrayList<User> users = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    User u = new User(r.get("username").asString() , "",r.get("twitter_taster_handle").asString() ,r.get("country").asString()  ,"", false);
+                    User u = new User(r.get("username").asString(), "", r.get("twitter_taster_handle").asString(), r.get("country").asString(), "", false);
                     users.add(u);
                 }
                 return users;
             });
-        } catch (Exception e){
+        } catch (Exception e) {
             suggestedUsers = null;
         }
         return suggestedUsers;
     }
-
-/*
-
-    public void randomFollowByUser(final String selected_taster_name) {
-        try (Session session = driver.session()) {
-            List<String> random = session.readTransaction((TransactionWork<List<String>>) tx -> {
-                Result result = tx.run("MATCH (p:User) RETURN p.taster_name as taster_name LIMIT 10");
-
-                ArrayList<String> randomUsers = new ArrayList<>();
-                while (result.hasNext()) {
-                    Record r = result.next();
-                    if (!(r.get("taster_name").asString().equals(selected_taster_name))) {
-                        String taster_name;
-                        randomUsers.add(r.get("taster_name").asString());
-                        taster_name = r.get("taster_name").asString();
-                        createRelationFollow(selected_taster_name, taster_name);
-                        createRelationFollow(taster_name, selected_taster_name);
-                    }
-                }
-                return randomUsers;
-            });
-            System.out.println(random);
-        }
-    }
-
-
-
-    public void randomLikeByUser(final String selected_taster_name) {
-        try (Session session = driver.session()) {
-            List<String> random = session.readTransaction((TransactionWork<List<String>>) tx -> {
-                Result result = tx.run("MATCH (p:Post) RETURN p.titlePost as titlePost LIMIT 10");
-
-                ArrayList<String> randomPost = new ArrayList<>();
-                while (result.hasNext()) {
-                    Record r = result.next();
-                    randomPost.add(r.get("titlePost").asString());
-                    String titlePost;
-                    titlePost = r.get("titlePost").asString();
-                    //createRelationLikeByTitle(titlePost, selected_taster_name);
-
-                }
-                return randomPost;
-            });
-            System.out.println(random);
-        }
-    }
-
-
-
-*/
-
-
-
-
-
-
-
-
-
-
 }
-
-
 

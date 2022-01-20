@@ -1,10 +1,11 @@
 package databases;
+
 import beans.Review;
 import beans.User;
 import beans.Wine;
 import org.neo4j.driver.*;
 
-import java.util.*;
+import java.util.ArrayList;
 
 import static org.neo4j.driver.Values.parameters;
 
@@ -13,7 +14,6 @@ import static org.neo4j.driver.Values.parameters;
  */
 public class Advanced_graph implements AutoCloseable {
     private final Driver driver;
-
 
     /**
      * Constructor that allows to start the connection with Neo4J.
@@ -26,43 +26,55 @@ public class Advanced_graph implements AutoCloseable {
         driver = GraphDatabase.driver(uri, AuthTokens.basic(user, password));
     }
 
+    /**
+     * Close Neo4J connection
+     *
+     * @throws Exception if something goes wrong during the closing
+     */
     @Override
     public void close() throws Exception {
         driver.close();
     }
+
     /**
      * Find the top five post on the social according to their number of like,
      * in descending order.
+     *
      * @return likePost: list of post with their likes.
      */
-    public ArrayList<Review> showTrendingComment(){
-        ArrayList<Review>  likePost;
+    public ArrayList<Review> showTrendingComment() {
+        ArrayList<Review> likePost;
         try (Session session = driver.session()) {
-            likePost = session.readTransaction((TransactionWork<ArrayList<Review> >) tx -> {
+            likePost = session.readTransaction((TransactionWork<ArrayList<Review>>) tx -> {
                 Result result = tx.run("MATCH (p:Post)-[r:Like]-(u:User)\n" +
                         "RETURN p.description AS description, p.rating AS rating , COUNT(r) AS numLike \n" +
                         "ORDER BY numLike DESC\n" +
                         "LIMIT 5");
-                ArrayList<Review>  likeResult = new ArrayList<>();
+                ArrayList<Review> likeResult = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
                     int conversionRating = Integer.parseInt(r.get("rating").asString());
-                    Review review = new Review(r.get("description").asString() ,conversionRating );
+                    Review review = new Review(r.get("description").asString(), conversionRating);
                     likeResult.add(review);
                 }
                 return likeResult;
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             likePost = null;
         }
         return likePost;
     }
 
-
-    public ArrayList<User> showSuggestedUserByFriends (final String username) {
+    /**
+     * Suggest users that are friends of friends
+     *
+     * @param username: user who will be given suggestions
+     * @return suggestedUser: List of suggested user
+     */
+    public ArrayList<User> showSuggestedUserByFriends(final String username) {
         ArrayList<User> suggestedUsers;
         try (Session session = driver.session()) {
-            suggestedUsers = session.readTransaction((TransactionWork< ArrayList<User>>) tx -> {
+            suggestedUsers = session.readTransaction((TransactionWork<ArrayList<User>>) tx -> {
                 Result result = tx.run("MATCH (n:User{username: $username})-[:Follow]->(:User)<-[:Follow]-(u:User)\n" +
                                 "WHERE NOT EXISTS ((n)-[:Follow]->(u))\n" +
                                 "WITH u, rand() AS number\n" +
@@ -73,21 +85,28 @@ public class Advanced_graph implements AutoCloseable {
                 ArrayList<User> users = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    User u = new User(r.get("username").asString() , "",r.get("twitter_taster_handle").asString() ,r.get("country").asString()  ,"", false);
+                    User u = new User(r.get("username").asString(), "", r.get("twitter_taster_handle").asString(), r.get("country").asString(), "", false);
                     users.add(u);
                 }
                 return users;
             });
-        } catch (Exception e){
+        } catch (Exception e) {
             suggestedUsers = null;
         }
         return suggestedUsers;
     }
 
-    public ArrayList<User> showSuggestedUserByLike (final String username) {
+    /**
+     * Suggest users that created a post and the given user liked it but only if there isn't follow relation
+     * between each other
+     *
+     * @param username: user who will be given suggestions
+     * @return suggestedUsers: List of suggested user
+     */
+    public ArrayList<User> showSuggestedUserByLike(final String username) {
         ArrayList<User> suggestedUsers;
         try (Session session = driver.session()) {
-            suggestedUsers = session.readTransaction((TransactionWork< ArrayList<User>>) tx -> {
+            suggestedUsers = session.readTransaction((TransactionWork<ArrayList<User>>) tx -> {
                 Result result = tx.run("MATCH (n:User{username: $username})-[:Like]->(:Post)<-[:Created]-(u:User)\n" +
                                 "WHERE NOT EXISTS ((n)-[:Follow]->(u))\n" +
                                 "WITH u, rand() AS number\n" +
@@ -98,23 +117,28 @@ public class Advanced_graph implements AutoCloseable {
                 ArrayList<User> users = new ArrayList<>();
                 while (result.hasNext()) {
                     Record r = result.next();
-                    User u = new User(r.get("username").asString() , "",r.get("twitter_taster_handle").asString() ,r.get("country").asString()  ,"", false);
+                    User u = new User(r.get("username").asString(), "", r.get("twitter_taster_handle").asString(), r.get("country").asString(), "", false);
                     users.add(u);
                 }
                 return users;
             });
-        } catch (Exception e){
+        } catch (Exception e) {
             suggestedUsers = null;
         }
         return suggestedUsers;
     }
 
 
-
-    public ArrayList<Wine> showSuggestedWineByLike (final String username) {
+    /**
+     * Suggest wines to the given user if he likes a post associated to a wine
+     *
+     * @param username: user who will be given suggestions
+     * @return suggestedWines: List of suggested wines
+     */
+    public ArrayList<Wine> showSuggestedWineByLike(final String username) {
         ArrayList<Wine> suggestedWines;
         try (Session session = driver.session()) {
-            suggestedWines = session.readTransaction((TransactionWork< ArrayList<Wine>>) tx -> {
+            suggestedWines = session.readTransaction((TransactionWork<ArrayList<Wine>>) tx -> {
                 Result result = tx.run("MATCH (n:User{username: $username})-[:Like]->(:Post)-[:Related]->(u:Wine)\n" +
                                 "WITH u, rand() AS number\n" +
                                 "RETURN u.wineName AS wineName , u.price as price , u.designation as designation , u.winery as winery , u.variety as variety , u.province as province\n" +
@@ -126,21 +150,27 @@ public class Advanced_graph implements AutoCloseable {
                     Record r = result.next();
                     //User u = new User(r.get("username").asString() , "",r.get("twitter_taster_handle").asString() ,r.get("country").asString()  ,"", false);
 
-                    Wine u = new Wine(r.get("wineName").asString(),r.get("designation").asString(),Integer.parseInt(r.get("price").asString()),r.get("province").asString(),r.get("variety").asString(),r.get("winery").asString(),null);
+                    Wine u = new Wine(r.get("wineName").asString(), r.get("designation").asString(), Integer.parseInt(r.get("price").asString()), r.get("province").asString(), r.get("variety").asString(), r.get("winery").asString(), null);
                     wines.add(u);
                 }
                 return wines;
             });
-        } catch (Exception e){
+        } catch (Exception e) {
             suggestedWines = null;
         }
         return suggestedWines;
     }
 
-    public ArrayList<Wine> showSuggestedWineByComment (final String username) {
+    /**
+     * Suggest wines to the given user if he creates a post associated to a wine
+     *
+     * @param username: user who will be given suggestions
+     * @return suggestedWines: List of suggested wines
+     */
+    public ArrayList<Wine> showSuggestedWineByComment(final String username) {
         ArrayList<Wine> suggestedWines;
         try (Session session = driver.session()) {
-            suggestedWines = session.readTransaction((TransactionWork< ArrayList<Wine>>) tx -> {
+            suggestedWines = session.readTransaction((TransactionWork<ArrayList<Wine>>) tx -> {
                 Result result = tx.run("MATCH (n:User{username: $username})-[:Created]->(:Post)-[:Related]->(u:Wine)\n" +
                                 "WITH u, rand() AS number\n" +
                                 "RETURN u.wineName AS wineName , u.price as price , u.designation as designation , u.winery as winery , u.variety as variety , u.province as province\n" +
@@ -152,20 +182,14 @@ public class Advanced_graph implements AutoCloseable {
                     Record r = result.next();
                     //User u = new User(r.get("username").asString() , "",r.get("twitter_taster_handle").asString() ,r.get("country").asString()  ,"", false);
 
-                    Wine u = new Wine(r.get("wineName").asString(),r.get("designation").asString(),Integer.parseInt(r.get("price").asString()),r.get("province").asString(),r.get("variety").asString(),r.get("winery").asString(),null);
+                    Wine u = new Wine(r.get("wineName").asString(), r.get("designation").asString(), Integer.parseInt(r.get("price").asString()), r.get("province").asString(), r.get("variety").asString(), r.get("winery").asString(), null);
                     wines.add(u);
                 }
                 return wines;
             });
-        } catch (Exception e){
+        } catch (Exception e) {
             suggestedWines = null;
         }
         return suggestedWines;
     }
-
-
-
-
-
-
 }

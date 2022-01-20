@@ -11,6 +11,9 @@ import java.util.concurrent.TimeUnit;
  */
 public class InitTh {
 
+    /**
+     * Start thread and assign it to scheduler
+     */
     public void initThread() {
         final ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
         final ScheduledFuture<?> scraperHandle =scheduler.scheduleAtFixedRate(new ScraperThread(), 0, 1, TimeUnit.MINUTES);
