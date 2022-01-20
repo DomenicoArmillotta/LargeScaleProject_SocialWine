@@ -324,6 +324,33 @@ public class Crud_mongo {
         return wines;
     }
 
+    public ArrayList<Wine> findWineByPrefix (String prefix) throws WineNotExistsException {
+        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
+        MongoDatabase database = mongoClient.getDatabase("Wines");
+        MongoCollection<Document> collection = database.getCollection("wines");
+        Wine wine = null;
+        ArrayList<Wine> wines = new ArrayList<>();
+        MongoCursor<Document> cursor = collection.find(Filters.eq("wineName", "/" + prefix + "/i")).iterator();
+        if (!cursor.hasNext()){
+            throw new WineNotExistsException("No wine found with "+ prefix);
+        } else {
+            while (cursor.hasNext()) {
+                Document temp_wine_doc = cursor.next();
+                String wineName = temp_wine_doc.getString("wineName");
+                String variety = temp_wine_doc.getString("variety");
+                String country = temp_wine_doc.getString("country");
+                String province = temp_wine_doc.getString("province");
+                Integer price = temp_wine_doc.getInteger("price");
+                String winery = temp_wine_doc.getString("winery");
+                String designation = temp_wine_doc.getString("designation");
+                wine = new Wine(wineName, designation, price, province, variety, winery, country);
+                wines.add(wine);
+            }
+            mongoClient.close();
+            return wines;
+        }
+    }
+
     public List[] findAllReviewAndUserForSpecificWine(String title) {
         final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         MongoDatabase database = mongoClient.getDatabase("Wines");
@@ -338,19 +365,6 @@ public class Crud_mongo {
 
         AggregateIterable<Document> cursor = collection.aggregate(Arrays.asList(match(filter), unwind));
 
-        for (Document doc : cursor) {
-            Document nestedReview = (Document) doc.get("reviews");
-            Integer rating = nestedReview.getInteger("rating");
-            String description = nestedReview.getString("description");
-            String username = nestedReview.getString("taster_name");
-            String twitter_taster_handle = nestedReview.getString("taster_twitter_handle");
-            String country = nestedReview.getString("user_country");
-            String email = nestedReview.getString("email");
-            review = new Review(description, rating);
-            user = new User(username, "", twitter_taster_handle, country, email, false);
-            reviews.add(review);
-            users.add(user);
-        }
         return new List[]{reviews, users};
     }
 }
