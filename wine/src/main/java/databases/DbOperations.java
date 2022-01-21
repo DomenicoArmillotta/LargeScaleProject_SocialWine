@@ -67,7 +67,7 @@ public class DbOperations {
      */
     public boolean adminLogin2(String loginAdminName, String loginAdminPsw) {
         boolean result = false;
-        if (graph.checkLoginByUsername(loginAdminName, loginAdminPsw, "true") == true) {
+        if (graph.checkLoginByUsername(loginAdminName, loginAdminPsw, "1") == true) {
             result = true;
         } else {
             result = false;
@@ -104,7 +104,7 @@ public class DbOperations {
     public boolean userLogin2(String loginUserName, String loginUserPsw) {
         boolean result = false;
 
-        if (graph.checkLoginByUsername(loginUserName, loginUserPsw, "false") == true) {
+        if (graph.checkLoginByUsername(loginUserName, loginUserPsw, "0") == true) {
             result = true;
         } else {
             result = false;
@@ -676,11 +676,15 @@ public class DbOperations {
      * @param myUsername
      */
     public void showSuggestedUserAndFollow(String myUsername) {
-        ArrayList<User> usersPost = new ArrayList<>(adv_graph.showSuggestedUserByFriends(myUsername));
+        /*ArrayList<User> usersPost = new ArrayList<>(adv_graph.showSuggestedUserByFriends(myUsername));
         ArrayList<User> usersLike = new ArrayList<>(adv_graph.showSuggestedUserByLike(myUsername));
         ArrayList<User> users = new ArrayList<>();
         users.addAll(usersPost);
-        users.addAll(usersLike);
+        users.addAll(usersLike);*/
+
+        ArrayList<User> users = new ArrayList<>(adv_graph.showSuggestedUserByLikeAndFriends(myUsername));
+
+
 
         int i = 0;
         if (users.size() != 0) {
@@ -1766,11 +1770,17 @@ public class DbOperations {
 
 
         } else if (selectedMenuWine.equals("3")) {
-            ArrayList<Wine> suggestedWine1 = new ArrayList<>(adv_graph.showSuggestedWineByLike(myUsername));
+            /*ArrayList<Wine> suggestedWine1 = new ArrayList<>(adv_graph.showSuggestedWineByLike(myUsername));
             ArrayList<Wine> suggestedWine2 = new ArrayList<>(adv_graph.showSuggestedWineByComment(myUsername));
             ArrayList<Wine> suggestedWine = new ArrayList<>();
             suggestedWine.addAll(suggestedWine1);
-            suggestedWine.addAll(suggestedWine2);
+            suggestedWine.addAll(suggestedWine2);*/
+
+            ArrayList<Wine> suggestedWine = new ArrayList<>(adv_graph.showSuggestedWineByCommentAndLike(myUsername));
+
+
+
+
             if (suggestedWine.size() != 0) {
                 System.out.println("==============List of Suggested Wine on Social============= ");
                 show10Wine(suggestedWine, 0, 10);
@@ -2044,11 +2054,14 @@ public class DbOperations {
                 System.out.println(e.getMessage());
             }
         } else if (selectedMenuWine.equals("3")) {
-            ArrayList<Wine> suggestedWine1 = new ArrayList<>(adv_graph.showSuggestedWineByLike(myUsername));
+            /*ArrayList<Wine> suggestedWine1 = new ArrayList<>(adv_graph.showSuggestedWineByLike(myUsername));
             ArrayList<Wine> suggestedWine2 = new ArrayList<>(adv_graph.showSuggestedWineByComment(myUsername));
             ArrayList<Wine> suggestedWine = new ArrayList<>();
             suggestedWine.addAll(suggestedWine1);
-            suggestedWine.addAll(suggestedWine2);
+            suggestedWine.addAll(suggestedWine2);*/
+
+            ArrayList<Wine> suggestedWine = new ArrayList<>(adv_graph.showSuggestedWineByCommentAndLike(myUsername));
+
             if (suggestedWine.size() != 0) {
                 System.out.println("==============List of Suggested Wine on Social============= ");
                 show10Wine(suggestedWine, 0, 10);
