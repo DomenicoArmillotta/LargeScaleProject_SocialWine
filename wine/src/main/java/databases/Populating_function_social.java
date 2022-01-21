@@ -3,8 +3,12 @@ package databases;
 import beans.Review;
 import beans.User;
 import beans.Wine;
-import com.mongodb.client.MongoClient;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoDatabase;
+import org.bson.Document;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,14 +23,13 @@ public class Populating_function_social {
      * Populate Neo4J with data stored in wines collection
      */
     public void populateSocial() {
-        MongoClient mongoClient = MongoClients.create();
-        Crud_mongo mongo = new Crud_mongo();
         Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
         DbOperations db = new DbOperations();
         ArrayList<Review> reviews = null;
         ArrayList<Wine> wines = null;
         ArrayList<User> users = null;
 
+        Crud_mongo mongo = new Crud_mongo();
         wines = mongo.findAllWine();
         reviews = mongo.findAllReview();
         users = mongo.findAllUser();
