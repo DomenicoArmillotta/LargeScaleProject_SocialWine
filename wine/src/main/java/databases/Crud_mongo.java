@@ -4,14 +4,19 @@ import beans.Review;
 import beans.User;
 import beans.Wine;
 import com.google.common.base.Strings;
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
 import com.mongodb.MongoClient;
-import com.mongodb.client.*;
+import com.mongodb.MongoClientURI;
+import com.mongodb.MongoException;
+import com.mongodb.client.AggregateIterable;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Filters;
-import exception.AlreadyPopulatedException;
 import exception.ReviewAlreadyInserted;
 import exception.UserNotPresentException;
 import exception.WineNotExistsException;
+import exception.WrongInsertionException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -19,23 +24,34 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.mongodb.client.model.Aggregates.*;
+import static com.mongodb.client.model.Aggregates.match;
+import static com.mongodb.client.model.Aggregates.unwind;
 
 /**
- * Contains all the crud operation that could be done on MongoDB.
+ * Contains all the basic CRUD operation done on MongoDB
  */
 public class Crud_mongo {
 
-    //WORKS ON NEO4J
+    final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
+    MongoDatabase database = mongoClient.getDatabase("Wines");
+    MongoCollection<Document> collection = database.getCollection("wines");
+    /**
+     * Add a wine, with all his features, on MongoDB but only if it's not already present
+     *
+     * @param title:       wine name
+     * @param designation: the name of the wine given to the wine by the producer
+     * @param price:       wine price
+     * @param province:    production province
+     * @param variety:     types of grapes used
+     * @param winery:      producer
+     * @param country:     production country
+     */
     public void addWine(String title, String variety, String country, String province, String designation, String winery, int price) {
         if (Strings.isNullOrEmpty(title) || Strings.isNullOrEmpty(variety) || Strings.isNullOrEmpty(country) || Strings.isNullOrEmpty(province) || Strings.isNullOrEmpty(designation) || Strings.isNullOrEmpty(winery) || price <= 0) {
             System.out.println("Fields for wine must not be null");
             return;
         }
 
-        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
-        MongoDatabase database = mongoClient.getDatabase("Wines");
-        MongoCollection<Document> collection = database.getCollection("wines");
 
         BasicDBObject query = new BasicDBObject("wineName", title);
         MongoCursor<Document> cursor = collection.find(query).iterator();
@@ -53,15 +69,29 @@ public class Crud_mongo {
             collection.insertOne(onlyWine);
         } else {
             try {
-                throw new AlreadyPopulatedException("A wine with this name already exists");
-            } catch (AlreadyPopulatedException e) {
+                throw new WrongInsertionException("A wine with this name already exists");
+            } catch (WrongInsertionException e) {
                 System.out.println(e.getMessage());
             }
         }
-
     }
 
-
+    /**
+     * Function used by scraper to populate MongoDB with new Wines and associated reviews
+     *
+     * @param title:       wine name
+     * @param designation: the name of the wine given to the wine by the producer
+     * @param price:       wine price
+     * @param province:    production province
+     * @param variety:     types of grapes used
+     * @param winery:      producer
+     * @param country:     production country
+     * @param country:     user's country
+     * @param mail:        user's email
+     * @param description: comment body
+     * @param points:      wine's rating
+     * @throws ReviewAlreadyInserted: if a review for a wine already exits
+     */
     public void createWine(String title, String variety, String country, String province, String designation, int price, String taster_name, int points,
                            String description, String winery, String taster_twitter_handle, String country_user, String mail) throws ReviewAlreadyInserted {
 
@@ -69,10 +99,6 @@ public class Crud_mongo {
             System.out.println("Fields for wine must not be null");
             return;
         }
-        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
-        MongoDatabase database = mongoClient.getDatabase("Wines");
-        MongoCollection<Document> collection = database.getCollection("wines");
-
 
         BasicDBObject query = new BasicDBObject("wineName", title);
         MongoCursor<Document> cursor = collection.find(query).iterator();
@@ -87,12 +113,9 @@ public class Crud_mongo {
                     .append("user_country", "" + country_user + "")
                     .append("email", "" + mail + "");
             reviews.add(rev);
-
-
             Document mongoWine = new org.bson.Document("wineName", title)
                     .append("variety", variety).append("country", country).append("province", province).append("price", price).append("winery", winery).append("designation", designation).append("reviews", reviews);
             collection.insertOne(mongoWine);
-
         }
         // wine document is already inserted
         else {
@@ -129,17 +152,17 @@ public class Crud_mongo {
                 collection.updateOne(query, update);
             } else {
                 // throw Already Inserted exception
-                System.out.println("The review is already inserted for that wine");
-                throw new ReviewAlreadyInserted("The review is already inserted for that wine");
+                throw new ReviewAlreadyInserted(" ");
             }
         }
     }
 
-    //WORKS ON NEO4J
+    /**
+     * Delete a wine by his name
+     *
+     * @param title: wine's name to delete
+     */
     public void deleteWine(String title) {
-        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
-        MongoDatabase database = mongoClient.getDatabase("Wines");
-        MongoCollection<Document> collection = database.getCollection("wines");
         try {
             collection.deleteMany(Filters.eq("wineName", "" + title + ""));
         } catch (MongoException me) {
@@ -147,10 +170,14 @@ public class Crud_mongo {
         }
     }
 
+    /**
+     * Find a wine and its features by its name
+     *
+     * @param title: Wine's name
+     * @return wine: retrieved wine
+     * @throws WineNotExistsException: if the searched wine doesn't exits in wines collection
+     */
     public Wine findSpecificWine(String title) throws WineNotExistsException {
-        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
-        MongoDatabase database = mongoClient.getDatabase("Wines");
-        MongoCollection<Document> collection = database.getCollection("wines");
         BasicDBObject query = new BasicDBObject("wineName", title);
         MongoCursor<Document> cursor = collection.find(query).iterator();
 
@@ -169,15 +196,17 @@ public class Crud_mongo {
             wine = new Wine(wineName, designation, price, province, variety, winery, country);
 
         }
-        mongoClient.close();
         return wine;
     }
 
-    //WORKS ON NEO4J
+    /**
+     * Delete a comment of a given user for a specific wine
+     *
+     * @param description: comment body
+     * @param taster_name: username
+     * @param title:       wine name
+     */
     public void deleteComment(String description, String taster_name, String title) {
-        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
-        MongoDatabase database = mongoClient.getDatabase("Wines");
-        MongoCollection<Document> collection = database.getCollection("wines");
         BasicDBObject match = new BasicDBObject("wineName", title);
         BasicDBObject update = new BasicDBObject("reviews", new BasicDBObject("description", description).append("taster_name", taster_name));
         try {
@@ -187,12 +216,20 @@ public class Crud_mongo {
         }
     }
 
-    //WORKS ON NEO4J
+    /**
+     * Add a comment for a given wine
+     *
+     * @param title:                 wine's name
+     * @param taster_name:           username that made the comment
+     * @param score:                 rating associated to wine
+     * @param description:           comment associated to wine
+     * @param taster_twitter_handle: twitter nickname of user that did the comment
+     * @param country:               user's country
+     * @param email:                 user's email
+     * @throws WineNotExistsException: if user wants to do a comment for a wine that doesn't exists
+     * @throws ReviewAlreadyInserted:  if user wants to do another review for same wine
+     */
     public void addComment(String title, String taster_name, int score, String description, String taster_twitter_handle, String country, String email) throws WineNotExistsException, ReviewAlreadyInserted {
-        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
-        MongoDatabase database = mongoClient.getDatabase("Wines");
-        MongoCollection<Document> collection = database.getCollection("wines");
-
         BasicDBObject query = new BasicDBObject("wineName", title);
         MongoCursor<Document> cursor = collection.find(query).iterator();
         if (!cursor.hasNext()) {
@@ -238,12 +275,13 @@ public class Crud_mongo {
         }
     }
 
-    //WORK
+    /**
+     * Scan all wines collection and delete all comments that a given user did
+     *
+     * @param taster_name: user name
+     * @throws UserNotPresentException: if given user doesnt' exists
+     */
     public void deleteAllCommentForGivenUser(String taster_name) throws UserNotPresentException {
-        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
-        MongoDatabase database = mongoClient.getDatabase("Wines");
-        MongoCollection<Document> collection = database.getCollection("wines");
-
         MongoCursor<Document> myDoc = collection.find(Filters.eq("reviews.taster_name", taster_name)).cursor();
         if (myDoc.hasNext() == false) {
             throw new UserNotPresentException(taster_name + " doesn't exists");
@@ -254,11 +292,12 @@ public class Crud_mongo {
     }
 
 
+    /**
+     * List of all users that are inside wines collection
+     *
+     * @return users: List of all user
+     */
     public ArrayList<User> findAllUser() {
-        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
-        MongoDatabase database = mongoClient.getDatabase("Wines");
-        MongoCollection<Document> collection = database.getCollection("wines");
-
         User user = null;
         ArrayList<User> users = new ArrayList<>();
         Bson unwind = unwind("$reviews");
@@ -276,34 +315,38 @@ public class Crud_mongo {
             user = new User(username, "0000", twitter_taster_handle, country, email, false);
             users.add(user);
         }
-        mongoClient.close();
         return users;
 
     }
 
+    /**
+     * List of all comment made in the wines collection
+     *
+     * @return reviews: list of all comment made
+     */
     public ArrayList<Review> findAllReview() {
-        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
-        MongoDatabase database = mongoClient.getDatabase("Wines");
-        MongoCollection<Document> collection = database.getCollection("wines");
         Review review = null;
         ArrayList<Review> reviews = new ArrayList<>();
         Bson unwind = unwind("$reviews");
-        AggregateIterable<Document> cursor = collection.aggregate(Arrays.asList(unwind));
+        Document group = new Document("$group", new Document("_id", new Document("description", "$reviews.description")
+                .append("rating", "$reviews.rating")));
+        AggregateIterable<Document> cursor = collection.aggregate(Arrays.asList(unwind,group));
         for (Document tempReview : cursor) {
-            Document nestedReview = (Document) tempReview.get("reviews");
-            Integer rating = nestedReview.getInteger("rating");
-            String description = nestedReview.getString("description");
+            Document temp_rev_doc = (Document) tempReview.get("_id");
+            Integer rating = temp_rev_doc.getInteger("rating");
+            String description = temp_rev_doc.getString("description");
             review = new Review(description, rating);
             reviews.add(review);
         }
-        mongoClient.close();
         return reviews;
     }
 
+    /**
+     * List of all wine that are inside wines collection
+     *
+     * @return wines: list of all wines
+     */
     public ArrayList<Wine> findAllWine() {
-        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
-        MongoDatabase database = mongoClient.getDatabase("Wines");
-        MongoCollection<Document> collection = database.getCollection("wines");
         Wine wine = null;
         ArrayList<Wine> wines = new ArrayList<>();
         MongoCursor<Document> cursor = collection.find().iterator();
@@ -319,53 +362,68 @@ public class Crud_mongo {
             wine = new Wine(wineName, designation, price, province, variety, winery, country);
             wines.add(wine);
         }
-        mongoClient.close();
         return wines;
     }
 
+    /**
+     * Retrieve a wine if it contains a given word or multiple word
+     *
+     * @param prefix: substring or entire wine name to retrieve
+     * @return wines: list of all wines that contains at least the given word
+     * @throws WineNotExistsException: if no wine(s) was/were retrieved in wines collection
+     */
     public ArrayList<Wine> findWineByPrefix(String prefix) throws WineNotExistsException {
-        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
-        MongoDatabase database = mongoClient.getDatabase("Wines");
-        MongoCollection<Document> collection = database.getCollection("wines");
         Wine wine = null;
         ArrayList<Wine> wines = new ArrayList<>();
-        Bson Filter = Filters.text("/" + prefix +" /i");
+        Bson Filter = Filters.text("/" + prefix + " /i");
         MongoCursor<Document> cursor = collection.find(Filter).iterator();
         if (!cursor.hasNext()) {
             throw new WineNotExistsException("No wine found with " + prefix);
         } else {
             while (cursor.hasNext()) {
-                    Document temp_wine_doc = cursor.next();
-                    String wineName = temp_wine_doc.getString("wineName");
-                    String variety = temp_wine_doc.getString("variety");
-                    String country = temp_wine_doc.getString("country");
-                    String province = temp_wine_doc.getString("province");
-                    Integer price = temp_wine_doc.getInteger("price");
-                    String winery = temp_wine_doc.getString("winery");
-                    String designation = temp_wine_doc.getString("designation");
-                    wine = new Wine(wineName, designation, price, province, variety, winery, country);
-                    wines.add(wine);
+                Document temp_wine_doc = cursor.next();
+                String wineName = temp_wine_doc.getString("wineName");
+                String variety = temp_wine_doc.getString("variety");
+                String country = temp_wine_doc.getString("country");
+                String province = temp_wine_doc.getString("province");
+                Integer price = temp_wine_doc.getInteger("price");
+                String winery = temp_wine_doc.getString("winery");
+                String designation = temp_wine_doc.getString("designation");
+                wine = new Wine(wineName, designation, price, province, variety, winery, country);
+                wines.add(wine);
             }
-            mongoClient.close();
             return wines;
         }
     }
 
+    /**
+     * Return all comment and user for a given wine
+     *
+     * @param title: wine's name
+     * @return List: Array composed by list of comments and a list of users
+     */
     public List[] findAllReviewAndUserForSpecificWine(String title) {
-        final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
-        MongoDatabase database = mongoClient.getDatabase("Wines");
-        MongoCollection<Document> collection = database.getCollection("wines");
-
         Bson filter = Filters.eq("wineName", title);
         ArrayList<Review> reviews = new ArrayList<>();
         ArrayList<User> users = new ArrayList<>();
         Bson unwind = unwind("$reviews");
         Review review = null;
         User user = null;
-
         AggregateIterable<Document> cursor = collection.aggregate(Arrays.asList(match(filter), unwind));
-
-        return new List[]{reviews, users};
+        for (Document doc : cursor) {
+            Document nestedReview = (Document) doc.get("reviews");
+            Integer rating = nestedReview.getInteger("rating");
+            String description = nestedReview.getString("description");
+            String username =  nestedReview.getString("taster_name");
+            String twitter_taster_handle =nestedReview.getString("taster_twitter_handle");
+            String country = nestedReview.getString("user_country");
+            String email = nestedReview.getString("email");
+            review = new Review(description, rating);
+            user = new User(username, "0000", twitter_taster_handle, country, email, false);
+            reviews.add(review);
+            users.add(user);
+        }
+        return new List[] {reviews,users};
     }
 }
 

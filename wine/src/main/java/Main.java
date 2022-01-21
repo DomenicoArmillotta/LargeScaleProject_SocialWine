@@ -1,56 +1,17 @@
-import beans.User;
-import beans.Wine;
-import com.mongodb.client.MongoCursor;
-import databases.*;
-import exception.WrongInsertionException;
+import databases.Crud_graph;
+import databases.Crud_mongo;
+import databases.Populating_function_social;
 import menu.Menu;
-import scraping.InitTh;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Scanner;
 
 /**
- * In the main class is called the scraper that works before all programs.
- * To avoid cuncurrent print between the effective program and the scrpaer
- * it was added a thread the intentionally start the program with delay.
+ * In the main class is called the scraper and the menu. Scraper will work concurrently to menu
  */
 public class Main {
-    public static void main(String[] args)throws Exception  {
-    //dubbi:
-    //username already exist
-        //admin forse non ha il trending post
-
-
-
-
-       // Populating_wine_document pop = new Populating_wine_document();
-       // pop.poplulateData();
-        //DbOperations graph_operation = new DbOperations();
-        //Crud_mongo mongo = new Crud_mongo();
-        //inizialization TEST
-        //Crud_graph graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
-        /*mongo.addWine("wine","a","a","a","a","a",78);
-        mongo.addWine("wine bbbb","a","a","a","a","a",78);
-        mongo.addWine("wine aa","a","a","a","a","a",78);
-        mongo.addWine("wibne 1215","a","a","a","a","a",78);
-        mongo.addWine("ksncwibne 1215","a","a","a","a","a",78);
-
-*/
-       /* ArrayList<Wine> a = mongo.findWineByPrefix("s");
-        ArrayList<Wine> wines = new ArrayList<>(a);
-        for(int i=0;i< wines.size();i++){
-            System.out.println(wines.get(i).getWineName());
-        }*/
-        //TEST
-        /*graph.registerUser("adam","00","0","@user1","it","rr");
-        graph.registerUser("bob","00","1","@user1","it","rr");
-        graph.createRelationFollow("adam","bob");
-        graph.createRelationFollow("bob","adam");*/
-        //graph.deleteWineByName("wine1");
-
-        Menu menu = new Menu();
-        menu.MainMenu();
-
+    public static void main(String[] args) throws Exception {
+        Populating_function_social pop = new Populating_function_social();
+        pop.populateSocial();
+        /*Menu menu = new Menu();
+        menu.MainMenu();*/
     }
 }

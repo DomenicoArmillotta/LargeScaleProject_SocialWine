@@ -1,11 +1,9 @@
 package scraping;
 
 import com.google.common.base.Strings;
-import com.mongodb.*;
-
-import com.mongodb.client.MongoClients;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
 import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
 import databases.Crud_graph;
 import databases.Crud_mongo;
@@ -15,11 +13,8 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.neo4j.driver.*;
 
-import java.io.*;
-
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,22 +22,21 @@ import java.util.List;
  * Contains scraper that allow to retrieve new reviews from winemag website.
  * New reviews that are detected are stored automatically in MongoDB, after a check
  * to figure out if a review is already inside or not. Automatically are added
- * nodes in Neo4J with addPostComplete and in the same way in user-credentials' collection
- * are stored the new user with their password.
+ * nodes in Neo4J with addPostComplete.
  */
-public class ScraperThread implements Runnable{
+public class ScraperThread implements Runnable {
 
     @Override
     public void run() {
 
         MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
-        Crud_graph crud_graph = new Crud_graph("bolt://localhost:7687","neo4j","0000");
+        Crud_graph crud_graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
 
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<org.bson.Document> collection = database.getCollection("wines");
 
         MongoCollection<org.bson.Document> usersCollection = database.getCollection("wines");
-        Crud_mongo crud=new Crud_mongo();
+        Crud_mongo crud = new Crud_mongo();
         Document doc = null;
         try {
             //doc = Jsoup.connect("https://www.winemag.com/ratings/#").get();
@@ -58,7 +52,7 @@ public class ScraperThread implements Runnable{
             }
         }
         List<String> links = doc.getElementsByClass("review-listing").eachAttr("href");
-        for(String link : links) {
+        for (String link : links) {
             HashMap<String, String> map = new HashMap<String, String>();
             Document reviewDoc = null;
             try {
@@ -70,17 +64,17 @@ public class ScraperThread implements Runnable{
             Element tasterElement = reviewDoc.getElementsByClass("taster-area").first().getElementsByTag("a").first();
             // check for empty string
             String taster_name = CheckEmpty(tasterElement.text());
-            map.put("taster_name",taster_name);
+            map.put("taster_name", taster_name);
             Document tasterDoc = null;
             try {
                 tasterDoc = Jsoup.connect(tasterElement.attr("href")).get();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            String taster_twitter=CheckEmpty(tasterDoc.getElementsByClass("twitter").first().text());
-            map.put("taster_twitter",taster_twitter);
-            String email=CheckEmpty(tasterDoc.getElementsByClass("email").first().text());
-            map.put("taster_email",email);
+            String taster_twitter = CheckEmpty(tasterDoc.getElementsByClass("twitter").first().text());
+            map.put("taster_twitter", taster_twitter);
+            String email = CheckEmpty(tasterDoc.getElementsByClass("email").first().text());
+            map.put("taster_email", email);
             map.put("title", reviewDoc.getElementsByClass("header__title").first().getElementsByTag("h1").first().text());
             map.put("description", reviewDoc.getElementsByClass("description").first().ownText());
             Element attribuiteTable = reviewDoc.select("ul.primary-info").first();
@@ -118,28 +112,29 @@ public class ScraperThread implements Runnable{
             }
 
             try {
-                crud.createWine(map.get("title"),map.get("Variety"),map.get("Country"),map.get("Province"),map.get("Designation"),parseIntOrNull(map.get("Price")),map.get("taster_name"),parseIntOrNull(map.get("rating")),map.get("description"),map.get("Winery"),map.get("taster_twitter"),"None",map.get("taster_email"));
+                crud.createWine(map.get("title"), map.get("Variety"), map.get("Country"), map.get("Province"), map.get("Designation"), parseIntOrNull(map.get("Price")), map.get("taster_name"), parseIntOrNull(map.get("rating")), map.get("description"), map.get("Winery"), map.get("taster_twitter"), "None", map.get("taster_email"));
             } catch (ReviewAlreadyInserted e) {
-                //e.printStackTrace();
+                System.out.println(e.getMessage());
             }
 
-            Integer rating=parseIntOrNull(map.get("rating"));
-            Integer price=parseIntOrNull(map.get("Price"));
+            Integer rating = parseIntOrNull(map.get("rating"));
+            Integer price = parseIntOrNull(map.get("Price"));
             // the rating must be greater than zero otherwise no insertion to graph
-            if(rating>0 && price>0 &&!Strings.isNullOrEmpty(map.get("title")) && !Strings.isNullOrEmpty(map.get("Variety")) && !Strings.isNullOrEmpty(map.get("Country")) && !Strings.isNullOrEmpty(map.get("Province")) && !Strings.isNullOrEmpty(map.get("Designation")) && !Strings.isNullOrEmpty(map.get("description")) &&!Strings.isNullOrEmpty(map.get("taster_name")) && !Strings.isNullOrEmpty(map.get("Winery"))  && !Strings.isNullOrEmpty(map.get("taster_twitter"))  && !Strings.isNullOrEmpty(map.get("taster_email"))) {
-                crud_graph.addPostComplete(map.get("title"),map.get("Variety"),map.get("Country"),map.get("Province"),map.get("Price"),map.get("Winery"),map.get("Designation"),rating,map.get("description"),map.get("taster_twitter"),map.get("taster_name"),"None",map.get("taster_email"));
-}
+            if (rating > 0 && price > 0 && !Strings.isNullOrEmpty(map.get("title")) && !Strings.isNullOrEmpty(map.get("Variety")) && !Strings.isNullOrEmpty(map.get("Country")) && !Strings.isNullOrEmpty(map.get("Province")) && !Strings.isNullOrEmpty(map.get("Designation")) && !Strings.isNullOrEmpty(map.get("description")) && !Strings.isNullOrEmpty(map.get("taster_name")) && !Strings.isNullOrEmpty(map.get("Winery")) && !Strings.isNullOrEmpty(map.get("taster_twitter")) && !Strings.isNullOrEmpty(map.get("taster_email"))) {
+                crud_graph.addPostComplete(map.get("title"), map.get("Variety"), map.get("Country"), map.get("Province"), map.get("Price"), map.get("Winery"), map.get("Designation"), rating, map.get("description"), map.get("taster_twitter"), map.get("taster_name"), "None", map.get("taster_email"));
+            }
         }
 
     }
 
     /**
      * Check if something is empty or not.
+     *
      * @param input: String to check
      * @return input
      */
     private String CheckEmpty(String input) {
-        if(input.isEmpty()) {
+        if (input.isEmpty()) {
             return null;
         }
         return input;
@@ -147,6 +142,7 @@ public class ScraperThread implements Runnable{
 
     /**
      * Transform a string value in an integer value.
+     *
      * @param value: string value.
      * @return integer value or null.
      */

@@ -1,31 +1,30 @@
 package databases;
 
 import com.mongodb.client.*;
-import com.mongodb.client.model.*;
+import com.mongodb.client.model.Aggregates;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Projections;
 import exception.ResultsNotFoundException;
 import exception.WrongInsertionException;
 import org.bson.Document;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
 import org.bson.conversions.Bson;
+
 import java.text.DecimalFormat;
 import java.util.*;
-import static com.mongodb.client.model.Accumulators.*;
+
+import static com.mongodb.client.model.Accumulators.avg;
 import static com.mongodb.client.model.Aggregates.*;
 import static com.mongodb.client.model.Sorts.descending;
 
 /**
  * This class contains MongoDB advanced queries made with aggregation pipeline.
  */
-public class Advanced_mongo{
+public class Advanced_mongo {
+    private static final DecimalFormat df = new DecimalFormat("0.00");
     Crud_mongo mongo = new Crud_mongo();
 
-
-    private static final DecimalFormat df = new DecimalFormat("0.00");
-
-    /*
-       db.wines.aggregate( [ { $unwind:"$reviews"}, { $group:{_id:"$country", Average:{$avg:"$reviews.rating"}}}, {$limit:3}])
+    /**
+     * 1 Query: Shows the Top-3 countries that own higher average wines' ratings
      */
     public void topFiveCountryAccordingRating() {
         MongoClient mongoClient = MongoClients.create();
@@ -51,12 +50,11 @@ public class Advanced_mongo{
                 System.out.println("Country: " + countryName + " --- Average: " + df.format(avg));
             }
             System.out.println("==================================================");
-
         }
     }
 
-    /*
-        db.wines.aggregate( [ { $unwind:"$reviews"}, { $group:{_id: { taster_name : "$reviews.taster_name", variety : "$variety"}, count:{$sum:1}}},{$limit:10}])
+    /**
+     * 2 Query: Shows Top-10 username ,with wine varieties and prices, that made highest number of reviews per variety
      */
     public void topTenUsersMadeHighestumberOfReveiwsPerVarieties() {
         MongoClient mongoClient = MongoClients.create();
@@ -82,16 +80,15 @@ public class Advanced_mongo{
             for (int i = 0; i < results.size(); i++) {
                 Document doc = (Document) results.get(i).get("_id");
                 Integer count = results.get(i).getInteger("count");
-                System.out.println("Name: " + doc.get("taster_name") + " --- Variety: " + doc.get("variety") + " .....Count: " + count );
+                System.out.println("Name: " + doc.get("taster_name") + " --- Variety: " + doc.get("variety") + " .....Count: " + count);
             }
             System.out.println("================================================================");
         }
 
     }
 
-    /*
-    db.wines.aggregate( [ { $unwind : "$reviews" }, { "$match": { "price": { "$gte": userInput } } },
-    { $project : { wineName : 1 , "reviews.taster_name" : 1 } } ] )
+    /**
+     * 3 Query: Shows Top-30 wines and usernames that bought them, below a price treshold inserted by admin by keyboard
      */
     public void topThirtyWinesWithPriceLowerThan() {
         MongoClient mongoClient = MongoClients.create();
@@ -112,7 +109,7 @@ public class Advanced_mongo{
                     System.out.println("=================================================================");
                 }
             } else {
-                Bson limit = limit(10);
+                Bson limit = limit(30);
                 Bson filter = Filters.lt("price", treshold);
                 Bson unwind = unwind("$reviews");
                 Bson match = match(filter);
@@ -127,7 +124,6 @@ public class Advanced_mongo{
                 }
                 for (Document doc : results) {
                     Document review = (Document) doc.get("reviews");
-                    //"Username: " + review.getString("taster_name") + "\n" +
                     System.out.println("Wine name: " + doc.getString("wineName") + "\n" + "Wine's price: " + doc.getInteger("price").toString() + "\n");
                 }
                 System.out.println("=================================================================");
