@@ -67,7 +67,7 @@ public class DbOperations {
      */
     public boolean adminLogin2(String loginAdminName, String loginAdminPsw) {
         boolean result = false;
-        if (graph.checkLoginByUsername(loginAdminName, loginAdminPsw, "1") == true) {
+        if (graph.checkLoginByUsername(loginAdminName, loginAdminPsw, "true") == true) {
             result = true;
         } else {
             result = false;
@@ -104,7 +104,7 @@ public class DbOperations {
     public boolean userLogin2(String loginUserName, String loginUserPsw) {
         boolean result = false;
 
-        if (graph.checkLoginByUsername(loginUserName, loginUserPsw, "0") == true) {
+        if (graph.checkLoginByUsername(loginUserName, loginUserPsw, "false") == true) {
             result = true;
         } else {
             result = false;

@@ -46,7 +46,7 @@ public class Menu {
                         System.out.println("Password or username not correct");
                         user = 0;
                     }
-                    user = 1;
+                    //user = 1;
                 } else if (selection.equals("2")) {
                     user = 2;
                     userLoggedName = null;
