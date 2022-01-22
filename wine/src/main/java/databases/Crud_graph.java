@@ -372,7 +372,7 @@ public class Crud_graph implements AutoCloseable {
                                 "WHERE  EXISTS ((u)-[:Follow]-(u1))\n" +
                                 "AND  EXISTS ((u1)-[:Created]->(p))\n" +
                                 "AND  EXISTS ((p)-[:Related]-(w))\n" +
-                                "RETURN  p.description AS description , p.rating AS rating , w.wineName AS wineName \n",
+                                "RETURN  p.description AS description , p.rating AS rating , w.wineName AS wineName\n",
                         parameters("myUsername", myUsername, "usernameFriend", usernameFriend));
                 ArrayList<Review> reviews = new ArrayList<>();
                 while (result.hasNext()) {

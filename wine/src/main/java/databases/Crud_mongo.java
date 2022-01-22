@@ -17,6 +17,7 @@ import exception.ReviewAlreadyInserted;
 import exception.UserNotPresentException;
 import exception.WineNotExistsException;
 import exception.WrongInsertionException;
+import org.apache.poi.hssf.record.WindowOneRecord;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -289,6 +290,24 @@ public class Crud_mongo {
         BasicDBObject match = new BasicDBObject("reviews.taster_name", taster_name);
         BasicDBObject update = new BasicDBObject("reviews", new BasicDBObject("taster_name", taster_name));
         collection.updateMany(match, new BasicDBObject("$pull", update));
+    }
+
+
+    public ArrayList<Review> findAllCommentForGivenUser (String taster_name){
+        Bson filter = Filters.eq("reviews.taster_name", taster_name);
+        ArrayList<Review> reviews = new ArrayList<>();
+        ArrayList<User> users = new ArrayList<>();
+        Bson unwind = unwind("$reviews");
+        Review review = null;
+        AggregateIterable<Document> cursor = collection.aggregate(Arrays.asList(match(filter), unwind));
+        for (Document doc : cursor) {
+            Document nestedReview = (Document) doc.get("reviews");
+            Integer rating = nestedReview.getInteger("rating");
+            String description = nestedReview.getString("description");
+            review = new Review(description, rating);
+            reviews.add(review);
+        }
+        return reviews;
     }
 
 
