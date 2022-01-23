@@ -32,7 +32,7 @@ public class Menu {
                 String selection = scanSelection.nextLine();
                 if (selection.equals("1")) {
                     userLoggedName = null;
-                    System.out.println("==============LOGIN ADMIN ===========");
+                    System.out.println("==============LOGIN USER ===========");
                     System.out.println("Please enter your username: ");
                     Scanner scanLoginUsername = new Scanner(System.in);
                     String loginName = scanLoginUsername.nextLine();
