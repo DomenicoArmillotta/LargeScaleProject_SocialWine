@@ -291,7 +291,7 @@ public class Crud_mongo {
         ArrayList<User> users = new ArrayList<>();
         Bson unwind = unwind("$reviews");
         Review review = null;
-        AggregateIterable<Document> cursor = collection.aggregate(Arrays.asList(match(filter), unwind));
+        AggregateIterable<Document> cursor = collection.aggregate(Arrays.asList(unwind,match(filter)));
         for (Document doc : cursor) {
             Document nestedReview = (Document) doc.get("reviews");
             Integer rating = nestedReview.getInteger("rating");
