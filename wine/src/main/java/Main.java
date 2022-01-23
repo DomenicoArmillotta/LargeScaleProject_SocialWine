@@ -1,4 +1,5 @@
 import menu.Menu;
+import scraping.InitTh;
 import scraping.ScraperThread;
 
 
@@ -7,8 +8,8 @@ import scraping.ScraperThread;
  */
 public class Main {
     public static void main(String[] args){
-        ScraperThread sc = new ScraperThread();
-        sc.run();
+        InitTh sc = new InitTh();
+        sc.initThread();
         Menu menu = new Menu();
         menu.MainMenu();
     }
