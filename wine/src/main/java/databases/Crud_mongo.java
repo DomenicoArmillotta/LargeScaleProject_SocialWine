@@ -5,19 +5,13 @@ import beans.User;
 import beans.Wine;
 import com.google.common.base.Strings;
 import com.mongodb.BasicDBObject;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
 import com.mongodb.MongoException;
-import com.mongodb.client.AggregateIterable;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoCursor;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
 import com.mongodb.client.model.Filters;
 import exception.ReviewAlreadyInserted;
 import exception.UserNotPresentException;
 import exception.WineNotExistsException;
 import exception.WrongInsertionException;
-import org.apache.poi.hssf.record.WindowOneRecord;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -32,8 +26,8 @@ import static com.mongodb.client.model.Aggregates.unwind;
  * Contains all the basic CRUD operation done on MongoDB
  */
 public class Crud_mongo {
-
-    final MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
+    MongoClient mongoClient = MongoClients.create();
+    //MongoClient mongoClient = MongoClients.create("mongodb://172.16.4.79:27020,172.16.4.80:27020/"+ "?retryWrites=true&w=W1&readPreference=nearest&wtimeout=5000");
     MongoDatabase database = mongoClient.getDatabase("Wines");
     MongoCollection<Document> collection = database.getCollection("wines");
     /**
@@ -49,7 +43,6 @@ public class Crud_mongo {
      */
     public void addWine(String title, String variety, String country, String province, String designation, String winery, int price) {
         if (Strings.isNullOrEmpty(title) || Strings.isNullOrEmpty(variety) || Strings.isNullOrEmpty(country) || Strings.isNullOrEmpty(province) || Strings.isNullOrEmpty(designation) || Strings.isNullOrEmpty(winery) || price <= 0) {
-            System.out.println("Fields for wine must not be null");
             return;
         }
 
@@ -97,7 +90,6 @@ public class Crud_mongo {
                            String description, String winery, String taster_twitter_handle, String country_user, String mail) throws ReviewAlreadyInserted {
 
         if (Strings.isNullOrEmpty(title) || Strings.isNullOrEmpty(variety) || Strings.isNullOrEmpty(country) || Strings.isNullOrEmpty(province) || Strings.isNullOrEmpty(designation) || Strings.isNullOrEmpty(description) || price <= 0 || Strings.isNullOrEmpty(taster_name) || Strings.isNullOrEmpty(winery) || points <= 0 || Strings.isNullOrEmpty(taster_twitter_handle) || Strings.isNullOrEmpty(country_user) || Strings.isNullOrEmpty(mail)) {
-            System.out.println("Fields for wine must not be null");
             return;
         }
 

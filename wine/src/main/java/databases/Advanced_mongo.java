@@ -22,14 +22,14 @@ import static com.mongodb.client.model.Sorts.descending;
 public class Advanced_mongo {
     private static final DecimalFormat df = new DecimalFormat("0.00");
     Crud_mongo mongo = new Crud_mongo();
-
+    MongoClient mongoClient = MongoClients.create();
+    MongoDatabase database = mongoClient.getDatabase("Wines");
+    MongoCollection<Document> collection = database.getCollection("wines");
     /**
      * 1 Query: Shows the Top-3 countries that own higher average wines' ratings
      */
     public void topFiveCountryAccordingRating() {
-        MongoClient mongoClient = MongoClients.create();
-        MongoDatabase database = mongoClient.getDatabase("Wines");
-        MongoCollection<Document> collection = database.getCollection("wines");
+        //MongoClient mongoClient = MongoClients.create("mongodb://172.16.4.79:27020,172.16.4.80:27020/"+ "?retryWrites=true&w=W1&readPreference=nearest&wtimeout=5000");
         Bson limit = limit(3);
         Bson sort = sort(descending("Average"));
         Bson unwind = unwind("$reviews");
@@ -57,10 +57,6 @@ public class Advanced_mongo {
      * 2 Query: Shows Top-10 username ,with wine varieties and prices, that made highest number of reviews per variety
      */
     public void topTenUsersMadeHighestumberOfReveiwsPerVarieties() {
-        MongoClient mongoClient = MongoClients.create();
-        MongoDatabase database = mongoClient.getDatabase("Wines");
-        MongoCollection<Document> collection = database.getCollection("wines");
-
         Bson limit = limit(10);
         Bson sort = sort(descending("count"));
         Bson unwind = unwind("$reviews");
@@ -91,9 +87,6 @@ public class Advanced_mongo {
      * 3 Query: Shows Top-30 wines and usernames that bought them, below a price treshold inserted by admin by keyboard
      */
     public void topThirtyWinesWithPriceLowerThan() {
-        MongoClient mongoClient = MongoClients.create();
-        MongoDatabase database = mongoClient.getDatabase("Wines");
-        MongoCollection<Document> collection = database.getCollection("wines");
         System.out.println("=========TOP 10 WINES WITH PRICE LOWER THAN A TRESHOLD FIXED BY ADMIN========");
         System.out.println("Insert price treshold:");
         Scanner sc = new Scanner(System.in);

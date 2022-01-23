@@ -938,7 +938,7 @@ public class Crud_graph implements AutoCloseable {
     public void addPostComplete(final String wineName, final String variety, final String country, final String province, final String price, final String winery, final String designation, final Integer rating, final String description, final String taster_twitter_handle, final String taster_name, final String user_country, final String email) {
         addWine(wineName, designation, price, province, variety, winery);
         addComment(description, rating.toString());
-        registerUser(taster_name, "0000", "false", taster_twitter_handle, country, email);
+        registerUser(taster_name, "0000", "false", taster_twitter_handle, "None", "None");
         createRelationRelated(wineName, description);
         createRelationCreated(description, taster_name);
     }

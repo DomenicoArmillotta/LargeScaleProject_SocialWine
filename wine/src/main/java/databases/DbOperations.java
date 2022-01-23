@@ -1323,7 +1323,7 @@ public class DbOperations {
         System.out.println("Select an option");
         System.out.println("1. Search a user");
         System.out.println("2. See 10 random people that don't follow");
-        System.out.println("3. See 10 suggested friends");
+        System.out.println("3. See 10 suggested users");
         Scanner scanselectOption = new Scanner(System.in);
         String selectOption = scanselectOption.nextLine();
 

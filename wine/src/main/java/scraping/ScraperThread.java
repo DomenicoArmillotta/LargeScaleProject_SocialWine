@@ -1,8 +1,9 @@
 package scraping;
 
 import com.google.common.base.Strings;
-import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import databases.Crud_graph;
@@ -29,9 +30,8 @@ public class ScraperThread implements Runnable {
     @Override
     public void run() {
 
-        MongoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
         Crud_graph crud_graph = new Crud_graph("bolt://localhost:7687", "neo4j", "0000");
-
+        MongoClient mongoClient = MongoClients.create("mongodb://172.16.4.79:27020,172.16.4.80:27020/"+ "?retryWrites=true&w=W1&readPreference=nearest&wtimeout=5000");
         MongoDatabase database = mongoClient.getDatabase("Wines");
         MongoCollection<org.bson.Document> collection = database.getCollection("wines");
 
@@ -112,16 +112,15 @@ public class ScraperThread implements Runnable {
             }
 
             try {
-                crud.createWine(map.get("title"), map.get("Variety"), map.get("Country"), map.get("Province"), map.get("Designation"), parseIntOrNull(map.get("Price")), map.get("taster_name"), parseIntOrNull(map.get("rating")), map.get("description"), map.get("Winery"), map.get("taster_twitter"), "None", map.get("taster_email"));
+                crud.createWine(map.get("title"), map.get("Variety"), map.get("Country"), map.get("Province"), map.get("Designation"), parseIntOrNull(map.get("Price")), map.get("taster_name"), parseIntOrNull(map.get("rating")), map.get("description"), map.get("Winery"), map.get("taster_twitter"), "None", "None");
             } catch (ReviewAlreadyInserted e) {
-                System.out.println(e.getMessage());
             }
 
             Integer rating = parseIntOrNull(map.get("rating"));
             Integer price = parseIntOrNull(map.get("Price"));
             // the rating must be greater than zero otherwise no insertion to graph
             if (rating > 0 && price > 0 && !Strings.isNullOrEmpty(map.get("title")) && !Strings.isNullOrEmpty(map.get("Variety")) && !Strings.isNullOrEmpty(map.get("Country")) && !Strings.isNullOrEmpty(map.get("Province")) && !Strings.isNullOrEmpty(map.get("Designation")) && !Strings.isNullOrEmpty(map.get("description")) && !Strings.isNullOrEmpty(map.get("taster_name")) && !Strings.isNullOrEmpty(map.get("Winery")) && !Strings.isNullOrEmpty(map.get("taster_twitter")) && !Strings.isNullOrEmpty(map.get("taster_email"))) {
-                crud_graph.addPostComplete(map.get("title"), map.get("Variety"), map.get("Country"), map.get("Province"), map.get("Price"), map.get("Winery"), map.get("Designation"), rating, map.get("description"), map.get("taster_twitter"), map.get("taster_name"), "None", map.get("taster_email"));
+                crud_graph.addPostComplete(map.get("title"), map.get("Variety"), map.get("Country"), map.get("Province"), map.get("Price"), map.get("Winery"), map.get("Designation"), rating, map.get("description"), map.get("taster_twitter"), map.get("taster_name"), "None", "None");
             }
         }
 

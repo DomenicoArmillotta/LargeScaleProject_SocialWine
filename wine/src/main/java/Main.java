@@ -1,5 +1,5 @@
 import menu.Menu;
-import scraping.ScraperThread;
+import scraping.InitTh;
 
 
 /**
@@ -7,8 +7,9 @@ import scraping.ScraperThread;
  */
 public class Main {
     public static void main(String[] args){
-        ScraperThread sc = new ScraperThread();
-        sc.run();
+        //MonngoClient mongoClient = new MongoClient(new MongoClientURI("mongodb://localhost:27017"));
+        InitTh init = new InitTh();
+        init.initThread();
         Menu menu = new Menu();
         menu.MainMenu();
     }
