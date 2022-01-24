@@ -1849,7 +1849,8 @@ public class DbOperations {
             }
             //ArrayList<Review> reviews = new ArrayList<>(graph.showAllCommentRelatedWineName(wines.get(convertedSelection).getWineName()));
             ArrayList<Review> reviews = new ArrayList<>(mongo.findAllReviewAndUserForSpecificWine(wines.get(convertedSelection).getWineName())[0]);
-            User user = (User) mongo.findAllReviewAndUserForSpecificWine(wines.get(convertedSelection).getWineName())[1].get(0);
+            ArrayList<User> user = new ArrayList<>(mongo.findAllReviewAndUserForSpecificWine(wines.get(convertedSelection).getWineName())[1]);
+
 
             if (reviews.size() != 0) {
                 int j = 0;
@@ -1860,7 +1861,7 @@ public class DbOperations {
                     System.out.println("rating = " + reviews.get(j).getRating());
                     System.out.println("like = " + graph.countLikeByDescription(reviews.get(j).getDescription()));
                     //System.out.println("made by:  = " + graph.findUserByDescription(reviews.get(j).getDescription()).get(0).getUsername());
-                    System.out.println("made by:  = " + user.getUsername());
+                    System.out.println("made by:  = " + user.get(j).getUsername());
                     if (graph.checkIfLikedByDescription(reviews.get(j).getDescription(), myUsername) == 1) {
                         System.out.println("Like = V");
                     } else if (graph.checkIfLikedByDescription(reviews.get(j).getDescription(), myUsername) == 0) {
