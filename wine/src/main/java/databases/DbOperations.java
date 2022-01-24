@@ -1952,6 +1952,7 @@ public class DbOperations {
             System.out.println("1. Follow");
             System.out.println("2. See the profile");//--> mongo ok
             System.out.println("3. Ban user"); //-->mongo ok
+            System.out.println("4. Elect user to ADMIN");
             Scanner scanSelect = new Scanner(System.in);
             String selection = scanSelect.nextLine();
             if (selection.equals("1")) {
@@ -2113,6 +2114,10 @@ public class DbOperations {
                 graph.deleteAllRelationLike(user.getUsername());
                 graph.deleteAllRelationCreated(user.getUsername());
                 graph.deleteUserByUsername(user.getUsername());
+            }else if (selection.equals("4")) {
+                User tempUser = user;
+                graph.deleteUserByUsername(user.getUsername());
+                graph.registerUser(tempUser.getUsername(),tempUser.getPassword(),"true",tempUser.getTwitter_taster_handle(),tempUser.getCountry(),tempUser.getEmail());
             }
         } else {
             System.out.println("User dont found");
@@ -3167,13 +3172,18 @@ public class DbOperations {
                                         /*System.out.println("What do you want do?");
                                         System.out.println("1.  Delete one review"); //-->mongo ok
                                         System.out.println("2.  Delete account"); //-->mongo ok
+                                        System.out.println("3.  Elect user to admin");
                                         Scanner scanSelection = new Scanner(System.in);
                                         String selection = scanSelection.nextLine();
                                         if (selection.equals("1")) {
                                             deleteComment(myReviews);
                                         } else if (selection.equals("2")) {
                                             deleteAccount(users.get(convertedSelection).getUsername());
-                                        }*/
+                                        }else if (selection.equals("3")) {
+                                            User tempUser = users.get(convertedSelection);
+                                            graph.deleteUserByUsername(users.get(convertedSelection).getUsername());
+                                            graph.registerUser(tempUser.getUsername(),tempUser.getPassword(),"true",tempUser.getTwitter_taster_handle(),tempUser.getCountry(),tempUser.getEmail());
+                                        }
 
                                     } else {
                                         System.out.println("Selection wrong");
