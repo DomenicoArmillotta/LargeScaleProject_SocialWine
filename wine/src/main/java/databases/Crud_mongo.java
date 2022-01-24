@@ -284,7 +284,11 @@ public class Crud_mongo {
         collection.updateMany(match, new BasicDBObject("$pull", update));
     }
 
-
+    /**
+     * Find all reviews made from a given user
+     * @param taster_name: user to take comments from
+     * @return reviews: List of all his/her reviews
+     */
     public ArrayList<Review> findAllCommentForGivenUser (String taster_name){
         Bson filter = Filters.eq("reviews.taster_name", taster_name);
         ArrayList<Review> reviews = new ArrayList<>();

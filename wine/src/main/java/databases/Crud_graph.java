@@ -60,19 +60,6 @@ public class Crud_graph implements AutoCloseable {
     }
 
 
-    public void banUserByUsername(final String username) {
-        boolean result = true;
-        try (Session session = driver.session()) {
-            session.writeTransaction(tx -> {
-                tx.run("MATCH path=(u:User{username : $username})\n" +
-                                "DELETE u",
-                        parameters("username", username));
-                return null;
-            });
-        }
-    }
-
-
     /**
      * Given an username will return user's attributes
      *
@@ -155,27 +142,6 @@ public class Crud_graph implements AutoCloseable {
     }
 
 
-    public void searchUserByPrefix(final String prefixUsername) {
-        HashSet<User> suggestedUsers;
-        try (Session session = driver.session()) {
-            suggestedUsers = session.readTransaction((TransactionWork<HashSet<User>>) tx -> {
-                Result result = tx.run("MATCH (u:User)\n" +
-                                "WHERE  u.username STARTS WITH '$prefixUsername'\n" +
-                                "RETURN u.username AS username , u.country AS country \n",
-                        parameters("prefixUsername", prefixUsername));
-                HashSet<User> users = new HashSet<>();
-                while (result.hasNext()) {
-                    Record r = result.next();
-                    System.out.println("Nome ");
-                    System.out.println(r.get("username").asString());
-                    System.out.println("Country : ");
-                    System.out.println(r.get("country").asString());
-                }
-                return null;
-            });
-        }
-    }
-
     /**
      * Add a new wine on Social Wine
      *
@@ -212,28 +178,6 @@ public class Crud_graph implements AutoCloseable {
             });
         }
     }
-
-
-    public ArrayList<Wine> showWineByName(final String wineName) {
-        ArrayList<Wine> winetoshow;
-        try (Session session = driver.session()) {
-            winetoshow = session.readTransaction((TransactionWork<ArrayList<Wine>>) tx -> {
-                Result result = tx.run("MATCH (w:Wine{wineName: $wineName})\n" +
-                        "RETURN w.wineName AS wineName ,w.designation AS designation , w.price AS price , w.province AS province , w.variety as variety , w.winery as winery");
-                ArrayList<Wine> wines = new ArrayList<>();
-                while (result.hasNext()) {
-                    Record r = result.next();
-                    Wine wine = new Wine(r.get("wineName").asString(), r.get("designation").asString(), r.get("price").asInt(), r.get("province").asString(), r.get("variety").asString(), r.get("winery").asString(), r.get("country").asString());
-                    wines.add(wine);
-                }
-                return wines;
-            });
-        } catch (Exception e) {
-            winetoshow = null;
-        }
-        return winetoshow;
-    }
-
 
     /**
      * List of all wines that are in Social Wine
@@ -486,8 +430,6 @@ public class Crud_graph implements AutoCloseable {
     }
 
 
-    //relation between user that create a new review and the review
-
     /**
      * Check if there is "created" relation between an user and a comment by its description
      *
@@ -619,17 +561,6 @@ public class Crud_graph implements AutoCloseable {
     }
 
 
-    public void deleteRelationRelated(final String description, final String wineName) {
-        boolean result = true;
-        try (Session session = driver.session()) {
-            session.writeTransaction(tx -> {
-                tx.run("MATCH path=(p:Post{description : $description})-[f:Related]-(w:Wine{wineName : $wineName})\n" +
-                                "DELETE f",
-                        parameters("description", description, "wineName", wineName));
-                return null;
-            });
-        }
-    }
 
     /**
      * Delete all relation "like" of a given comment
@@ -690,19 +621,6 @@ public class Crud_graph implements AutoCloseable {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
                 tx.run("MATCH (u:User{username: $username})<-[f:Follow]->(u:User)\n" +
-                                "DELETE f",
-                        parameters("username", username));
-                return null;
-            });
-        }
-    }
-
-
-    public void deleteAllRelationFollowed(final String username) {
-        boolean result = true;
-        try (Session session = driver.session()) {
-            session.writeTransaction(tx -> {
-                tx.run("MATCH (u:User{username: $username})<-[f:Follow]-(u:User)\n" +
                                 "DELETE f",
                         parameters("username", username));
                 return null;
@@ -943,6 +861,10 @@ public class Crud_graph implements AutoCloseable {
         createRelationCreated(description, taster_name);
     }
 
+    /**
+     * Make a normal user, admin. May only be used by administrators
+     * @param username: user to be made admin
+     */
     public void switchToAdmin(String username){
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {

@@ -21,7 +21,6 @@ import static com.mongodb.client.model.Sorts.descending;
  */
 public class Advanced_mongo {
     private static final DecimalFormat df = new DecimalFormat("0.00");
-    Crud_mongo mongo = new Crud_mongo();
     MongoClient mongoClient = MongoClients.create();
     MongoDatabase database = mongoClient.getDatabase("Wines");
     MongoCollection<Document> collection = database.getCollection("wines");
