@@ -1312,7 +1312,7 @@ public class DbOperations {
         } else {
             System.out.println("You don't have review");
         }
-        System.out.println("What do you want do?");
+       /* System.out.println("What do you want do?");
         System.out.println("1.  Unfollow a friends");
         System.out.println("2.  Delete one review"); //-->mongo ok
         System.out.println("3.  Delete account"); //--->mongo ok
@@ -1502,7 +1502,7 @@ public class DbOperations {
             }
         } else {
             System.out.println("Selection wrong");
-        }
+        }*/
     }
 
 
