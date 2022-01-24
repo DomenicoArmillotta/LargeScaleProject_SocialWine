@@ -943,6 +943,17 @@ public class Crud_graph implements AutoCloseable {
         createRelationCreated(description, taster_name);
     }
 
+    public void switchToAdmin(String username){
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (u:User{username : $username})\n" +
+                                "SET u.adminFlag = 'true' ",
+                        parameters("username", username));
+                return null;
+            });
+        }
+    }
+
 
     /**
      * List of 10 randomic users that follow a given user
