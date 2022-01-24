@@ -396,6 +396,7 @@ public class DbOperations {
 
 
                 }else{
+                    selectionMore="n";
                     System.out.println("===================================================== ");
                     System.out.println("what do you want to do?");
                     System.out.println("1 : Put like on a Post");
@@ -724,6 +725,7 @@ public class DbOperations {
 
 
                 }else{
+                    selectionMore="n";
                     System.out.println("===================================================== ");
                     System.out.println("what do you want to do?");
                     System.out.println("1 : Put like on a Post");
@@ -1291,6 +1293,199 @@ public class DbOperations {
                                                     } else {
 
                                                     }
+                                                }else {
+                                                    selectionMore="n";
+                                                    System.out.println("What do you want do?");
+                                                    System.out.println("1.  Unfollow a friends");
+                                                    System.out.println("2.  Delete one review"); //-->mongo ok
+                                                    System.out.println("3.  Delete account"); //--->mongo ok
+                                                    System.out.println("4.  See profile of a friend");
+                                                    scanSelection = new Scanner(System.in);
+                                                    selection = scanSelection.nextLine();
+                                                    if (selection.equals("1")) {
+                                                        if (users.size() != 0) {
+                                                            System.out.println("Select a user to unfollow :");
+                                                            Scanner scanSelect = new Scanner(System.in);
+                                                            String selected = scanSelect.nextLine();
+                                                            if (selected.equals("X")) {
+
+                                                            } else {
+                                                                try {
+                                                                    int selectedInt = Integer.parseInt(selected);
+                                                                    if (selectedInt >= 0 && selectedInt <= (users.size() - 1)) {
+                                                                        graph.deleteRelationFollow(myUsername, users.get(selectedInt).getUsername());
+                                                                    }
+                                                                } catch (NumberFormatException nex) {
+                                                                    System.out.println("You have to insert a number not a string");
+                                                                }
+                                                            }
+                                                        } else {
+                                                            System.out.println("You don't have friend");
+                                                        }
+                                                    } else if (selection.equals("2")) {
+                                                        if (myReviews.size() != 0) {
+                                                            System.out.println("Select Comment to delete :");
+                                                            Scanner scanSelect2 = new Scanner(System.in);
+                                                            String selectedReview = scanSelect2.nextLine();
+                                                            if (selectedReview.equals("X")) {
+
+                                                            } else {
+                                                                try {
+                                                                    int selectedReviewInt = Integer.parseInt(selectedReview);
+                                                                    if (selectedReviewInt >= 0 && selectedReviewInt <= (myReviews.size() - 1)) {
+                                                                        mongo.deleteComment(myReviews.get(selectedReviewInt).getDescription(), myUsername, graph.findWineByDescription(myReviews.get(selectedReviewInt).getDescription()).get(0).getWineName());
+                                                                        graph.deleteAllRelationLikeByDescription(myReviews.get(selectedReviewInt).getDescription());
+                                                                        graph.deleteAllRelationRelatedByDescription(myReviews.get(selectedReviewInt).getDescription());
+                                                                        graph.deleteAllRelationCreatedByDescription(myReviews.get(selectedReviewInt).getDescription());
+                                                                        graph.deleteCommentByDescription(myReviews.get(selectedReviewInt).getDescription());
+                                                                    }
+                                                                } catch (NumberFormatException nex) {
+                                                                    System.out.println("You have to insert a number not a string");
+                                                                }
+
+                                                            }
+                                                        } else {
+                                                            System.out.println("You dont have comment");
+                                                        }
+                                                    } else if (selection.equals("3")) {
+                                                        try {
+                                                            mongo.deleteAllCommentForGivenUser(myUsername);
+                                                        } catch (UserNotPresentException e) {
+                                                            System.out.println(e.getMessage());
+                                                        }
+                                                        graph.deleteAllRelationFollow(myUsername);
+                                                        //graph.deleteAllRelationFollowed(myUsername);
+                                                        graph.deleteAllRelationLike(myUsername);
+                                                        graph.deleteAllRelationCreated(myUsername);
+                                                        graph.deleteUserByUsername(myUsername);
+
+
+                                                    } else if (selection.equals("4")) {
+                                                        if (users.size() != 0) {
+                                                            System.out.println("Select a user to see profile :");
+                                                            scanSelectProfile = new Scanner(System.in);
+                                                            selectedProfile = scanSelectProfile.nextLine();
+                                                            if (selectedProfile.equals("X")) {
+
+                                                            } else {
+                                                                try {
+                                                                    selectedIntProfile = Integer.parseInt(selectedProfile);
+                                                                    if (selectedIntProfile >= 0 && selectedIntProfile <= (users.size() - 1)) {
+                                                                        System.out.println("==============PROFILE OF YOUR FRIEND============= ");
+                                                                        System.out.println("Name : " + users.get(selectedIntProfile).getUsername());
+                                                                        System.out.println("Country : " + users.get(selectedIntProfile).getCountry());
+                                                                        System.out.println("Email : " + users.get(selectedIntProfile).getEmail());
+                                                                        System.out.println("Twitter Tag : " + users.get(selectedIntProfile).getTwitter_taster_handle());
+                                                                        System.out.println("Followed Friends : " + graph.showFollowedUsers(users.get(selectedIntProfile).getUsername()).size());
+                                                                        System.out.println("Followers : " + graph.countFollowersByUsername(users.get(selectedIntProfile).getUsername()));
+                                                                        System.out.println("==============LIST OF FRIENDS============= ");
+                                                                        usersFollowed = new ArrayList<>(graph.showFollowedUsers(users.get(selectedIntProfile).getUsername()));
+                                                                        if (usersFollowed.size() != 0) {
+                                                                            int z = 0;
+                                                                            for (z = 0; z < usersFollowed.size(); z++) {
+
+
+                                                                                System.out.println(z + " : name = " + usersFollowed.get(z).getUsername() + "   country = " + usersFollowed.get(z).getCountry());
+                                                                                if (z != (usersFollowed.size() - 1)) {
+                                                                                    System.out.println("--------------------------------------------------");
+                                                                                }
+                                                                            }
+
+                                                                        } else {
+                                                                            System.out.println("He/She doesn't have friends");
+                                                                        }
+                                                                        System.out.println("==============LIST OF COMMENTS MADE============= ");
+                                                                        times = 0;
+                                                                        perTimes = 10;
+                                                                        friendReviews = new ArrayList<>(mongo.findAllCommentForGivenUser(users.get(selectedIntProfile).getUsername()));
+                                                                        if (friendReviews.size() != 0) {
+                                                                            show10Comment(friendReviews, times, perTimes, myUsername);
+                                                                            times++;
+                                                                            k = 0;
+                                                                            selectionMore = "y";
+                                                                            while (selectionMore.equals("y")) {
+                                                                                if (perTimes * times < friendReviews.size() - 1) {
+                                                                                    System.out.println("\nDo you want to see 10 more comment? y/n");
+                                                                                    Scanner scanSelectionMore = new Scanner(System.in);
+                                                                                    selectionMore = scanSelectionMore.nextLine().toLowerCase(Locale.ROOT);
+                                                                                    if (selectionMore.equals("y")) {
+                                                                                        show10Comment(friendReviews, times, perTimes, myUsername);
+                                                                                        times++;
+                                                                                        if (graph.checkIfLikedByDescription(friendReviews.get(k).getDescription(), myUsername) == 1) {
+                                                                                            System.out.println("Like = V");
+                                                                                        } else if (graph.checkIfLikedByDescription(friendReviews.get(k).getDescription(), myUsername) == 0) {
+                                                                                            System.out.println("Like = X");
+                                                                                        }
+                                                                                    } else if (selectionMore.equals("n")) {
+                                                                                        System.out.println("==================================================" + "\n");
+                                                                                        System.out.println("Select operation");
+                                                                                        System.out.println("1. put like on a post");
+                                                                                        System.out.println("2. delete like on a post");
+                                                                                        try {
+                                                                                            Scanner scanChoise = new Scanner(System.in);
+                                                                                            String selectChoise = scanChoise.nextLine();
+                                                                                            if (selectChoise.equals("1")) {
+                                                                                                System.out.println("select a post: ");
+                                                                                                Scanner scanSelectlike = new Scanner(System.in);
+                                                                                                String selectedReviewLike = scanSelectlike.nextLine();
+                                                                                                if (selectedReviewLike.equals("X")) {
+
+                                                                                                } else {
+                                                                                                    try {
+                                                                                                        int selectedReviewInt = Integer.parseInt(selectedReviewLike);
+                                                                                                        if (selectedReviewInt >= 0 && selectedReviewInt <= (friendReviews.size() - 1)) {
+                                                                                                            graph.putLikeByDescription(friendReviews.get(selectedReviewInt).getDescription(), myUsername);
+                                                                                                        } else {
+                                                                                                            System.out.println("selection wrong");
+                                                                                                        }
+                                                                                                    } catch (NumberFormatException nex) {
+                                                                                                        System.out.println("You have to insert a number not a string");
+                                                                                                    }
+
+                                                                                                }
+                                                                                            } else if (selectChoise.equals("2")) {
+                                                                                                System.out.println("select a post: ");
+                                                                                                Scanner scanSelectlike = new Scanner(System.in);
+                                                                                                String selectedReviewLike = scanSelectlike.nextLine();
+                                                                                                if (selectedReviewLike.equals("X")) {
+
+                                                                                                } else {
+                                                                                                    try {
+                                                                                                        int selectedReviewInt = Integer.parseInt(selectedReviewLike);
+                                                                                                        if (selectedReviewInt >= 0 && selectedReviewInt <= (friendReviews.size() - 1)) {
+                                                                                                            graph.deleteLikeByDescription(friendReviews.get(selectedReviewInt).getDescription(), myUsername);
+                                                                                                        } else {
+                                                                                                            System.out.println("Selection wrong");
+                                                                                                        }
+                                                                                                    } catch (NumberFormatException nex) {
+                                                                                                        System.out.println("You have to insert a number not a string");
+                                                                                                    }
+                                                                                                }
+                                                                                            } else if (selectChoise.equals("X")) {
+
+                                                                                            }
+                                                                                        } catch (NumberFormatException nex) {
+                                                                                            System.out.println("You have to insert a number not a string");
+                                                                                        }
+                                                                                    } else {
+
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        } else {
+                                                                            System.out.println("He doesn't have comments");
+                                                                        }
+                                                                    }
+                                                                } catch (NumberFormatException e) {
+                                                                    System.out.println("You have to insert a number not a string");
+                                                                }
+                                                            }
+                                                        } else {
+                                                            System.out.println("You don't have friends");
+                                                        }
+                                                    } else {
+                                                        System.out.println("Selection wrong");
+                                                    }
                                                 }
                                             }
                                         } else {
@@ -1312,7 +1507,7 @@ public class DbOperations {
         } else {
             System.out.println("You don't have review");
         }
-       /* System.out.println("What do you want do?");
+        /*System.out.println("What do you want do?");
         System.out.println("1.  Unfollow a friends");
         System.out.println("2.  Delete one review"); //-->mongo ok
         System.out.println("3.  Delete account"); //--->mongo ok
@@ -1752,7 +1947,7 @@ public class DbOperations {
         String nameToSearch = scanName.nextLine();
         User user = graph.showUserByUsername(nameToSearch);
         if (user != null) {
-            System.out.println("name: " + user.getUsername() + "\nemail: " + user.getEmail() + "\ncountry" + user.getCountry() + "\nFollowers:" + graph.countFollowersByUsername(user.getUsername()));
+            System.out.println("name: " + user.getUsername() + "\nemail: " + user.getEmail() + "\ncountry: " + user.getCountry() + "\nFollowers:" + graph.countFollowersByUsername(user.getUsername()));
             System.out.println("Select operation: ");
             System.out.println("1. Follow");
             System.out.println("2. See the profile");//--> mongo ok
@@ -1810,11 +2005,58 @@ public class DbOperations {
                             } else if (selectionMore.equals("n")) {
                                 System.out.println("==================================================" + "\n");
                             }
+                        }else {
+                            selectionMore="n";
+                            System.out.println("What do you want do?");
+                            System.out.println("1.  Delete one review"); //-->mongo ok
+                            System.out.println("2.  Delete account"); //--> mongo ok
+                            Scanner scanSelectionOption = new Scanner(System.in);
+                            String selectionOption = scanSelectionOption.nextLine();
+                            if (selectionOption.equals("1")) {
+                                System.out.println("Select Comment to delete :");
+                                Scanner scanSelect2Option = new Scanner(System.in);
+                                String selectedReviewOption = scanSelect2Option.nextLine();
+                                if (selectedReviewOption.equals("X")) {
+
+                                } else {
+                                    try {
+                                        int selectedReviewIntOption = Integer.parseInt(selectedReviewOption);
+                                        if (selectedReviewIntOption >= 0 && selectedReviewIntOption <= (reviews.size() - 1)) {
+                                            graph.deleteAllRelationLikeByDescription(reviews.get(selectedReviewIntOption).getDescription());
+                                            graph.deleteAllRelationRelatedByDescription(reviews.get(selectedReviewIntOption).getDescription());
+                                            graph.deleteAllRelationCreatedByDescription(reviews.get(selectedReviewIntOption).getDescription());
+                                            mongo.deleteComment(reviews.get(selectedReviewIntOption).getDescription(), graph.findUserByDescription(reviews.get(selectedReviewIntOption).getDescription()).get(0).getUsername(), graph.findWineByDescription(reviews.get(selectedReviewIntOption).getDescription()).get(0).getWineName());
+                                            graph.deleteCommentByDescription(reviews.get(selectedReviewIntOption).getDescription());
+
+                                        } else {
+                                            System.out.println("selection wrong");
+                                        }
+
+                                    } catch (NumberFormatException nex) {
+                                        System.out.println("You have to insert a number not a string");
+                                    }
+
+                                }
+
+                            } else if (selectionOption.equals("2")) {
+                                try {
+                                    mongo.deleteAllCommentForGivenUser(user.getUsername());
+                                } catch (UserNotPresentException e) {
+                                    System.out.println(e.getMessage());
+                                }
+                                graph.deleteAllRelationFollow(user.getUsername());
+                                //graph.deleteAllRelationFollowed(myUsername);
+                                graph.deleteAllRelationLike(user.getUsername());
+                                graph.deleteAllRelationCreated(user.getUsername());
+                                graph.deleteUserByUsername(user.getUsername());
+
+                            }
                         }
                     }
                 } else {
                     System.out.println("He/She doesn't have review");
                 }
+                /*
                 System.out.println("What do you want do?");
                 System.out.println("1.  Delete one review"); //-->mongo ok
                 System.out.println("2.  Delete account"); //--> mongo ok
@@ -1858,7 +2100,7 @@ public class DbOperations {
                     graph.deleteAllRelationCreated(user.getUsername());
                     graph.deleteUserByUsername(user.getUsername());
 
-                }
+                }*/
 
             } else if (selection.equals("3")) {
                 try {
@@ -2893,6 +3135,28 @@ public class DbOperations {
                                                         }
                                                     } else if (selectionMore.equals("n")) {
                                                         System.out.println("==================================================" + "\n");
+                                                        System.out.println("What do you want do?");
+                                                        System.out.println("1.  Delete one review"); //-->mongo ok
+                                                        System.out.println("2.  Delete account"); //-->mongo ok
+                                                        Scanner scanSelection = new Scanner(System.in);
+                                                        String selection = scanSelection.nextLine();
+                                                        if (selection.equals("1")) {
+                                                            deleteComment(myReviews);
+                                                        } else if (selection.equals("2")) {
+                                                            deleteAccount(users.get(convertedSelection).getUsername());
+                                                        }
+                                                    }
+                                                } else {
+                                                    selectionMore="n";
+                                                    System.out.println("What do you want do?");
+                                                    System.out.println("1.  Delete one review"); //-->mongo ok
+                                                    System.out.println("2.  Delete account"); //-->mongo ok
+                                                    Scanner scanSelection = new Scanner(System.in);
+                                                    String selection = scanSelection.nextLine();
+                                                    if (selection.equals("1")) {
+                                                        deleteComment(myReviews);
+                                                    } else if (selection.equals("2")) {
+                                                        deleteAccount(users.get(convertedSelection).getUsername());
                                                     }
                                                 }
                                             }
@@ -2900,7 +3164,7 @@ public class DbOperations {
                                             System.out.println("He/She doesn't have review");
                                         }
 
-                                        System.out.println("What do you want do?");
+                                        /*System.out.println("What do you want do?");
                                         System.out.println("1.  Delete one review"); //-->mongo ok
                                         System.out.println("2.  Delete account"); //-->mongo ok
                                         Scanner scanSelection = new Scanner(System.in);
@@ -2909,7 +3173,7 @@ public class DbOperations {
                                             deleteComment(myReviews);
                                         } else if (selection.equals("2")) {
                                             deleteAccount(users.get(convertedSelection).getUsername());
-                                        }
+                                        }*/
 
                                     } else {
                                         System.out.println("Selection wrong");
@@ -2981,12 +3245,24 @@ public class DbOperations {
                                                 } else if (selectionMore.equals("n")) {
                                                     System.out.println("==================================================" + "\n");
                                                 }
+                                            } else {
+                                                selectionMore="n";
+                                                System.out.println("What do you want do?");
+                                                System.out.println("1.  Delete one review"); //--->mongo ok
+                                                System.out.println("2.  Delete account"); //--> mongo ok
+                                                Scanner scanSelection = new Scanner(System.in);
+                                                String selection = scanSelection.nextLine();
+                                                if (selection.equals("1")) {
+                                                    deleteComment(myReviews);
+                                                } else if (selection.equals("2")) {
+                                                    deleteAccount(users.get(convertedSelection).getUsername());
+                                                }
                                             }
                                         }
                                     } else {
                                         System.out.println("He/She doesn't have review");
                                     }
-                                    System.out.println("What do you want do?");
+                                    /*System.out.println("What do you want do?");
                                     System.out.println("1.  Delete one review"); //--->mongo ok
                                     System.out.println("2.  Delete account"); //--> mongo ok
                                     Scanner scanSelection = new Scanner(System.in);
@@ -2995,7 +3271,7 @@ public class DbOperations {
                                         deleteComment(myReviews);
                                     } else if (selection.equals("2")) {
                                         deleteAccount(users.get(convertedSelection).getUsername());
-                                    }
+                                    }*/
 
                                 } else {
                                     System.out.println("Selection wrong");
