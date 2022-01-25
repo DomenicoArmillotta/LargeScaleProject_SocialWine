@@ -2057,6 +2057,7 @@ public class DbOperations {
         System.out.println("1 : Show all wine 10 per times");
         System.out.println("2 : Search specific wine");
         System.out.println("3 : See suggested wine");
+        System.out.println("4" + " Add specific wine"); //-->mongo ok
         Scanner scanSelectMenuWine = new Scanner(System.in);
         String selectedMenuWine = scanSelectMenuWine.nextLine();
         if (selectedMenuWine.equals("1")) {
@@ -2233,6 +2234,12 @@ public class DbOperations {
             } else {
                 System.out.println("No suggested wine");
             }
+        }else if (selectedMenuWine.equals("4")) {
+            try {
+                addWineAdmin();
+            } catch (WrongInsertionException e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
@@ -2317,7 +2324,6 @@ public class DbOperations {
         } catch (UserNotPresentException e) {
             System.out.println(e.getMessage());
         }
-        //mongo finish
 
     }
 
