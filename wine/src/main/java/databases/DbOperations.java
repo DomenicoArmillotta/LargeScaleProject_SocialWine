@@ -1171,18 +1171,7 @@ public class DbOperations {
                             System.out.println("You dont have comment");
                         }
                     } else if (selection.equals("3")) {
-                        try {
-                            mongo.deleteAllCommentForGivenUser(myUsername);
-                        } catch (UserNotPresentException e) {
-                            System.out.println(e.getMessage());
-                        }
-                        graph.deleteAllRelationFollow(myUsername);
-                        //graph.deleteAllRelationFollowed(myUsername);
-                        graph.deleteAllRelationLike(myUsername);
-                        graph.deleteAllRelationCreated(myUsername);
-                        graph.deleteUserByUsername(myUsername);
-
-
+                        deleteAccount(myUsername);
                     } else if (selection.equals("4")) {
                         if (users.size() != 0) {
                             System.out.println("Select a user to see profile :");
@@ -1348,18 +1337,7 @@ public class DbOperations {
                                                             System.out.println("You dont have comment");
                                                         }
                                                     } else if (selection.equals("3")) {
-                                                        try {
-                                                            mongo.deleteAllCommentForGivenUser(myUsername);
-                                                        } catch (UserNotPresentException e) {
-                                                            System.out.println(e.getMessage());
-                                                        }
-                                                        graph.deleteAllRelationFollow(myUsername);
-                                                        //graph.deleteAllRelationFollowed(myUsername);
-                                                        graph.deleteAllRelationLike(myUsername);
-                                                        graph.deleteAllRelationCreated(myUsername);
-                                                        graph.deleteUserByUsername(myUsername);
-
-
+                                                        deleteAccount(myUsername);
                                                     } else if (selection.equals("4")) {
                                                         if (users.size() != 0) {
                                                             System.out.println("Select a user to see profile :");
@@ -1533,16 +1511,8 @@ public class DbOperations {
                     System.out.println("You don't have friend");
                 }
             } else if (selection.equals("2")) {
-                try {
-                    mongo.deleteAllCommentForGivenUser(myUsername);
-                } catch (UserNotPresentException e) {
-                    System.out.println(e.getMessage());
-                }
-                graph.deleteAllRelationFollow(myUsername);
-                //graph.deleteAllRelationFollowed(myUsername);
-                graph.deleteAllRelationLike(myUsername);
-                graph.deleteAllRelationCreated(myUsername);
-                graph.deleteUserByUsername(myUsername);
+                deleteAccount(myUsername);
+
 
 
             } else if (selection.equals("3")) {
@@ -2207,16 +2177,8 @@ public class DbOperations {
                                 }
 
                             } else if (selectionOption.equals("2")) {
-                                try {
-                                    mongo.deleteAllCommentForGivenUser(user.getUsername());
-                                } catch (UserNotPresentException e) {
-                                    System.out.println(e.getMessage());
-                                }
-                                graph.deleteAllRelationFollow(user.getUsername());
-                                //graph.deleteAllRelationFollowed(myUsername);
-                                graph.deleteAllRelationLike(user.getUsername());
-                                graph.deleteAllRelationCreated(user.getUsername());
-                                graph.deleteUserByUsername(user.getUsername());
+                                deleteAccount(user.getUsername());
+
 
                             }
                         }
@@ -2271,16 +2233,9 @@ public class DbOperations {
                 }*/
 
             } else if (selection.equals("3")) {
-                try {
-                    mongo.deleteAllCommentForGivenUser(user.getUsername());
-                } catch (UserNotPresentException e) {
-                    System.out.println(e.getMessage());
-                }
-                graph.deleteAllRelationFollow(user.getUsername());
-                //graph.deleteAllRelationFollowed(myUsername);
-                graph.deleteAllRelationLike(user.getUsername());
-                graph.deleteAllRelationCreated(user.getUsername());
-                graph.deleteUserByUsername(user.getUsername());
+                deleteAccount(user.getUsername());
+
+
             } else if (selection.equals("4")){
                 graph.switchToAdmin(user.getUsername());
             }
@@ -3172,28 +3127,52 @@ public class DbOperations {
      * @param username
      */
     public void deleteAccount(String username) {
-        try {
-            mongo.deleteAllCommentForGivenUser(username);
-        } catch (UserNotPresentException e) {
-            System.out.println(e.getMessage());
+        //deve eliminare tutti i commenti fatti
+        //i commenti devono essere eliminati tutte le relazioni --> like ,
+        //deve eliminare tutte le relazini ==> like, follower , followed , createdBy
+        //like ok
+        //created ok
+
+
+
+
+        //elimino i commenti fatti dall'utente e ogni relazione
+       //DA METTERE --->  mongo.findAllCommentForGivenUser(username)
+        ArrayList<Review> commentFatti = new ArrayList<>(mongo.findAllCommentForGivenUser(username));
+        if(commentFatti!=null) {
+            for (int i = 0; i < commentFatti.size(); i++) {
+                try {
+                    graph.deleteAllRelationLikeByDescription(commentFatti.get(i).getDescription());
+                    graph.deleteAllRelationCreatedByDescription(commentFatti.get(i).getDescription());
+                    graph.deleteAllRelationRelatedByDescription(commentFatti.get(i).getDescription());
+                    graph.deleteCommentByDescription(commentFatti.get(i).getDescription());
+                } catch (IndexOutOfBoundsException e) {
+
+                }
+            }
         }
+        //elimino le relazioni di followes
         try {
             graph.deleteAllRelationFollow(username);
         } catch (IndexOutOfBoundsException ecc) {
 
         }
+        //elimino i like lasciati
         try {
             graph.deleteAllRelationLike(username);
         } catch (IndexOutOfBoundsException ecc) {
 
         }
-        try {
-            graph.deleteAllRelationCreated(username);
-        } catch (IndexOutOfBoundsException ecc) {
 
-        }
-        //graph.deleteAllRelationFollowed(myUsername);
         graph.deleteUserByUsername(username);
+
+        //mongo starts
+       try {
+            mongo.deleteAllCommentForGivenUser(username);
+        } catch (UserNotPresentException e) {
+            System.out.println(e.getMessage());
+        }
+        //mongo finish
 
     }
 
