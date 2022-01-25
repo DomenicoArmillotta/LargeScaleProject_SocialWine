@@ -231,13 +231,4 @@ public class Advanced_graph implements AutoCloseable {
         }
         return suggestedWines;
     }
-
-
-
-
-
-
-
-
-
 }
