@@ -83,10 +83,10 @@ public class Advanced_mongo {
     }
 
     /**
-     * 3 Query: Shows Top-20 wines and wines' prices, below a price treshold inserted by admin by keyboard
+     * 3 Query: Shows Top-20 wines, wines' prices, usernames that bought them, below a price treshold inserted by admin by keyboard
      */
-    public void topTwentyWinesWithPriceLowerThan() {
-        System.out.println("=========TOP 20 WINES WITH PRICE LOWER THAN A TRESHOLD FIXED BY ADMIN========");
+    public void topFiftyWinesWithPriceLowerThan() {
+        System.out.println("=========TOP 50 WINES WITH PRICE LOWER THAN A TRESHOLD FIXED BY ADMIN========");
         System.out.println("Insert price treshold:");
         Scanner sc = new Scanner(System.in);
         try {
@@ -101,7 +101,7 @@ public class Advanced_mongo {
                     System.out.println("=================================================================");
                 }
             } else {
-                Bson limit = limit(30);
+                Bson limit = limit(50);
                 Bson filter = Filters.lt("price", treshold);
                 Bson unwind = unwind("$reviews");
                 Bson match = match(filter);
@@ -116,7 +116,7 @@ public class Advanced_mongo {
                 }
                 for (Document doc : results) {
                     Document review = (Document) doc.get("reviews");
-                    System.out.println("Wine name: " + doc.getString("wineName") + "\n" + "Wine's price: " + doc.getInteger("price").toString() + "\n");
+                    System.out.println("Wine name: " + doc.getString("wineName") + "\n" + "Wine's price: " + doc.getInteger("price").toString() + "\n" + "Username: " + review.getString("taster_name")+ "\n");
                 }
                 System.out.println("=================================================================");
             }

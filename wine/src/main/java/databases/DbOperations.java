@@ -2780,7 +2780,7 @@ public class DbOperations {
         } else if (selected.equals("2")) {
             adv_mongo.topTenUsersMadeHighestumberOfReveiwsPerVarieties();
         } else if (selected.equals("3")) {
-            adv_mongo.topTwentyWinesWithPriceLowerThan();
+            adv_mongo.topFiftyWinesWithPriceLowerThan();
         }
 
     }
