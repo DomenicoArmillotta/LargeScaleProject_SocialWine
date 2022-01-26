@@ -9,7 +9,6 @@ import exception.WrongInsertionException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import javax.print.Doc;
 import java.text.DecimalFormat;
 import java.util.*;
 

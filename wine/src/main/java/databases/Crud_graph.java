@@ -6,7 +6,6 @@ import beans.Wine;
 import org.neo4j.driver.*;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
