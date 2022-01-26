@@ -2772,7 +2772,7 @@ public class DbOperations {
         System.out.println("what do you want to do?");
         System.out.println("1 : See top 5 country according to the rating");
         System.out.println("2 : See top 10 user with highest n° comment per variety ");
-        System.out.println("3 : See top 20 wines with price lower than X");
+        System.out.println("3 : See top 50 wines and price with price lower than X and highest average rating ");
         Scanner scanSelect = new Scanner(System.in);
         String selected = scanSelect.nextLine();
         if (selected.equals("1")) {

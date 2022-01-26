@@ -1,14 +1,15 @@
 package databases;
 
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.*;
-import com.mongodb.client.model.Aggregates;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Projections;
 import exception.ResultsNotFoundException;
 import exception.WrongInsertionException;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import javax.print.Doc;
 import java.text.DecimalFormat;
 import java.util.*;
 
@@ -83,10 +84,10 @@ public class Advanced_mongo {
     }
 
     /**
-     * 3 Query: Shows Top-20 wines, wines' prices, usernames that bought them, below a price treshold inserted by admin by keyboard
+     * 3 Query: Shows Top-50 wines, wines' prices, highest average rating, below a price treshold inserted by admin by keyboard
      */
     public void topFiftyWinesWithPriceLowerThan() {
-        System.out.println("=========TOP 50 WINES WITH PRICE LOWER THAN A TRESHOLD FIXED BY ADMIN========");
+        System.out.println("=========TOP 50 WINES WITH PRICE LOWER THAN A TRESHOLD AND HIGHEST AVERAGE RATING FIXED BY ADMIN========");
         System.out.println("Insert price treshold:");
         Scanner sc = new Scanner(System.in);
         try {
@@ -105,8 +106,12 @@ public class Advanced_mongo {
                 Bson filter = Filters.lt("price", treshold);
                 Bson unwind = unwind("$reviews");
                 Bson match = match(filter);
-                Bson project = Aggregates.project(Projections.fields(Projections.include("wineName", "price", "reviews.taster_name")));
-                AggregateIterable<Document> results = collection.aggregate(Arrays.asList(unwind, match, project, limit));
+                Bson sort = sort(descending("Average"));
+                List<Object> list1 = new BasicDBList();
+                list1.add(new BasicDBObject("wineName", "$wineName"));
+                list1.add(new BasicDBObject("price", "$price"));
+                Bson group = group(list1, avg("Average", "$reviews.rating"));
+                AggregateIterable<Document> results = collection.aggregate(Arrays.asList(match, unwind, group,limit, sort));
                 if (!results.iterator().hasNext()) {
                     try {
                         throw new ResultsNotFoundException("The are no items for this query!");
@@ -115,8 +120,8 @@ public class Advanced_mongo {
                     }
                 }
                 for (Document doc : results) {
-                    Document review = (Document) doc.get("reviews");
-                    System.out.println("Wine name: " + doc.getString("wineName") + "\n" + "Wine's price: " + doc.getInteger("price").toString() + "\n" + "Username: " + review.getString("taster_name")+ "\n");
+                    ArrayList<Document> wine = (ArrayList<Document>) doc.get("_id");
+                    System.out.println("Wine name: " + wine.get(0).get("wineName") + "\n" + "Wine's price: " + wine.get(1).get("price") + "\n" + "Wine's rating: " + doc.get("Average").toString() +"\n");
                 }
                 System.out.println("=================================================================");
             }
