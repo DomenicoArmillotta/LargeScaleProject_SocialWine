@@ -620,7 +620,17 @@ public class Crud_graph implements AutoCloseable {
     public void deleteAllRelationFollow(final String username) {
         try (Session session = driver.session()) {
             session.writeTransaction(tx -> {
-                tx.run("MATCH (u:User{username: $username})<-[f:Follow]->(u:User)\n" +
+                tx.run("MATCH (u:User{username: $username})<-[f:Follow]-(u2:User)\n" +
+                                "DELETE f",
+                        parameters("username", username));
+                return null;
+            });
+        }
+    }
+    public void deleteAllRelationFollow2(final String username) {
+        try (Session session = driver.session()) {
+            session.writeTransaction(tx -> {
+                tx.run("MATCH (u:User{username: $username})-[f:Follow]->(u2:User)\n" +
                                 "DELETE f",
                         parameters("username", username));
                 return null;

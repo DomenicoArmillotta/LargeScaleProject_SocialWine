@@ -2306,6 +2306,7 @@ public class DbOperations {
         //elimino le relazioni di followes
         try {
             graph.deleteAllRelationFollow(username);
+            graph.deleteAllRelationFollow2(username);
         } catch (IndexOutOfBoundsException ecc) {
 
         }
@@ -2779,7 +2780,7 @@ public class DbOperations {
         } else if (selected.equals("2")) {
             adv_mongo.topTenUsersMadeHighestumberOfReveiwsPerVarieties();
         } else if (selected.equals("3")) {
-            adv_mongo.topThirtyWinesWithPriceLowerThan();
+            adv_mongo.topTwentyWinesWithPriceLowerThan();
         }
 
     }

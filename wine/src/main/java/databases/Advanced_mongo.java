@@ -83,10 +83,10 @@ public class Advanced_mongo {
     }
 
     /**
-     * 3 Query: Shows Top-30 wines and usernames that bought them, below a price treshold inserted by admin by keyboard
+     * 3 Query: Shows Top-20 wines and wines' prices, below a price treshold inserted by admin by keyboard
      */
-    public void topThirtyWinesWithPriceLowerThan() {
-        System.out.println("=========TOP 10 WINES WITH PRICE LOWER THAN A TRESHOLD FIXED BY ADMIN========");
+    public void topTwentyWinesWithPriceLowerThan() {
+        System.out.println("=========TOP 20 WINES WITH PRICE LOWER THAN A TRESHOLD FIXED BY ADMIN========");
         System.out.println("Insert price treshold:");
         Scanner sc = new Scanner(System.in);
         try {
