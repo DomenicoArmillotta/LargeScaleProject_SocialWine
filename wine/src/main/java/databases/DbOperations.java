@@ -2430,11 +2430,10 @@ public class DbOperations {
         System.out.println("1 : Show all wine 10 per times");
         System.out.println("2 : Search specific wine");
         System.out.println("3 : See suggested wine");
-        System.out.println("4" + " Add specific wine"); //-->mongo ok
+        System.out.println("4 : Add specific wine"); //-->mongo ok
         Scanner scanSelectMenuWine = new Scanner(System.in);
         String selectedMenuWine = scanSelectMenuWine.nextLine();
         if (selectedMenuWine.equals("1")) {
-            //ArrayList<Wine> wines = new ArrayList<>(graph.showAllWine());
             ArrayList<Wine> wines = new ArrayList<>(mongo.findAllWine());
             int i = 0;
             int times = 0;
